@@ -33,6 +33,13 @@ if [ ! -f node_pubkeys.txt ]; then
     done
 fi
 
+if [ ! -f node_addrs.txt ]; then
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+        addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
+        echo "$addr" >> node_addrs.txt
+    done
+fi
+
 ./bitcoind_load_onchain.sh
 
 ./cln_load_onchain.sh
