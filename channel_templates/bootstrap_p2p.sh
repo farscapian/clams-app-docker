@@ -24,6 +24,7 @@ for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
             # Now open a p2p connection
             NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
             lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735 > /dev/null
+            echo "CLN-$NODE_ID connected to $NEXT_NODE_PUBKEY"
         fi
     done
 
