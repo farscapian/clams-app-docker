@@ -10,11 +10,11 @@ cd "$(dirname "$0")"
 if [[ $(bcli listwalletdir) == *'"name": "prism"'* ]]; then
     # load wallet if not already loaded
     if ! bcli listwallets | grep -q "prism"; then
-        bcli loadwallet prism
+        bcli loadwallet prism > /dev/null
     fi
 else
     #create walllet (gets loaded automatically) if it does not already exist
-    bcli createwallet prism
+    bcli createwallet prism > /dev/null
 fi
 
 WALLET_INFO=$(bcli getwalletinfo)
