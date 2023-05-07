@@ -26,6 +26,18 @@ for i in "$@"; do
     esac
 done
 
+#remove stored node pubkeys and addrs:
+cd ./channel_templates
+
+if [ -f ./node_pubkeys.txt ]; then
+    rm ./node_pubkeys.txt
+fi 
+
+if [ -f ./node_addrs.txt ]; then
+    rm ./node_addrs.txt
+fi
+
+cd ..
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then

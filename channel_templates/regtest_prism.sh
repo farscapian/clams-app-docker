@@ -2,12 +2,14 @@
 
 set -e
 
+mapfile -t pubkeys < node_pubkeys.txt
+
 # get node pubkeys
 #ALICE_PUBKEY=$(lncli --id=0 getinfo | jq -r ".id")
-BOB_PUBKEY=$(lncli --id=1 getinfo | jq -r ".id")
-CAROL_PUBKEY=$(lncli --id=2 getinfo | jq -r ".id")
-DAVE_PUBKEY=$(lncli --id=3 getinfo | jq -r ".id")
-ERIN_PUBKEY=$(lncli --id=4 getinfo | jq -r ".id")
+BOB_PUBKEY=${pubkeys[1]}
+CAROL_PUBKEY=${pubkeys[2]}
+DAVE_PUBKEY=${pubkeys[3]}
+ERIN_PUBKEY=${pubkeys[4]}
 
 # now lets wire them up
 # Alice --> Bob

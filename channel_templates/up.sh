@@ -10,11 +10,11 @@ done;
 
 # set these funcs and vars here for testing
 lncli() {
-    "$(dirname "$0")/../lightning-cli.sh" "$@"
+    "./../lightning-cli.sh" "$@"
 }
 
 bcli() {
-    "$(dirname "$0")/../bitcoin-cli.sh" "$@"
+    "./../bitcoin-cli.sh" "$@"
 }
 
 CLN_COUNT=5
@@ -24,6 +24,14 @@ export -f lncli
 export -f bcli
 export CLN_COUNT
 export BTC_CHAIN
+
+#lets get the node pubkeys one time and write them to a text file
+if [ ! -f node_pubkeys.txt ]; then
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+        pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
+        echo "$pubkey" >> node_pubkeys.txt
+    done
+fi
 
 ./bitcoind_load_onchain.sh
 
