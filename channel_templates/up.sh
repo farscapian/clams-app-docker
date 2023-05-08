@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 cd "$(dirname "$0")"
 
 # wait for bitcvoind container to startup
