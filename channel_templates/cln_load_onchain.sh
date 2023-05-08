@@ -42,3 +42,4 @@ bcli sendmany "" "$SENDMANY_JSON" > /dev/null
 
 bcli -generate 10 > /dev/null
 
+ 
