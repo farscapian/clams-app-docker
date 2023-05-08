@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 cd "$(dirname "$0")"
 
 # wait for bitcvoind container to startup
@@ -21,8 +21,13 @@ export -f lncli
 export -f bcli
 
 # clear out the node list and pubkey list
-rm node_pubkeys.txt
-rm node_addrs.txt
+if [ -f ./node_pubkeys.txt ]; then
+    rm ./node_pubkeys.txt
+fi 
+
+if [ -f ./node_addrs.txt ]; then
+    rm ./node_addrs.txt
+fi
 
 #lets get the node pubkeys one time and write them to a text file
 if [ ! -f node_pubkeys.txt ]; then
@@ -32,6 +37,7 @@ if [ ! -f node_pubkeys.txt ]; then
     done
 fi
 
+#get addrs for each node
 if [ ! -f node_addrs.txt ]; then
     for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
