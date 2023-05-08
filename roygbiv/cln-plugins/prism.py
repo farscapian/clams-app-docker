@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import json
 import os
+import re
 from math import floor
 from pyln.client import Plugin, RpcError, LightningRpc, Millisatoshi
 plugin = Plugin()
+
+pubkeyRegex = re.compile(r'^0[2-3][0-9a-fA-F]{64}$')
 
 @plugin.init()  # Decorator to define a callback once the `init` method call has successfully completed
 def init(options, configuration, plugin, **kwargs):
@@ -123,11 +126,13 @@ def validate_members(members):
             raise ValueError("Member 'name' must be a string.")
 
         if not isinstance(member["destination"], str):
-            #todo add check that it's a valid pubkey
-            raise ValueError("Member 'destination' must be a string.")
-
-        if not isinstance(member["split"], (int)):
-            #todo add check for integer
+            raise ValueError("Member 'destination' must be a valid pubkey")
+        
+        valid_pubkey = member["destination"] if pubkeyRegex.match(member["destination"]) else None
+        if valid_pubkey is None:
+            raise Exception("Invalid pubkey was provided")
+        
+        if not isinstance(member["split"], int):
             raise ValueError("Member 'split' must be an integer")
 
 
