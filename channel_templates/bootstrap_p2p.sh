@@ -11,7 +11,7 @@ for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
 
     # first we should check if the node has any peers already
     NODE_PEER_COUNT="$(lncli --id=${NODE_ID} listpeers | jq -r '.peers | length')"
-    if (( "$NODE_PEER_COUNT" >= 4 )); then
+    if [ "$NODE_PEER_COUNT" -gt 4 ]; then
         echo "Node $NODE_ID has $NODE_PEER_COUNT peers."
         continue
     fi
