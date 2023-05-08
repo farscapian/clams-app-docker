@@ -111,8 +111,8 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
 
 def validate_members(members):
-    if len(members) < 1:
-        raise ValueError("Prism must contain at least one member")
+    if len(members) < 3:
+        raise ValueError("Prism must contain at least two members")
 
     if not isinstance(members, list):
         raise ValueError("Members must be a list.")
@@ -130,15 +130,20 @@ def validate_members(members):
             raise ValueError("Member 'name' must be a string.")
 
         if not isinstance(member["destination"], str):
-            raise ValueError("Member 'destination' must be a valid pubkey")
+            raise ValueError("Member 'destination' must be a string")
 
         valid_pubkey = member["destination"] if pubkeyRegex.match(
             member["destination"]) else None
         if valid_pubkey is None:
-            raise Exception("Invalid pubkey was provided")
+            raise Exception(
+                "Destination must be a valid lightning node pubkey")
 
         if not isinstance(member["split"], int):
             raise ValueError("Member 'split' must be an integer")
+
+        if member["split"] < 1 or member["split"] > 1000:
+            raise ValueError(
+                "Member 'split' must be an integer between 1 and 1000")
 
 
 plugin.run()  # Run our plugin
