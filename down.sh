@@ -26,6 +26,14 @@ for i in "$@"; do
     esac
 done
 
+# need to check that we are in swarm mode if we are running down.sh for the first time one a remote dockerd
+if docker info | grep -q "Swarm: inactive"; then
+    if docker stack list | grep -q "roygbiv-stack"; then
+        echo "ERROR: the 'roygbiv-stack' is currently active. You may need to run ./down.sh or ./reset.sh first."
+        exit 1
+    fi
+fi
+
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then
