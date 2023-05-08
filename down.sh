@@ -76,7 +76,9 @@ if [ "$PURGE" = true ]; then
     # Iterate over each value in the list
     for VOLUME in $VOLUMES; do
         if ! echo "$VOLUME" | grep -q "roygbiv-certs"; then
-            docker volume rm "$VOLUME"
+            if echo "$VOLUME" | grep -q "roygbiv"; then
+                docker volume rm "$VOLUME"
+            fi
         fi
     done
 
