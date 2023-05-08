@@ -5,6 +5,8 @@ cd "$(dirname "$0")"
 
 . ./defaults.env
 
+. ./load_env.sh
+
 NODE_ID=0
 
 # grab any modifications from the command line.

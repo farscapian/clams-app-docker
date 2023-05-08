@@ -17,9 +17,6 @@ bcli() {
     "./../bitcoin-cli.sh" "$@"
 }
 
-CLN_COUNT=5
-BTC_CHAIN=regtest
-
 export -f lncli
 export -f bcli
 
