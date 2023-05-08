@@ -20,30 +20,22 @@ bcli() {
 export -f lncli
 export -f bcli
 
-# clear out the node list and pubkey list
-if [ -f ./node_pubkeys.txt ]; then
-    rm ./node_pubkeys.txt
-fi 
 
-if [ -f ./node_addrs.txt ]; then
-    rm ./node_addrs.txt
-fi
+# clear out the node addrs and pubkey cache
+rm -f ./node_addrs.txt
+rm -f ./node_pubkeys.txt
 
-#lets get the node pubkeys one time and write them to a text file
-if [ ! -f node_pubkeys.txt ]; then
+# cache node pubkeys
     for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> node_pubkeys.txt
     done
-fi
 
-#get addrs for each node
-if [ ! -f node_addrs.txt ]; then
+# cache node addrs
     for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done
-fi
 
 ./bitcoind_load_onchain.sh
 
