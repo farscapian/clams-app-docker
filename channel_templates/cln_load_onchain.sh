@@ -31,6 +31,9 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
             bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
         done
     fi
+
+    bcli -generate 1 > /dev/null
+
 done
 
 SENDMANY_JSON="${SENDMANY_JSON::-1}}"
