@@ -22,8 +22,10 @@ BTC_CHAIN=regtest
 
 export -f lncli
 export -f bcli
-export CLN_COUNT
-export BTC_CHAIN
+
+# clear out the node list and pubkey list
+rm node_pubkeys.txt
+rm node_addrs.txt
 
 #lets get the node pubkeys one time and write them to a text file
 if [ ! -f node_pubkeys.txt ]; then
