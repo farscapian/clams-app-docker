@@ -34,7 +34,6 @@ if docker info | grep -q "Swarm: inactive"; then
     fi
 fi
 
-
 if [ -f ./docker-compose.yml ]; then
     TIME_PER_CLN_NODE=3
     if docker stack ls --format "{{.Name}}" | grep -q roygbiv-stack; then
