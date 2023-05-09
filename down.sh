@@ -26,12 +26,9 @@ for i in "$@"; do
     esac
 done
 
-# need to check that we are in swarm mode if we are running down.sh for the first time one a remote dockerd
+# ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
-    if docker stack list | grep -q "roygbiv-stack"; then
-        echo "ERROR: the 'roygbiv-stack' is currently active. You may need to run ./down.sh or ./reset.sh first."
-        exit 1
-    fi
+    docker swarm init
 fi
 
 cd ./roygbiv/
@@ -46,17 +43,17 @@ fi
 
 cd ..
 
-# remove any container runtimes.
-docker system prune -f
-
-# remote dangling/unnamed volumes.
-docker volume prune -f
-
-sleep 2
-
 
 # let's delete all volumes EXCEPT roygbiv-certs
 if [ "$PURGE" = true ]; then
+
+    # remove any container runtimes.
+    docker system prune -f
+
+    # remote dangling/unnamed volumes.
+    docker volume prune -f
+
+    sleep 2
 
     # get a list of all the volumes
     VOLUMES=$(docker volume list -q)
