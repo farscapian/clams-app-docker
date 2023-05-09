@@ -18,6 +18,7 @@ done
 
 
 CHANNELS_ONLY=false
+WITH_TESTS=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -25,6 +26,9 @@ for i in "$@"; do
         --channels-only)
             CHANNELS_ONLY=true
             shift
+        ;;
+        --with-tests)
+            WITH_TESTS=true
         ;;
         *)
         ;;
@@ -90,3 +94,7 @@ fi
 
 # ok, let's do the channel logic
 ./channel_templates/up.sh
+
+if [ $WITH_TESTS == true ]; then
+    ./tests/run.sh 
+fi
