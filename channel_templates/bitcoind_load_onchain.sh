@@ -24,18 +24,44 @@ WALLET_BALANCE=$(echo "$WALLET_INFO" | jq -r '.balance')
 WALLET_NAME=$(echo "$WALLET_INFO" | jq -r '.walletname')
 
 echo "$WALLET_NAME wallet initialized"
+MIN_WALLET_BALANCE=50
+if [ "$BTC_CHAIN" = signet ]; then
+    MIN_WALLET_BALANCE=0.0001
+else
+    MIN_WALLET_BALANCE=0.0001
+fi
 
-if [ "$(echo "$WALLET_BALANCE < 50" | bc -l) " -eq 1 ]; then
+    
+BTC_ADDRESS=$(bcli getnewaddress)
+CLEAN_BTC_ADDRESS=$(echo -n "$BTC_ADDRESS" | tr -d '\r')
+if [ "$BTC_CHAIN" == regtest ]; then
 
-    BTC_ADDRESS=$(bcli getnewaddress)
-    CLEAN_BTC_ADDRESS=$(echo -n "$BTC_ADDRESS" | tr -d '\r')
+    # if the wallet balance is not big enough, we mine some blocks to ourselves
+    if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
 
-    if [ "$BTC_CHAIN" == regtest ]; then
-        # we need at least 100 blocks before coinbase tx are spendable.
+        # in regtest we can just generate some blocks; not so with signet and mainnet
         bcli generatetoaddress 105 "$CLEAN_BTC_ADDRESS" > /dev/null
         echo "105 blocks mined to $WALLET_NAME"
-    else 
-        echo "ERROR: You are on $BTC_CHAIN and cannot generate coins to your wallet. Figure out how to get some onchain funds"
+
+    fi
+
+elif [ "$BTC_CHAIN" == signet ]; then
+        
+    # if the wallet doesn't have the minimum required, then we error out.
+    # otherwise it's all good and we keep going.
+    if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
+        echo "WARNING: Your signet wallet is not properly funded. Send signet coins to: ${CLEAN_BTC_ADDRESS}"
+        echo "INFO:    Here's two faucets:"
+        echo "           - https://signetfaucet.com/"
+        echo "           - https://alt.signetfaucet.com/"
+        exit 1
+    fi
+
+else
+    # if the wallet doesn't have the minimum required, then we error out.
+    # otherwise it's all good and we keep going.
+    if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
+        echo "WARNING: Your MAINNET wallet is not properly funded. Send BTC coins to: ${CLEAN_BTC_ADDRESS}"
         exit 1
     fi
 fi
