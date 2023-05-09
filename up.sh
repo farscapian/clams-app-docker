@@ -16,12 +16,20 @@ done
 . ./defaults.env
 . ./load_env.sh
 
-if docker info | grep -q "Swarm: active"; then
-    if docker stack list | grep -q "roygbiv-stack"; then
-        echo "ERROR: the 'roygbiv-stack' is currently active. You may need to run ./down.sh or ./reset.sh first."
-        exit 1
-    fi
-fi
+
+CHANNELS_ONLY=false
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --channels-only)
+            CHANNELS_ONLY=true
+            shift
+        ;;
+        *)
+        ;;
+    esac
+done
 
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
@@ -69,7 +77,9 @@ PRISM_APP_IMAGE_TAG="${PRISM_APP_GIT_TAG: -5}"
 PRISM_APP_IMAGE_NAME="prism-browser-app:$PRISM_APP_IMAGE_TAG"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
 
-./roygbiv/run.sh
+if [ "$CHANNELS_ONLY" = false ]; then
+    ./roygbiv/run.sh
+fi
 
 # the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
 echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
