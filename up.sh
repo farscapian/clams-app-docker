@@ -41,6 +41,9 @@ if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" !
     exit 1
 fi
 
+
+RPC_PATH="/root/.lightning/${BTC_CHAIN}/lightning-rpc"
+
 export DOCKER_HOST="$DOCKER_HOST"
 export CLIGHTNING_WEBSOCKET_EXTERNAL_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
 export ENABLE_TLS="$ENABLE_TLS"
