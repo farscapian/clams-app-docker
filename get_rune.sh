@@ -42,4 +42,4 @@ elif [ "$RUNE_TYPE" = clams ]; then
 fi
 
 RUNE=$(echo "$RUNE_JSON" | jq -r '.rune')
-echo "CLN-${NODE_ID} ${RUNE_TYPE} rune: ${RUNE}"
+echo "${RUNE}"

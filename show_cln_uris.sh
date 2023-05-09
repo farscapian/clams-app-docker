@@ -14,10 +14,14 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     # now let's output the core lightning node URI so the user doesn't need to fetch that manually.
     CLN_WEBSOCKET_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_WEBSOCKET_PORT}")
-    echo "Core-lightning websocket URI for '$CLN_ALIAS': $CLN_WEBSOCKET_URI"
+    echo "Websocket URI for '$CLN_ALIAS': $CLN_WEBSOCKET_URI"
 
     CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_P2P_PORT}")
-    echo "Core-lightning native P2P URI for '$CLN_ALIAS': $CLN_P2P_URI"
+    echo "Native P2P URI for '$CLN_ALIAS': $CLN_P2P_URI"
+
+    if [ "$CLN_ID" = 1 ]; then
+        echo "Prism app WebSocket proxy string: wss://${DOMAIN_NAME}:${CLN_WEBSOCKET_PORT}"
+    fi
     
     RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID}")
     echo "Admin rune for ${CLN_ALIAS}: $RUNE"
