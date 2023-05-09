@@ -36,8 +36,8 @@ if [ "$ENABLE_TLS" = true ] && [ "$LN_WS_PROXY_HOSTNAME" = localhost ]; then
     exit 1
 fi
 
-if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != testnet ] && [ "$BTC_CHAIN" != mainnet ]; then
-    echo "ERROR: BTC_CHAIN must be either 'regtest', 'signet', 'testnet', or 'mainnet'."
+if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
+    echo "ERROR: BTC_CHAIN must be either 'regtest', 'signet', or 'mainnet'."
     exit 1
 fi
 
