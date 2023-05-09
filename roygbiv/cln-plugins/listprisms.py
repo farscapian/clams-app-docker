@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import json
+import os
 from math import floor
 from pyln.client import Plugin, RpcError, LightningRpc, Millisatoshi
 
-path_to_rpc = "/root/.lightning/regtest/lightning-rpc"
 plugin = Plugin()
 
 
@@ -15,7 +15,7 @@ def init(options, configuration, plugin, **kwargs):
 @plugin.method("listprisms")
 def listprisms(plugin):
     try:
-        lrpc = LightningRpc(path_to_rpc)
+        lrpc = LightningRpc(os.getenv('RPC_PATH'))
 
         offers = lrpc.listoffers()["offers"]
         offer_ids = [offer["offer_id"] for offer in offers]
