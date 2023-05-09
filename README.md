@@ -8,7 +8,7 @@ This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern do
 * [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes volumes will be deleted.
 * [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, the `up.sh`. Just save a step. You can also add `--purge` here.
 
-You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env`](./active_env)
+You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env.txt`](./active_env.txt)
 
 ```config
 DOCKER_HOST=ssh://ubuntu@domain.tld
