@@ -2,7 +2,7 @@
 
 Like a prism... get it?
 
-`prism` is a CLN plugin that creates bolt12 offers representing a lightning prism.
+`createprism`and `listprisms` are are CLN plugin to create and fetch bolt12 offers representing a lightning prism.
 
 ## Usage:
 
@@ -10,11 +10,11 @@ ROYGBIV adds two RPC methods. One to _create_ prisms, and the other to _list_ th
 
 ### Creating a prism:
 
-- **method**: _prism_
+- **method**: _createprism_
 - **params**: _label_ as a string and _members_ as an array
 
 ```
-lightning-cli prism label="string" members='[{"name": "node_pubkey", "destination": "node_pubkey", "split": 1 <= num <= 1000}]'
+lightning-cli createprism label="string" members='[{"name": "node_pubkey", "destination": "node_pubkey", "split": 1 <= num <= 1000}]'
 ```
 
 Returns the bolt12 offer:
@@ -40,7 +40,7 @@ Returns the bolt12 offer:
 For example:
 
 ```
-lightning-cli prism label="string" members='[{"name": "alice", "destination": "alice_pubkey", "split": 1}, {"name": "bob", "destination": "bob_pubkey", "split": 1}, {"name": "carol", "destination": "carol_pubkey", "split": 1}]'
+lightning-cli createprism label="string" members='[{"name": "alice", "destination": "alice_pubkey", "split": 1}, {"name": "bob", "destination": "bob_pubkey", "split": 1}, {"name": "carol", "destination": "carol_pubkey", "split": 1}]'
 ```
 
 The above equally distributes each payment to Alice, Bob, and Carol. . . they each get 33%.
@@ -119,4 +119,4 @@ _Assuming you are still using the clams-app-docker stack_
 
 # Conclusion
 
-Creating a prism results in a payable bolt12 offer that will split the payment to n number of prism members. Each member gets a relative split. The `prism` method allows you to create prisms and the `listprisms` method will fetch all prisms stored on that node. We then went through how you could use the [Clams Stack](https://github.com/farscapian/clams-app-docker) with prisms to easily spin up a test environment and interact with nodes and prims using the handy lightning-cli.sh script.
+Creating a prism results in a payable bolt12 offer that will split the payment to n number of prism members. Each member gets a relative split. The `createprism` method allows you to create prisms and the `listprisms` method will fetch all prisms stored on that node. We then went through how you could use the [Clams Stack](https://github.com/farscapian/clams-app-docker) with prisms to easily spin up a test environment and interact with nodes and prims using the handy lightning-cli.sh script.

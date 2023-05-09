@@ -11,11 +11,11 @@ pubkeyRegex = re.compile(r'^0[2-3][0-9a-fA-F]{64}$')
 
 @plugin.init()  # Decorator to define a callback once the `init` method call has successfully completed
 def init(options, configuration, plugin, **kwargs):
-    plugin.log("Plugin prism.py initialized")
+    plugin.log("Plugin createprism.py initialized")
 
 
-@plugin.method("prism")
-def prism(plugin, label, members):
+@plugin.method("createprism")
+def createprism(plugin, label, members):
     try:
         # check members is of form [{"name": "alias", "destination": "pubkey", "split": number}]
         # todo: validate destination is a valid pubkey.

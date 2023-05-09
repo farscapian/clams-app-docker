@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 cd "$(dirname "$0")"
 
 lncli() {
@@ -13,6 +13,6 @@ CAROL_PUBKEY=${pubkeys[2]}
 DAVE_PUBKEY=${pubkeys[3]}
 ERIN_PUBKEY=${pubkeys[4]}
 
-prism=$(lncli --id=1 prism label="'"$RANDOM"'" members='[{"name": "carol", "destination": "'"$CAROL_PUBKEY"'", "split": 1}, {"name": "dave", "destination": "'"$DAVE_PUBKEY"'", "split": 5}, {"name": "erin", "destination": "'"$ERIN_PUBKEY"'", "split": 2}]')
+prism=$(lncli --id=1 createprism label="'"$RANDOM"'" members='[{"name": "carol", "destination": "'"$CAROL_PUBKEY"'", "split": 1}, {"name": "dave", "destination": "'"$DAVE_PUBKEY"'", "split": 5}, {"name": "erin", "destination": "'"$ERIN_PUBKEY"'", "split": 2}]')
 
 echo "$prism"
