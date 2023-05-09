@@ -4,6 +4,7 @@ import os
 import re
 from math import floor
 from pyln.client import Plugin, RpcError, LightningRpc, Millisatoshi
+
 plugin = Plugin()
 
 pubkeyRegex = re.compile(r'^0[2-3][0-9a-fA-F]{64}$')
@@ -11,7 +12,7 @@ pubkeyRegex = re.compile(r'^0[2-3][0-9a-fA-F]{64}$')
 
 @plugin.init()  # Decorator to define a callback once the `init` method call has successfully completed
 def init(options, configuration, plugin, **kwargs):
-    plugin.log("Plugin createprism.py initialized")
+    plugin.log("prism plugin initialized")
 
 
 @plugin.method("createprism")
@@ -22,11 +23,12 @@ def createprism(plugin, label, members):
         validate_members(members)
         # maybe try to find a route first, and if no route can be found then
         # fail because that destination will not be payable
-
+        plugin.log(f"Members: {members}")
         lrpc = LightningRpc(os.getenv('RPC_PATH'))
         # returns object containing bolt12 offer
         offer = lrpc.offer("any", label)
         offer_id = offer["offer_id"]
+        plugin.log(f"Offer: {offer}")
 
         datastore = lrpc.listdatastore(offer_id)["datastore"]
         if any(offer_id in d['key'] for d in datastore):
@@ -42,6 +44,32 @@ def createprism(plugin, label, members):
                        string=json.dumps({"label": label, "bolt12": offer["bolt12"], "members": members}))
 
         return offer
+    except RpcError as e:
+        plugin.log(e)
+        return e
+
+
+@plugin.method("listprisms")
+def listprisms(plugin):
+    try:
+        lrpc = LightningRpc(os.getenv('RPC_PATH'))
+
+        offers = lrpc.listoffers()["offers"]
+        offer_ids = [offer["offer_id"] for offer in offers]
+
+        datastore = lrpc.listdatastore()["datastore"]
+
+        # extract all datastore entries with a key that matches our offer_ids
+        prisms = [i for i in datastore if any(
+            offer_id in i["key"] for offer_id in offer_ids)]
+
+        prism_data_string = list(
+            map(lambda prism: prism['string'].replace('\\"', '"'), prisms))
+
+        prism_data_json = list(
+            map(lambda prism: json.loads(prism), prism_data_string))
+
+        return prism_data_json
     except RpcError as e:
         plugin.log(e)
         return e
