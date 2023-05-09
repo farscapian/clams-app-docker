@@ -111,7 +111,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
 
 def validate_members(members):
-    if len(members) < 3:
+    if len(members) < 2:
         raise ValueError("Prism must contain at least two members")
 
     if not isinstance(members, list):
