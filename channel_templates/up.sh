@@ -21,7 +21,7 @@ export -f lncli
 export -f bcli
 
 
-# clear out the node addrs and pubkey cache
+clear out the node addrs and pubkey cache
 rm -f ./node_addrs.txt
 rm -f ./node_pubkeys.txt
 
@@ -47,5 +47,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     ./bootstrap_p2p.sh
 
     ./regtest_prism.sh
+
+    ./test_prism_plugin.sh
 
 fi
