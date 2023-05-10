@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 PURGE=false
 WITH_TESTS=false
 RETAIN_CACHE=false
+CHANNELS_ONLY=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -22,6 +23,9 @@ for i in "$@"; do
         ;;
         --retain-cache)
             RETAIN_CACHE=true
+        ;;        
+        --channels-only)
+            CHANNELS_ONLY=true
         ;;
         *)
         echo "Unexpected option: $1"
@@ -39,4 +43,4 @@ bash -c "./down.sh --purge=$PURGE"
 
 sleep 20
 
-bash -c "./up.sh --with-tests=$WITH_TESTS --retain-cache=$RETAIN_CACHE"
+bash -c "./up.sh --with-tests=$WITH_TESTS --retain-cache=$RETAIN_CACHE --channels-only=${CHANNELS_ONLY}"

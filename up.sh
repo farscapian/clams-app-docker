@@ -28,6 +28,10 @@ for i in "$@"; do
             CHANNELS_ONLY=true
             shift
         ;;
+        --channels-only=*)
+            CHANNELS_ONLY="${i#*=}"
+            shift
+        ;;
         --with-tests)
             WITH_TESTS=true
         ;;
