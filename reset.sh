@@ -24,6 +24,8 @@ for i in "$@"; do
             RETAIN_CACHE=true
         ;;
         *)
+        echo "Unexpected option: $1"
+        exit 1
         ;;
     esac
 done
