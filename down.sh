@@ -34,7 +34,7 @@ fi
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then
-    TIME_PER_CLN_NODE=3
+    TIME_PER_CLN_NODE=5
     if docker stack ls --format "{{.Name}}" | grep -q roygbiv-stack; then
         docker stack rm roygbiv-stack && sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
         sleep 5
