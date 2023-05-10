@@ -51,14 +51,22 @@ fi
 
 export MINIMUM_WALLET_BALANCE="$MINIMUM_WALLET_BALANCE"
 
-
+# this is called for all btc_chains
 ./bitcoind_load_onchain.sh
 
-./cln_load_onchain.sh
+# With mainnet, all channel opens and spend must be done through a wallet app or the CLI
+if [ "$BTC_CHAIN" = regtest ] || [ "$BTC_CHAIN" = signet ]; then
+    ./cln_load_onchain.sh
+fi
 
-./bootstrap_p2p.sh
+
+if [ "$BTC_CHAIN" != mainnet ]; then
+    ./bootstrap_p2p.sh
+fi
+
+# this represents the number of seconds per cln node we wait for service to come down
+# TODO maybe poll for this? 
 TIME_PER_CLN_NODE=3
-
 sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
 
 # automatically open channels if on regtest or signet.
