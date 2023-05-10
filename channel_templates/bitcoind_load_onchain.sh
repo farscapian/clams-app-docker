@@ -64,6 +64,8 @@ else
         echo "WARNING: Your ${BTC_CHAIN} wallet is not properly funded. Send at least '$MINIMUM_WALLET_BALANCE' btc to: ${CLEAN_BTC_ADDRESS}"
 
         if [ "$BTC_CHAIN" = mainnet ]; then
+            echo "ERROR: mainnet is not yet enabled."
+            exit 1
             echo "WARNING: You are running on mainnet! Please be sure you want to send real btc to this node!"
         fi
 
