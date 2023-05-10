@@ -89,6 +89,17 @@ if [ "$CHANNELS_ONLY" = false ]; then
     ./roygbiv/run.sh
 fi
 
+lncli() {
+    "./../lightning-cli.sh" "$@"
+}
+
+bcli() {
+    "./../bitcoin-cli.sh" "$@"
+}
+
+export -f lncli
+export -f bcli
+
 # the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
 echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
 
@@ -99,6 +110,6 @@ fi
 # ok, let's do the channel logic
 ./channel_templates/up.sh
 
-if [ $WITH_TESTS == true ]; then
+if [ "$WITH_TESTS" == true ]; then
     ./tests/run.sh 
 fi

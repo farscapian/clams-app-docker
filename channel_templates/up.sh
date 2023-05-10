@@ -9,16 +9,6 @@ until docker ps | grep -q bitcoind; do
 done;
 
 # set these funcs and vars here for testing
-lncli() {
-    "./../lightning-cli.sh" "$@"
-}
-
-bcli() {
-    "./../bitcoin-cli.sh" "$@"
-}
-
-export -f lncli
-export -f bcli
 
 
 # clear out the node addrs and pubkey cache
