@@ -111,6 +111,9 @@ fi
 
 docker stack deploy -c docker-compose.yml roygbiv-stack
 
-sleep 20
-
+if [ "$BTC_CHAIN" = mainnet ]; then
+    sleep 120
+else
+    sleep 20
+fi
 # TODO poll for container existence.

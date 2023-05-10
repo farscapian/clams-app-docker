@@ -42,18 +42,24 @@ if [ "$RETAIN_CACHE" == false ]; then
 
 fi
 
+MINIMUM_WALLET_BALANCE=5
+if [ "$BTC_CHAIN" = signet ] || [ "$BTC_CHAIN" = mainnet ]; then
+    MINIMUM_WALLET_BALANCE=0.004
+fi
+
+export MINIMUM_WALLET_BALANCE="$MINIMUM_WALLET_BALANCE"
+
+
 ./bitcoind_load_onchain.sh
 
-# now open channels depending on the setup.
+./cln_load_onchain.sh
+
+./bootstrap_p2p.sh
+TIME_PER_CLN_NODE=3
+
+sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
+
+# automatically open channels if on regtest or signet.
 if [ "$BTC_CHAIN" = regtest ]; then
-
-    ./cln_load_onchain.sh
-
-    ./bootstrap_p2p.sh
-    TIME_PER_CLN_NODE=3
-    
-    sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
     ./regtest_prism.sh
-
 fi
