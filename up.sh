@@ -30,6 +30,10 @@ for i in "$@"; do
         --with-tests)
             WITH_TESTS=true
         ;;
+        --with-tests=*)
+            WITH_TESTS="${i#*=}"
+            shift
+        ;;
         *)
         ;;
     esac
