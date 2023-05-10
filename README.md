@@ -76,7 +76,7 @@ If you want to run signet, set BTC_CHAIN=signet in your active env file. By defa
 
 ## Testing
 
-All the scripts are configured such that you should only ever have to run `s.up.sh`, `s.down.sh`, and `s.reset.sh` from the root dir.
+All the scripts are configured such that you should only ever have to run `up.sh`, `down.sh`, and `reset.sh` from the root dir.
 
 If you have already run `up.sh` certain things like building docker images and caching node info will already be taken care of.
 
