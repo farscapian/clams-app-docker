@@ -111,6 +111,10 @@ bcli() {
 export -f lncli
 export -f bcli
 
+if [ "$WITH_TESTS" = true ]; then
+    ./tests/run_cli_tests.sh
+fi
+
 # the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
 echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
 
