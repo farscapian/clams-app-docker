@@ -3,7 +3,7 @@
 # the purpose of this script is to ensure that all CLN nodes have on-chain funds.
 # assumes bitcoind has a loaded wallet with spendable funds
 
-set -e
+set -ex
 
 mapfile -t node_addrs < node_addrs.txt
 

@@ -22,7 +22,9 @@ for i in "$@"; do
 done
 
 # recache node addrs and pubkeys if not specified otherwise
-if [ -n "$RETAIN_CACHE" ]; then
+if [ "$RETAIN_CACHE" == false ]; then
+    echo "Caching node info..."
+
     rm -f ./node_addrs.txt
     rm -f ./node_pubkeys.txt
 
@@ -30,11 +32,14 @@ if [ -n "$RETAIN_CACHE" ]; then
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> node_pubkeys.txt
     done
+    echo "Node pubkeys cached"
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done
+        echo "Node addresses cached"
+
 fi
 
 ./bitcoind_load_onchain.sh
