@@ -35,6 +35,6 @@ fi
 
 bash -c "./down.sh --purge=$PURGE"
 
-sleep 10
+sleep 20
 
 bash -c "./up.sh --with-tests=$WITH_TESTS --retain-cache=$RETAIN_CACHE"

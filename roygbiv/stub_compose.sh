@@ -130,7 +130,7 @@ EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
-      - bitcoind:/home/bitcoin/.bitcoin
+      - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
 EOF
 
 
@@ -147,7 +147,9 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_ALIAS=${names[$CLN_ID]}
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
-    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --announce-addr=${CLN_NAME}:9735 --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --bitcoin-rpcuser=polaruser --bitcoin-rpcpassword=polarpass --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --log-level=debug --dev-bitcoind-poll=20 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers --experimental-dual-fund --experimental-peer-storage --experimental-onion-messages"
+
+    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --announce-addr=${CLN_NAME}:9735 --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --bitcoin-rpcuser=polaruser --bitcoin-rpcpassword=polarpass --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --log-level=debug --dev-bitcoind-poll=20 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers"
+
 
     if [ "$BTC_CHAIN" != mainnet ]; then
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
@@ -169,8 +171,8 @@ EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
-      - cln-${CLN_ID}:/home/clightning/.lightning
-      - cln-${CLN_ID}-certs:/opt/c-lightning-rest/certs
+      - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
+      - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
 EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -233,17 +235,15 @@ EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
-  bitcoind:
-    external: true
-    name: bitcoind-${BTC_CHAIN}
+  bitcoind-${BTC_CHAIN}:
 EOF
 
 
 # define the volumes for CLN nodes. regtest and signet SHOULD NOT persist data, but TESTNET and MAINNET MUST define volumes
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  cln-${CLN_ID}:
-  cln-${CLN_ID}-certs:
+  cln-${CLN_ID}-${BTC_CHAIN}:
+  cln-${CLN_ID}-certs-${BTC_CHAIN}:
 EOF
 
 done

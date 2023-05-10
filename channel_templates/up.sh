@@ -50,6 +50,9 @@ if [ "$BTC_CHAIN" = regtest ]; then
     ./cln_load_onchain.sh
 
     ./bootstrap_p2p.sh
+    TIME_PER_CLN_NODE=3
+    
+    sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
 
     ./regtest_prism.sh
 
