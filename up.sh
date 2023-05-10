@@ -92,17 +92,20 @@ export PRISM_APP_GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL"
 PRISM_APP_IMAGE_TAG="${PRISM_APP_GIT_TAG: -5}"
 PRISM_APP_IMAGE_NAME="prism-browser-app:$PRISM_APP_IMAGE_TAG"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export ROOT_DIR="$ROOT_DIR"
+
 
 if [ "$CHANNELS_ONLY" = false ]; then
     ./roygbiv/run.sh
 fi
 
 lncli() {
-    "./../lightning-cli.sh" "$@"
+    "$ROOT_DIR/lightning-cli.sh" "$@"
 }
 
 bcli() {
-    "./../bitcoin-cli.sh" "$@"
+    "$ROOT_DIR/bitcoin-cli.sh" "$@"
 }
 
 export -f lncli
