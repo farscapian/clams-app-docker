@@ -8,24 +8,34 @@ until docker ps | grep -q bitcoind; do
     sleep 0.1;
 done;
 
-# set these funcs and vars here for testing
+RETAIN_CACHE=false
 
-
-# clear out the node addrs and pubkey cache
-rm -f ./node_addrs.txt
-rm -f ./node_pubkeys.txt
-
-# cache node pubkeys
-for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
-    pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
-    echo "$pubkey" >> node_pubkeys.txt
+for i in "$@"; do
+    case $i in
+        --retain-cache=*)
+            RETAIN_CACHE="${i#*=}"
+            shift
+        ;;
+        *)
+        ;;
+    esac
 done
 
-# cache node addrs
-for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
-    addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
-    echo "$addr" >> node_addrs.txt
-done
+# recache node addrs and pubkeys if not specified otherwise
+if [ -n "$RETAIN_CACHE" ]; then
+    rm -f ./node_addrs.txt
+    rm -f ./node_pubkeys.txt
+
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+        pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
+        echo "$pubkey" >> node_pubkeys.txt
+    done
+
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+        addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
+        echo "$addr" >> node_addrs.txt
+    done
+fi
 
 ./bitcoind_load_onchain.sh
 

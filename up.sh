@@ -19,6 +19,7 @@ done
 
 CHANNELS_ONLY=false
 WITH_TESTS=false
+RETAIN_CACHE=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -32,6 +33,13 @@ for i in "$@"; do
         ;;
         --with-tests=*)
             WITH_TESTS="${i#*=}"
+            shift
+        ;;
+        --retain-cache)
+            RETAIN_CACHE=true
+        ;;
+        --retain-cache=*)
+            RETAIN_CACHE="${i#*=}"
             shift
         ;;
         *)
@@ -108,7 +116,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 # ok, let's do the channel logic
-./channel_templates/up.sh
+./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 
 if [ "$WITH_TESTS" == true ]; then
     ./tests/run.sh 
