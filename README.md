@@ -6,8 +6,8 @@ This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern do
 
 - [`./install.sh`](install.sh) - this script installs dockerd and other utilities needed to run the rest of this software.
 - [`./up.sh`](./up.sh) - brings up your the `roygbiv stack` according to your `env` file (defined in `./environments`).
-- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes volumes will be deleted. Pass `--with-tests` to run integration tests.
-- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, the `up.sh`. Just save a step. You can also add `--purge` and `--with-tests` here.
+- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes volumes will be deleted.
+- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, the `up.sh`. Just save a step. You can also add `--purge` here.
 
 You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env.txt`](./active_env.txt)
 
@@ -70,9 +70,23 @@ Configure the `prism-browser-app` against Bob who will create the prism and expo
 
 ## signet
 
-When running signet, everything will get spun up as usual, but things will stop if signet wallet is inadequately funded. If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. We recommend having a bBtcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
+When running signet, everything will get spun up as usual, but things will stop if signet wallet is inadequately funded. If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. We recommend having a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
 
 If you want to run signet, set BTC_CHAIN=signet in your active env file. By default this runs the public signet having a 10 minute block time. (The plan to to connect to [MutinyNet](https://blog.mutinywallet.com/mutinynet/) by default with 30 second block times.)
+
+## Testing
+
+All the scripts are configured such that you should only ever have to run `s.up.sh`, `s.down.sh`, and `s.reset.sh` from the root dir.
+
+If you have already run `up.sh` certain things like building docker images and caching node info will already be taken care of.
+
+Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient are:
+
+- `--channels-only` which will only run the scripts in channel_templates
+  - helpful for testing new network configurations
+- `--retain-cache` to keep and cache files
+
+Pass `--with-tests` to run integration tests.
 
 ## TODO List
 
