@@ -73,6 +73,9 @@ fi
 
 
 RPC_PATH="/root/.lightning/${BTC_CHAIN}/lightning-rpc"
+if [ "$BTC_CHAIN" = mainnet ]; then
+    RPC_PATH="/root/.lightning/bitcoin/lightning-rpc"
+fi
 
 export DOCKER_HOST="$DOCKER_HOST"
 export CLIGHTNING_WEBSOCKET_EXTERNAL_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
