@@ -90,7 +90,6 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     # pull the base image from dockerhub and build the ./Dockerfile.
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$PRISM_APP_IMAGE_NAME"; then
         docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
-        --build-arg GIT_COMMIT="$PRISM_APP_GIT_TAG" \
         -t "$PRISM_APP_IMAGE_NAME" \
         ./prism-app/
 
