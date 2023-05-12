@@ -103,7 +103,28 @@ export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export ROOT_DIR="$ROOT_DIR"
 
+
+if [ "$CHANNELS_ONLY" = false ]; then
+    ./roygbiv/run.sh
+fi
+
+lncli() {
+    "$ROOT_DIR/lightning-cli.sh" "$@"
+}
+
+bcli() {
+    "$ROOT_DIR/bitcoin-cli.sh" "$@"
+}
+
+export -f lncli
+export -f bcli
+
+if [ "$WITH_TESTS" = true ]; then
+    ./tests/run_cli_tests.sh
+fi
 if [ "$CHANNELS_ONLY" = false ]; then
     ./roygbiv/run.sh
 fi
@@ -131,6 +152,12 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 # ok, let's do the channel logic
+./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
+
+if [ "$WITH_TESTS" == true ]; then
+    ./tests/run.sh 
+fi
+
 ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 
 if [ "$WITH_TESTS" == true ]; then
