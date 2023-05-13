@@ -17,34 +17,27 @@ done
 . ./load_env.sh
 
 
-RUN_CHANNELS=true
-RUN_TESTS=true
+RUN_CHANNELS=false
+RUN_TESTS=false
 RETAIN_CACHE=false
+REFRESH_STACK=true
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --no-channels)
-            RUN_CHANNELS=false
+        --run-channels)
+            RUN_CHANNELS=true
             shift
         ;;
-        --channels=*)
-            RUN_CHANNELS="${i#*=}"
+        --no-stack-refresh)
+            REFRESH_STACK=false
             shift
         ;;
         --run-tests)
             RUN_TESTS=true
         ;;
-        --run-tests=*)
-            RUN_TESTS="${i#*=}"
-            shift
-        ;;
         --retain-cache)
             RETAIN_CACHE=true
-        ;;
-        --retain-cache=*)
-            RETAIN_CACHE="${i#*=}"
-            shift
         ;;
         *)
         ;;
@@ -109,8 +102,10 @@ export ROOT_DIR="$ROOT_DIR"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-# bring up the stack; or refresh it
-./roygbiv/run.sh
+if [ "$REFRESH_STACK" = true ]; then
+    # bring up the stack; or refresh it
+    ./roygbiv/run.sh
+fi
 
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"
