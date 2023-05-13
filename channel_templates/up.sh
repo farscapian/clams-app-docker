@@ -3,10 +3,32 @@
 set -e
 cd "$(dirname "$0")"
 
-# wait for bitcvoind container to startup
-until docker ps | grep -q bitcoind; do
-    sleep 0.1;
-done;
+function check_containers {
+  # Check if bitcoind container is running
+  if ! docker ps --filter "name=roygbiv-stack_bitcoind" --filter "status=running" | grep -q polarlightning/bitcoind; then
+    return 1
+  fi
+
+  # Loop through all CLN nodes and check if they are running
+  for (( i=0; i<$CLN_COUNT; i++ )); do
+    if ! docker ps --filter "name=roygbiv-stack_cln-$i" --filter "status=running" | grep -q roygbiv/cln; then
+      return 1
+    fi
+  done
+
+  # If all containers are running, return 0
+  return 0
+}
+
+# Wait for all containers to be up and running
+while ! check_containers; do
+  sleep 3
+done
+
+# sleep a little longer
+TIME_PER_CLN_NODE=6
+sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
+
 
 RETAIN_CACHE=false
 
@@ -22,10 +44,6 @@ for i in "$@"; do
         ;;
     esac
 done
-
-
-# TODO readiness check
-sleep 20
 
 
 # recache node addrs and pubkeys if not specified otherwise
