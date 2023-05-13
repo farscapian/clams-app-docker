@@ -82,11 +82,11 @@ If you have already run `up.sh` certain things like building docker images and c
 
 Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient are:
 
-- `--channels-only` which will only run the scripts in channel_templates
+- `--no-channels` which will only NOT RUN the scripts in channel_templates
   - helpful for testing new network configurations
 - `--retain-cache` to keep and cache files
 
-Pass `--with-tests` to run integration tests.
+Pass `--with-tests` WILL RUN run integration tests.
 
 ## TODO List
 
