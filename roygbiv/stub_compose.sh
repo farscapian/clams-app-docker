@@ -122,7 +122,7 @@ fi
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
   bitcoind:
-    image: polarlightning/bitcoind:24.0
+    image: ${BITCOIND_DOCKER_IMAGE_NAME}
     hostname: bitcoind
     networks:
       - bitcoindnet
@@ -159,7 +159,6 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
     fi
 
-    CLN_COMMAND="$CLN_COMMAND\""
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}:
     image: ${CLN_IMAGE}

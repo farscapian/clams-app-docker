@@ -35,28 +35,29 @@ NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 
 CLN_IMAGE_NAME="roygbiv/cln"
-CLN_IMAGE_TAG="23.02.2"
+CLN_IMAGE_TAG="latest"
 CLN_IMAGE="$CLN_IMAGE_NAME:$CLN_IMAGE_TAG"
 export CLN_IMAGE="$CLN_IMAGE"
+
+
+BITCOIND_DOCKER_IMAGE_NAME="roygbiv/bitcoind:latest"
+export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
+#if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
+    docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" ./bitcoind/
+#fi
+
+LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:latest"
+if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
+    docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+fi
 
 
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_compose.sh
 ./stub_nginx_conf.sh
 
-BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:24.0"
-if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
-    # pull bitcoind down
-    docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
-fi
-
-LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.02.2"
-if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
-    docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
-fi
-
 # build the cln image with our plugins
-docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" .
+docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" ./clightning/
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # create a volume to hold the browser app build output
