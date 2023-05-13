@@ -108,6 +108,15 @@ fi
 
 docker stack deploy -c docker-compose.yml roygbiv-stack
 
+
+# the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
+echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
+
+if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+    echo "The clams-browser-app is available at http://${CLAMS_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
+fi
+
+
 if [ "$BTC_CHAIN" = mainnet ]; then
     sleep 120
 else
