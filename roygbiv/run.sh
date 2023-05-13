@@ -40,13 +40,14 @@ CLN_IMAGE="$CLN_IMAGE_NAME:$CLN_IMAGE_TAG"
 export CLN_IMAGE="$CLN_IMAGE"
 
 
-BITCOIND_DOCKER_IMAGE_NAME="roygbiv/bitcoind:latest"
+BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:24.0"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
-#if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
-    docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" ./bitcoind/
-#fi
+if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
+    # pull bitcoind down
+    docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
+fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:latest"
+LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.02.2"
 if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 fi
