@@ -20,36 +20,42 @@ done
 RUN_CHANNELS=false
 RUN_TESTS=false
 RETAIN_CACHE=false
+REFRESH_STACK=true
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --no-channels)
-            RUN_CHANNELS=false
+        --run-channels)
+            RUN_CHANNELS=true
             shift
         ;;
-        --channels=*)
-            RUN_CHANNELS="${i#*=}"
+        --no-stack-refresh)
+            REFRESH_STACK=false
             shift
         ;;
         --run-tests)
             RUN_TESTS=true
         ;;
-        --run-tests=*)
-            RUN_TESTS="${i#*=}"
-            shift
-        ;;
         --retain-cache)
             RETAIN_CACHE=true
-        ;;
-        --retain-cache=*)
-            RETAIN_CACHE="${i#*=}"
-            shift
         ;;
         *)
         ;;
     esac
 done
+
+if [ "$ACTIVE_ENV" != "local.env" ]; then
+    read -p "WARNING: You are targeting something OTHER than a dev/local instance. Are you sure you want to continue? (yes/no): " answer
+
+    # Convert the answer to lowercase
+    ANSWER=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
+
+    # Check if the answer is "yes"
+    if [ "$ANSWER" != "yes" ]; then
+        echo "Quitting."
+        exit 1
+    fi
+fi
 
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
@@ -96,8 +102,10 @@ export ROOT_DIR="$ROOT_DIR"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-# bring up the stack; or refresh it
-./roygbiv/run.sh
+if [ "$REFRESH_STACK" = true ]; then
+    # bring up the stack; or refresh it
+    ./roygbiv/run.sh
+fi
 
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"

@@ -23,6 +23,11 @@ for i in "$@"; do
     esac
 done
 
+
+# TODO readiness check
+sleep 20
+
+
 # recache node addrs and pubkeys if not specified otherwise
 if [ "$RETAIN_CACHE" == false ]; then
     echo "Caching node info..."
