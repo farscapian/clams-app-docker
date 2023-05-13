@@ -17,26 +17,26 @@ done
 . ./load_env.sh
 
 
-CHANNELS_ONLY=false
-WITH_TESTS=false
+RUN_CHANNELS=false
+RUN_TESTS=false
 RETAIN_CACHE=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --channels-only)
-            CHANNELS_ONLY=true
+        --no-channels)
+            RUN_CHANNELS=false
             shift
         ;;
-        --channels-only=*)
-            CHANNELS_ONLY="${i#*=}"
+        --channels=*)
+            RUN_CHANNELS="${i#*=}"
             shift
         ;;
-        --with-tests)
-            WITH_TESTS=true
+        --run-tests)
+            RUN_TESTS=true
         ;;
-        --with-tests=*)
-            WITH_TESTS="${i#*=}"
+        --run-tests=*)
+            RUN_TESTS="${i#*=}"
             shift
         ;;
         --retain-cache)
@@ -47,8 +47,6 @@ for i in "$@"; do
             shift
         ;;
         *)
-        echo "Unexpected option: $1"
-        exit 1
         ;;
     esac
 done
