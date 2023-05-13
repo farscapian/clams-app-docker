@@ -59,11 +59,6 @@ fi
 echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
 echo "INFO: You are targeting '$BTC_CHAIN' using domain '$DOMAIN_NAME'."
 
-if [ "$ENABLE_TLS" = true ] && [ "$LN_WS_PROXY_HOSTNAME" = localhost ]; then
-    echo "ERROR: You MUST set LN_WS_PROXY_HOSTNAME to a hostname resolveable in the DNS."
-    exit 1
-fi
-
 if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
     echo "ERROR: BTC_CHAIN must be either 'regtest', 'signet', or 'mainnet'."
     exit 1
@@ -78,12 +73,9 @@ fi
 export DOCKER_HOST="$DOCKER_HOST"
 export CLIGHTNING_WEBSOCKET_EXTERNAL_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
 export ENABLE_TLS="$ENABLE_TLS"
-export LN_WS_PROXY_HOSTNAME="$LN_WS_PROXY_HOSTNAME"
 export BROWSER_APP_EXTERNAL_PORT="$BROWSER_APP_EXTERNAL_PORT"
 export BROWSER_APP_GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL"
 export BROWSER_APP_GIT_TAG="$BROWSER_APP_GIT_TAG"
-export LN_WS_PROXY_GIT_REPO_URL="$LN_WS_PROXY_GIT_REPO_URL"
-export LN_WS_PROXY_GIT_TAG="$LN_WS_PROXY_GIT_TAG"
 export CLN_COUNT="$CLN_COUNT"
 export DEPLOY_CLAMS_BROWSER_APP="$DEPLOY_CLAMS_BROWSER_APP"
 export DEPLOY_PRISM_BROWSER_APP="$DEPLOY_PRISM_BROWSER_APP"
