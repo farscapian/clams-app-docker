@@ -96,10 +96,8 @@ export ROOT_DIR="$ROOT_DIR"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-
-if [ "$CHANNELS_ONLY" = false ]; then
-    ./roygbiv/run.sh
-fi
+# bring up the stack; or refresh it
+./roygbiv/run.sh
 
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"
@@ -112,13 +110,6 @@ bcli() {
 export -f lncli
 export -f bcli
 
-if [ "$WITH_TESTS" = true ]; then
-    ./tests/run_cli_tests.sh
-fi
-if [ "$CHANNELS_ONLY" = false ]; then
-    ./roygbiv/run.sh
-fi
-
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"
 }
@@ -130,26 +121,12 @@ bcli() {
 export -f lncli
 export -f bcli
 
-if [ "$WITH_TESTS" = true ]; then
-    ./tests/run_cli_tests.sh
+
+if [ "$RUN_CHANNELS" = true ]; then
+    # ok, let's do the channel logic
+    ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
-# the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
-echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
-
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    echo "The clams-browser-app is available at http://${CLAMS_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
-fi
-
-# ok, let's do the channel logic
-./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
-
-if [ "$WITH_TESTS" == true ]; then
-    ./tests/run.sh 
-fi
-
-./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
-
-if [ "$WITH_TESTS" == true ]; then
+if [ "$RUN_TESTS" == true ]; then
     ./tests/run.sh 
 fi
