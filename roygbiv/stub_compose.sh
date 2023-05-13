@@ -13,8 +13,12 @@ names=(alice bob carol dave erin frank greg hannah ian jane kelly laura mario ni
 DOCKER_COMPOSE_YML_PATH="$(pwd)/docker-compose.yml"
 touch "$DOCKER_COMPOSE_YML_PATH"
 
-RPC_AUTH_TOKEN='polaruser:5e5e98c21f5c814568f8b55d83b23c1c$$066b03f92df30b11de8e4b1b1cd5b1b4281aa25205bd57df9be82caf97a05526'
-BITCOIND_COMMAND="bitcoind -server=1 -rpcauth=${RPC_AUTH_TOKEN} -zmqpubrawblock=tcp://0.0.0.0:28334 -zmqpubrawtx=tcp://0.0.0.0:28335 -zmqpubhashblock=tcp://0.0.0.0:28336 -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -prune=50000"
+# let's generate a random username and password and get our -rpcauth=<token>
+BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
+BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
+RPC_AUTH_TOKEN=$(./rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+
+BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -prune=50000"
 
 for CHAIN in regtest signet; do
     if [ "$CHAIN" = "$BTC_CHAIN" ]; then  
@@ -148,7 +152,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
-    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --announce-addr=${CLN_NAME}:9735 --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --bitcoin-rpcuser=polaruser --bitcoin-rpcpassword=polarpass --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --log-level=debug --dev-bitcoind-poll=20 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers"
+    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --announce-addr=${CLN_NAME}:9735 --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --log-level=debug --dev-bitcoind-poll=20 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers"
 
 
     if [ "$BTC_CHAIN" != mainnet ]; then
