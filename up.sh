@@ -17,8 +17,8 @@ done
 . ./load_env.sh
 
 
-RUN_CHANNELS=false
-RUN_TESTS=false
+RUN_CHANNELS=true
+RUN_TESTS=true
 RETAIN_CACHE=false
 REFRESH_STACK=true
 
