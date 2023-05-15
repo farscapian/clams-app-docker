@@ -61,7 +61,14 @@ else
     # if the wallet doesn't have the minimum required, then we error out.
     # otherwise it's all good and we keep going.
     if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
-        echo "WARNING: Your MAINNET wallet is not properly funded. Send BTC coins to: ${CLEAN_BTC_ADDRESS}"
+        echo "WARNING: Your ${BTC_CHAIN} wallet is not properly funded. Send at least '$MINIMUM_WALLET_BALANCE' btc to: ${CLEAN_BTC_ADDRESS}"
+
+        if [ "$BTC_CHAIN" = mainnet ]; then
+            echo "ERROR: mainnet is not yet enabled."
+            exit 1
+            echo "WARNING: You are running on mainnet! Please be sure you want to send real btc to this node!"
+        fi
+
         exit 1
     fi
 fi

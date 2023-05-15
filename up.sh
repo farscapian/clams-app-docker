@@ -17,35 +17,45 @@ done
 . ./load_env.sh
 
 
-CHANNELS_ONLY=false
-WITH_TESTS=false
+RUN_CHANNELS=true
+RUN_TESTS=true
 RETAIN_CACHE=false
+REFRESH_STACK=true
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --channels-only)
-            CHANNELS_ONLY=true
+        --run-channels)
+            RUN_CHANNELS=true
             shift
         ;;
-        --with-tests)
-            WITH_TESTS=true
-        ;;
-        --with-tests=*)
-            WITH_TESTS="${i#*=}"
+        --no-stack-refresh)
+            REFRESH_STACK=false
             shift
+        ;;
+        --run-tests)
+            RUN_TESTS=true
         ;;
         --retain-cache)
             RETAIN_CACHE=true
-        ;;
-        --retain-cache=*)
-            RETAIN_CACHE="${i#*=}"
-            shift
         ;;
         *)
         ;;
     esac
 done
+
+if [ "$ACTIVE_ENV" != "local.env" ]; then
+    read -p "WARNING: You are targeting something OTHER than a dev/local instance. Are you sure you want to continue? (yes/no): " answer
+
+    # Convert the answer to lowercase
+    ANSWER=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
+
+    # Check if the answer is "yes"
+    if [ "$ANSWER" != "yes" ]; then
+        echo "Quitting."
+        exit 1
+    fi
+fi
 
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
@@ -55,11 +65,6 @@ fi
 echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
 echo "INFO: You are targeting '$BTC_CHAIN' using domain '$DOMAIN_NAME'."
 
-if [ "$ENABLE_TLS" = true ] && [ "$LN_WS_PROXY_HOSTNAME" = localhost ]; then
-    echo "ERROR: You MUST set LN_WS_PROXY_HOSTNAME to a hostname resolveable in the DNS."
-    exit 1
-fi
-
 if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
     echo "ERROR: BTC_CHAIN must be either 'regtest', 'signet', or 'mainnet'."
     exit 1
@@ -67,17 +72,16 @@ fi
 
 
 RPC_PATH="/root/.lightning/${BTC_CHAIN}/lightning-rpc"
+if [ "$BTC_CHAIN" = mainnet ]; then
+    RPC_PATH="/root/.lightning/bitcoin/lightning-rpc"
+fi
 
 export DOCKER_HOST="$DOCKER_HOST"
 export CLIGHTNING_WEBSOCKET_EXTERNAL_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
 export ENABLE_TLS="$ENABLE_TLS"
-export LIGHTNING_P2P_EXTERNAL_PORT="$CLIGHTNING_P2P_EXTERNAL_PORT"
-export LN_WS_PROXY_HOSTNAME="$LN_WS_PROXY_HOSTNAME"
 export BROWSER_APP_EXTERNAL_PORT="$BROWSER_APP_EXTERNAL_PORT"
 export BROWSER_APP_GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL"
 export BROWSER_APP_GIT_TAG="$BROWSER_APP_GIT_TAG"
-export LN_WS_PROXY_GIT_REPO_URL="$LN_WS_PROXY_GIT_REPO_URL"
-export LN_WS_PROXY_GIT_TAG="$LN_WS_PROXY_GIT_TAG"
 export CLN_COUNT="$CLN_COUNT"
 export DEPLOY_CLAMS_BROWSER_APP="$DEPLOY_CLAMS_BROWSER_APP"
 export DEPLOY_PRISM_BROWSER_APP="$DEPLOY_PRISM_BROWSER_APP"
@@ -87,16 +91,19 @@ export CLAMS_FQDN="$CLAMS_FQDN"
 export RPC_PATH="$RPC_PATH"
 export STARTING_WEBSOCKET_PORT="$STARTING_WEBSOCKET_PORT"
 export STARTING_CLN_PTP_PORT="$STARTING_CLN_PTP_PORT"
-export PRISM_APP_GIT_TAG="$PRISM_APP_GIT_TAG"
+
 export PRISM_APP_GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL"
-PRISM_APP_IMAGE_TAG="${PRISM_APP_GIT_TAG: -5}"
-PRISM_APP_IMAGE_NAME="prism-browser-app:$PRISM_APP_IMAGE_TAG"
+
+PRISM_APP_IMAGE_NAME="prism-browser-app:main"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export ROOT_DIR="$ROOT_DIR"
 
-if [ "$CHANNELS_ONLY" = false ]; then
+if [ "$REFRESH_STACK" = true ]; then
+    # bring up the stack; or refresh it
     ./roygbiv/run.sh
 fi
 
@@ -111,20 +118,23 @@ bcli() {
 export -f lncli
 export -f bcli
 
-if [ "$WITH_TESTS" = true ]; then
-    ./tests/run_cli_tests.sh
+lncli() {
+    "$ROOT_DIR/lightning-cli.sh" "$@"
+}
+
+bcli() {
+    "$ROOT_DIR/bitcoin-cli.sh" "$@"
+}
+
+export -f lncli
+export -f bcli
+
+
+if [ "$RUN_CHANNELS" = true ]; then
+    # ok, let's do the channel logic
+    ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
-# the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
-echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
-
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    echo "The clams-browser-app is available at http://${CLAMS_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
-fi
-
-# ok, let's do the channel logic
-./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
-
-if [ "$WITH_TESTS" == true ]; then
+if [ "$RUN_TESTS" == true ]; then
     ./tests/run.sh 
 fi

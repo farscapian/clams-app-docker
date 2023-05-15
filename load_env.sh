@@ -5,15 +5,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 DOCKER_HOST=
 
-# read in ./active_env.txt then source the file if it exists. export variables.
+# Stub out active_env.txt if doesn't exist.
 if [ ! -f ./active_env.txt ]; then
     # stub one out
     echo "local.env" >> ./active_env.txt
+    echo "INFO: '$(pwd)/active_env.txt' was just stubbed out. You may need to update it. Right now you're targeting your local dockerd."
+    exit 1
 fi
 
 ACTIVE_ENV=$(cat ./active_env.txt | head -n1 | awk '{print $1;}')
 export ACTIVE_ENV="$ACTIVE_ENV"
-
 
 ENV_FILE="./environments/$ACTIVE_ENV"
 
