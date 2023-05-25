@@ -152,7 +152,13 @@ EOF
 # so we will use the replication feature
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_NAME="cln-${CLN_ID}"
+
+    # non-mainnet nodes get aliases from the names array, else domain name.
     CLN_ALIAS=${names[$CLN_ID]}
+    if [ "$BTC_CHAIN" = mainnet ]; then
+        CLN_ALIAS="$DOMAIN_NAME"
+    fi
+
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
