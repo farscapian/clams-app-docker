@@ -20,7 +20,12 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     echo "Native P2P URI for '$CLN_ALIAS': $CLN_P2P_URI"
 
     if [ "$CLN_ID" = 1 ]; then
-        echo "Prism app WebSocket proxy string: wss://${DOMAIN_NAME}:${CLN_WEBSOCKET_PORT}"
+        PROTOCOL=ws
+        if [ "$ENABLE_TLS" = true ]; then
+            PROTOCOL=wss
+        fi
+
+        echo "Prism app WebSocket proxy string: ${PROTOCOL}://${DOMAIN_NAME}:${CLN_WEBSOCKET_PORT}"
     fi
     
     RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID}")
