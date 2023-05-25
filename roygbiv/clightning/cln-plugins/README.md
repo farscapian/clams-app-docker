@@ -1,8 +1,10 @@
 # ROYGBIV
 
+![Lightning Prisms](https://camo.githubusercontent.com/1952f4c33ec82c8dbe748f0b0fa5925659d66add0bd93591d24245322d100581/68747470733a2f2f692e696d6775722e636f6d2f686555636b71342e6a7067)
+
 Like a prism... get it?
 
-`createprism`and `listprisms` are are CLN plugin to create and fetch bolt12 offers representing a lightning prism.
+`createprism` and `listprisms` are CLN plugin to create and fetch bolt12 offers representing a lightning prism.
 
 ## Usage:
 
