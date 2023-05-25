@@ -27,7 +27,7 @@ for CHAIN in regtest signet; do
 done
 
 if [ "$BTC_CHAIN" = mainnet ]; then  
-    BITCOIND_COMMAND="$BITCOIND_COMMAND -dbcache=2048" 
+    BITCOIND_COMMAND="$BITCOIND_COMMAND -dbcache=1024" 
 fi
 
 cat > "$DOCKER_COMPOSE_YML_PATH" <<EOF
