@@ -43,6 +43,13 @@ if [ -f ./docker-compose.yml ]; then
     fi
 fi
 
+# ensure all docker related processes have quit.
+SLEEP_TIME=1
+if [ "$BTC_CHAIN" = mainnet ]; then SLEEP_TIME=5; fi
+while [ "$(docker ps -q)" ]; do
+    sleep $SLEEP_TIME
+done
+
 cd ..
 
 
