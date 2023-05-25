@@ -22,9 +22,6 @@ for i in "$@"; do
             shift
         ;;
         *)
-        echo "Unexpected option: $1"
-        exit 1
-        ;;
     esac
 done
 

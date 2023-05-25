@@ -21,6 +21,7 @@ RUN_CHANNELS=true
 RUN_TESTS=true
 RETAIN_CACHE=false
 REFRESH_STACK=true
+USER_SAYS_YES=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -39,12 +40,15 @@ for i in "$@"; do
         --retain-cache)
             RETAIN_CACHE=true
         ;;
+        -y)
+            USER_SAYS_YES=true
+        ;;
         *)
         ;;
     esac
 done
 
-if [ "$ACTIVE_ENV" != "local.env" ]; then
+if [ "$ACTIVE_ENV" != "local.env" ] && [ "$USER_SAYS_YES" = false ]; then
     read -p "WARNING: You are targeting something OTHER than a dev/local instance. Are you sure you want to continue? (yes/no): " answer
 
     # Convert the answer to lowercase
