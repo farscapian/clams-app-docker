@@ -40,7 +40,7 @@ CLN_IMAGE="$CLN_IMAGE_NAME:$CLN_IMAGE_TAG"
 export CLN_IMAGE="$CLN_IMAGE"
 
 
-BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:24.0"
+BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:25.0"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
     # pull bitcoind down
