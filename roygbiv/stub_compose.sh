@@ -19,7 +19,7 @@ BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | hea
 RPC_AUTH_TOKEN=$(./rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 
 BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
-# -prune=50000
+
 for CHAIN in regtest signet; do
     if [ "$CHAIN" = "$BTC_CHAIN" ]; then  
         BITCOIND_COMMAND="$BITCOIND_COMMAND -${BTC_CHAIN}" 
@@ -27,7 +27,7 @@ for CHAIN in regtest signet; do
 done
 
 if [ "$BTC_CHAIN" = mainnet ]; then  
-    BITCOIND_COMMAND="$BITCOIND_COMMAND -dbcache=1024" 
+    BITCOIND_COMMAND="$BITCOIND_COMMAND -dbcache=512 -assumevalid=000000000000000000035c5d77449f404b15de2c1662b48b241659e92d3daa14"
 fi
 
 cat > "$DOCKER_COMPOSE_YML_PATH" <<EOF
