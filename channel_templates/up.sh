@@ -10,7 +10,7 @@ function check_containers {
   fi
 
   # Loop through all CLN nodes and check if they are running
-  for (( i=0; i<$CLN_COUNT; i++ )); do
+  for (( i=0; i<CLN_COUNT; i++ )); do
     if ! docker ps --filter "name=roygbiv-stack_cln-$i" --filter "status=running" | grep -q roygbiv/cln; then
       return 1
     fi
