@@ -8,23 +8,6 @@ cd "$(dirname "$0")"
 source ./defaults.env
 source ./load_env.sh
 
-PURGE=false
-
-# grab any modifications from the command line.
-for i in "$@"; do
-    case $i in
-        --purge)
-            PURGE=true
-            shift
-        ;;
-        --purge=*)
-            PURGE="${i#*=}"
-            shift
-        ;;
-        *)
-    esac
-done
-
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
     docker swarm init
@@ -49,28 +32,3 @@ while [ "$(docker ps -q)" ]; do
     sleep $SLEEP_TIME
 done
 sleep $SLEEP_TIME
-
-# let's delete all volumes EXCEPT roygbiv-certs
-if [ "$PURGE" = true ]; then
-
-    # remove any container runtimes.
-    docker system prune -f
-
-    # remote dangling/unnamed volumes.
-    docker volume prune -f
-
-    sleep 2
-
-    # get a list of all the volumes
-    VOLUMES=$(docker volume list -q)
-
-    # Iterate over each value in the list
-    for VOLUME in $VOLUMES; do
-        if ! echo "$VOLUME" | grep -q "roygbiv-certs"; then
-            if echo "$VOLUME" | grep -q "roygbiv"; then
-                docker volume rm "$VOLUME"
-            fi
-        fi
-    done
-
-fi
