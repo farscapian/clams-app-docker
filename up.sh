@@ -110,27 +110,38 @@ if [ "$REFRESH_STACK" = true ]; then
     ./roygbiv/run.sh
 fi
 
-lncli() {
-    "$ROOT_DIR/lightning-cli.sh" "$@"
-}
 
 bcli() {
     "$ROOT_DIR/bitcoin-cli.sh" "$@"
 }
-
-export -f lncli
 export -f bcli
+
+
+if [ "$BTC_CHAIN" != regtest ]; then
+    # we need to do some kind of readiness check here.
+    # in particular, check to ensure bitcoin-cli is returning json objects and IBD is complete.
+    while true; do
+        BLOCKCHAIN_INFO_JSON=$(bcli getblockchaininfo)
+
+        ibd_status=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.initialblockdownload')
+        verification_progress=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.verificationprogress')
+
+        if [[ $ibd_status == "true" ]]; then
+            echo "Initial Block Download is not complete. Current progress is $verification_progress"
+        else
+            echo "Initial Block Download has completed."
+            break
+        fi
+
+        sleep 10  # Adjust the sleep duration as per your requirement
+    done
+fi
 
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"
 }
 
-bcli() {
-    "$ROOT_DIR/bitcoin-cli.sh" "$@"
-}
-
 export -f lncli
-export -f bcli
 
 
 if [ "$RUN_CHANNELS" = true ]; then
