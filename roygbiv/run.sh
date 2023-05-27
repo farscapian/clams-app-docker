@@ -57,7 +57,7 @@ fi
 ./stub_compose.sh
 ./stub_nginx_conf.sh
 
-docker build -t tor-proxy:latest ./tor-proxy/
+docker build -t torproxy:latest ./torproxy/
 
 # build the cln image with our plugins
 docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" ./clightning/
@@ -91,6 +91,11 @@ fi
 docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
 -t "$PRISM_APP_IMAGE_NAME" \
 ./prism-app/
+
+sleep 5
+
+
+docker build -t "torproxy:latest" ./torproxy/
 
 sleep 5
 

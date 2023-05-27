@@ -191,12 +191,14 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
       - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
+      - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:ro
 EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
       - bitcoindnet
       - clnnet-${CLN_ID}
+      - torproxynet-cln-${CLN_ID}
 EOF
 
 
@@ -220,6 +222,39 @@ EOF
 
 done
 
+
+# insert cln-torproxy here
+# this tor proxy is use EXCLUSIVELY for the the cln node to establish and maintain channels with remote onion endpoints.
+# Remote lightning nodes will BE UNABLE to establish a tor based channel atm.
+for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  torproxy-cln-${CLN_ID}:
+    image: torproxy:latest
+    hostname: cln-${CLN_ID}-torproxy
+    environment:
+      - RPC_PATH=${RPC_PATH}
+    volumes:
+      - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:rw
+    networks:
+      - torproxynet-cln-${CLN_ID}
+    deploy:
+      mode: replicated
+      replicas: 1
+
+EOF
+
+done
+
+
+
+
+
+
+
+##############################3
+
+
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 networks:
   bitcoindnet:
@@ -234,6 +269,7 @@ fi
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clnnet-${CLN_ID}:
+  torproxynet-cln-${CLN_ID}:
 EOF
 
 done
@@ -262,6 +298,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}-${BTC_CHAIN}:
   cln-${CLN_ID}-certs-${BTC_CHAIN}:
+  cln-${CLN_ID}-torproxy-${BTC_CHAIN}:
 EOF
 
 done
