@@ -16,6 +16,11 @@ done
 . ./defaults.env
 . ./load_env.sh
 
+if [ "$CLN_COUNT" -gt 15 ]; then
+    echo "ERROR: This software only supports up to 15 CLN nodes."
+    exit 1
+fi
+
 
 RUN_CHANNELS=true
 RUN_TESTS=true
@@ -57,7 +62,10 @@ if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     exit 1
 fi
 
-echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
+if [ -n "$DOCKER_HOST" ]; then
+    echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
+fi
+
 echo "INFO: You are targeting '$BTC_CHAIN' using domain '$DOMAIN_NAME'."
 
 if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
