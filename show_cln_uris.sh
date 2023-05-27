@@ -38,17 +38,13 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_WEBSOCKET_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_WEBSOCKET_PORT}")
     echo "  websocket_uri: $CLN_WEBSOCKET_URI"
 
-
-
-    if [ "$CLN_ID" = 1 ]; then
-        WEBSOCKET_PROTOCOL=ws
-        if [ "$ENABLE_TLS" = true ]; then
-            WEBSOCKET_PROTOCOL=wss
-        fi
-
-        WEBSOCKET_PROXY="${WEBSOCKET_PROTOCOL}://${DOMAIN_NAME}:${CLN_WEBSOCKET_PORT}"
-        echo "  websocket_proxy: $WEBSOCKET_PROXY"
+    WEBSOCKET_PROTOCOL=ws
+    if [ "$ENABLE_TLS" = true ]; then
+        WEBSOCKET_PROTOCOL=wss
     fi
+
+    WEBSOCKET_PROXY="${WEBSOCKET_PROTOCOL}://${DOMAIN_NAME}:${CLN_WEBSOCKET_PORT}"
+    echo "  websocket_proxy: $WEBSOCKET_PROXY"
 
     echo ""
 
