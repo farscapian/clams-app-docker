@@ -166,7 +166,11 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     if [ "$BTC_CHAIN" = mainnet ]; then
         # mainnet specific
-        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT}"
+        if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
+            CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
+        fi
+
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
     else
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735"
