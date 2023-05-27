@@ -5,9 +5,9 @@
 This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). The main scripts you need to know about are:
 
 - [`./install.sh`](install.sh) - this script installs dockerd and other utilities needed to run the rest of this software.
-- [`./up.sh`](./up.sh) - brings up your the `roygbiv stack` according to your `env` file (defined in `./environments`).
-- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes volumes will be deleted.
-- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, the `up.sh`. Just save a step. You can also add `--purge` here.
+- [`./up.sh`](./up.sh) - brings `roygbiv stack` up according to your `active_env.txt` file.
+- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes will be deleted.
+- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step. You can also pass `--purge` here.
 
 You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env.txt`](./active_env.txt)
 
@@ -21,13 +21,7 @@ An `env` file overrides anything in [`./defaults.env`](./defaults.env). You can 
 
 Since we are using docker stacks, services are exposed on ALL IP addresses (you cannot specify a bind address). This is usually fine if you're running a dedicated VM in the cloud, but if you're self-hosting, ensure the host is on a protected DMZ.
 
-If you don't specify an `env` file, you will get a default set of five CLN nodes running on regtest, all connnected to a single bitcoind backend. In addition, the [prism-browser-app](https://github.com/johngribbin/ROYGBIV-frontend) becomes available on port 80/443 at `https://domain.tld`. You may also deploy the [`clams-browser-app`](https://github.com/clams-tech/browser-app) at `https://clams.domain.tld` by updating your `env` file. All CLN nodes are configured to accept [websocket connections](https://lightning.readthedocs.io/lightningd-config.5.html) from remote web clients. The nginx server that gets deployed terminates all client TLS sessions and proxies websocket requests to the appropriate CLN node based on port number. See `cln nodes` below.
-
-```
-wss://CLAMS_HOST:9736
-wss://CLAMS_HOST:9737
-wss://CLAMS_HOST:9738
-```
+If you don't specify an `env` file, you will get a default set of five CLN nodes running on regtest, all connnected to a single bitcoind backend. In addition, the [prism-browser-app](https://github.com/johngribbin/ROYGBIV-frontend) becomes available on port 80/443 at `https://domain.tld`. You may also deploy the [`clams-browser-app`](https://github.com/clams-tech/browser-app) at `https://clams.domain.tld` by updating your `env` file. All CLN nodes are configured to accept [websocket connections](https://lightning.readthedocs.io/lightningd-config.5.html) from remote web clients. The nginx server that gets deployed terminates all client TLS sessions and proxies websocket requests to the appropriate CLN node based on port number: `wss://${DOMAIN_NAME}:[9736+CLN_ID]`
 
 > When `ENABLE_TLS=true` you MUST forward ports 80/tcp and 443/tcp during certificate issuance and renewal (i.e., PUBLIC->IP_ADDRESS:80/443) for everything to work.
 
@@ -89,12 +83,6 @@ Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient 
 Pass `--with-tests` WILL RUN run integration tests.
 
 ## TODO List
-
-### Private Signets
-
-In addition to connecting to public signets, it would be useful for lab settings to deploy a network of `n` CLN nodes all running on a private signet. These CLN nodes would only be able to connect with CLN nodes within the private signet.
-
-The plan is to add a [private signet]() with configurable blocktimes. This is useful for lab or educational settings where waiting 10 minutes for channel creation is untenable.
 
 ## QR codes
 
