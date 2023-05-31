@@ -57,7 +57,11 @@ fi
 ./stub_compose.sh
 ./stub_nginx_conf.sh
 
-docker build -t torproxy:latest ./torproxy/
+if [[ -z $(docker images -q torproxy:latest) ]]; then
+    docker build -t torproxy:latest ./torproxy/
+fi
+
+
 
 # build the cln image with our plugins
 docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" ./clightning/
