@@ -61,7 +61,16 @@ if [[ -z $(docker images -q torproxy:latest) ]]; then
     docker build -t torproxy:latest ./torproxy/
 fi
 
-
+# pull the latest changes from the prism repo
+PRISM_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"
+if [ ! -d "$PRISM_PATH" ]; then
+    git clone https://github.com/daGoodenough/bolt12-prism "$PRISM_PATH"
+else
+    cd "$PRISM_PATH"
+    git checkout main
+    git pull
+    cd -
+fi
 
 # build the cln image with our plugins
 docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" ./clightning/
