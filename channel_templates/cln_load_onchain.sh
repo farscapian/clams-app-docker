@@ -9,6 +9,7 @@ mapfile -t node_addrs < node_addrs.txt
 
 SENDMANY_JSON="{"
 SEND_AMT=5
+NEED_TO_SEND=false
 
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
@@ -20,6 +21,8 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
         echo "INFO: cln-$CLN_ID has sufficient funds: $BALANCE_MSAT mSats"
         continue
     fi
+
+    NEED_TO_SEND=true
 
     echo "Insufficient funds. Sending 5 btc to cln-$CLN_ID"
     CLN_ADDR=${node_addrs[$CLN_ID]}
@@ -35,10 +38,10 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
 
 done
 
-SENDMANY_JSON="${SENDMANY_JSON::-1}}"
+if [ "$NEED_TO_SEND" = true ]; then
+    SENDMANY_JSON="${SENDMANY_JSON::-1}}"
 
-bcli sendmany "" "$SENDMANY_JSON" > /dev/null
+    bcli sendmany "" "$SENDMANY_JSON" > /dev/null
 
-bcli -generate 10 > /dev/null
-
- 
+    bcli -generate 10 > /dev/null
+fi
