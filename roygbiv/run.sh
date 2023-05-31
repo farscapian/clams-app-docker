@@ -39,7 +39,7 @@ CLN_IMAGE_TAG="latest"
 CLN_IMAGE="$CLN_IMAGE_NAME:$CLN_IMAGE_TAG"
 export CLN_IMAGE="$CLN_IMAGE"
 
-
+# TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
 BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:25.0"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then

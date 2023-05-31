@@ -50,7 +50,7 @@ elif [ "$BTC_CHAIN" == signet ]; then
     # if the wallet doesn't have the minimum required, then we error out.
     # otherwise it's all good and we keep going.
     if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
-        echo "WARNING: Your signet wallet is not properly funded. Send signet coins to: ${CLEAN_BTC_ADDRESS}"
+        echo "WARNING: Your signet wallet is not funded. Send at least 0.01000000 signet coins to: ${CLEAN_BTC_ADDRESS}"
         echo "INFO:    Here's two faucets:"
         echo "           - https://signetfaucet.com/"
         echo "           - https://alt.signetfaucet.com/"

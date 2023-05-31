@@ -144,11 +144,11 @@ lncli() {
 export -f lncli
 
 
-if [ "$RUN_CHANNELS" = true ]; then
+if [ "$RUN_CHANNELS" = true ] && [ "$BTC_CHAIN" != mainnet ]; then
     # ok, let's do the channel logic
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
-if [ "$RUN_TESTS" == true ]; then
+if [ "$RUN_TESTS" = true ]; then
     ./tests/run.sh 
 fi

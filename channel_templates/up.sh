@@ -47,7 +47,7 @@ done
 
 
 # recache node addrs and pubkeys if not specified otherwise
-if [ "$RETAIN_CACHE" == false ]; then
+if [ "$RETAIN_CACHE" = false ]; then
     echo "Caching node info..."
 
     rm -f ./node_addrs.txt
@@ -103,5 +103,4 @@ if [ "$BTC_CHAIN" = regtest ]; then
     sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
 
     ./regtest_prism.sh
-
 fi
