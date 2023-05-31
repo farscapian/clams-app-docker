@@ -11,10 +11,12 @@ if [[ $(bcli listwalletdir) == *'"name": "prism"'* ]]; then
     # load wallet if not already loaded
     if ! bcli listwallets | grep -q "prism"; then
         bcli loadwallet prism > /dev/null
+        echo "INFO: Loaded existing '$WALLET_NAME' wallet."
     fi
 else
     #create walllet (gets loaded automatically) if it does not already exist
     bcli createwallet prism > /dev/null
+    echo "INFO: Created '$WALLET_NAME' wallet."
 fi
 
 WALLET_INFO=$(bcli getwalletinfo)
@@ -23,7 +25,6 @@ WALLET_INFO=$(bcli getwalletinfo)
 WALLET_BALANCE=$(echo "$WALLET_INFO" | jq -r '.balance')
 WALLET_NAME=$(echo "$WALLET_INFO" | jq -r '.walletname')
 
-echo "$WALLET_NAME wallet initialized"
 MIN_WALLET_BALANCE=50
 if [ "$BTC_CHAIN" = signet ]; then
     MIN_WALLET_BALANCE=0.0001
