@@ -8,6 +8,20 @@ cd "$(dirname "$0")"
 source ./defaults.env
 source ./load_env.sh
 
+RUN_DOCKER_PRUNE=false
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --prune)
+            RUN_DOCKER_PRUNE=true
+        ;;
+        *)
+        ;;
+    esac
+done
+
+
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
     docker swarm init
@@ -32,3 +46,8 @@ while [ "$(docker ps -q)" ]; do
     sleep $SLEEP_TIME
 done
 sleep $SLEEP_TIME
+
+if [ "$RUN_DOCKER_PRUNE" ]; then
+    # remove any container runtimes.
+    docker system prune -f
+fi
