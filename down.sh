@@ -15,10 +15,9 @@ for i in "$@"; do
     case $i in
         --prune)
             RUN_DOCKER_PRUNE=true
+            shift
         ;;
         *)
-        echo "Unexpected option: $1"
-        exit 1
         ;;
     esac
 done
