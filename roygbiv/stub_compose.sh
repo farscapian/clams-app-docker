@@ -135,7 +135,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 
 # we persist data for signet, testnet, and mainnet
-
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
@@ -165,13 +164,24 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers"
 
     if [ "$BTC_CHAIN" = mainnet ]; then
-        # mainnet specific
+        # mainnet only
         if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
             CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
         fi
 
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    else
+    fi
+    
+    if [ "$BTC_CHAIN" = signet ]; then
+        # signet only
+        CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
+        CLN_COMMAND="$CLN_COMMAND --log-level=debug --dev-bitcoind-poll=20"
+
+    fi
+
+    if [ "$BTC_CHAIN" = regtest ]; then
+        # regtest only
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735"
         CLN_COMMAND="$CLN_COMMAND --log-level=debug --dev-bitcoind-poll=20"

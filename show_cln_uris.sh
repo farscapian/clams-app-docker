@@ -30,6 +30,11 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     echo "  admin_rune: $RUNE"
     echo ""
 
+    # use the override if specified.
+    if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
+        CLN_P2P_PORT="$CLN_P2P_PORT_OVERRIDE"
+    fi
+
     CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_P2P_PORT}")
     echo "  p2p_uri: $CLN_P2P_URI"
 
