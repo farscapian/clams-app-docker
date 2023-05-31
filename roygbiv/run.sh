@@ -47,11 +47,6 @@ if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
     docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.02.2"
-if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
-    docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
-fi
-
 
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_compose.sh
@@ -72,8 +67,15 @@ else
     cd -
 fi
 
+
+LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05"
+if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
+    docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+fi
+
+
 # build the cln image with our plugins
-docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" ./clightning/
+docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # create a volume to hold the browser app build output

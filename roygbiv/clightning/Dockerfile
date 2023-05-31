@@ -1,4 +1,6 @@
-FROM polarlightning/clightning:23.02.2
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
 
 RUN apt update && apt install -y tor
 
