@@ -17,6 +17,8 @@ for i in "$@"; do
             RUN_DOCKER_PRUNE=true
         ;;
         *)
+        echo "Unexpected option: $1"
+        exit 1
         ;;
     esac
 done

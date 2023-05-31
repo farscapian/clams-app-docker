@@ -27,9 +27,10 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     SENDMANY_JSON+="\"$CLN_ADDR\":$SEND_AMT,"
 
     if [ "$CLN_ID" = 1 ]; then
-        for _ in {1...4}; do 
-            bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
-        done
+        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
+        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
+        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
+        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
     fi
 
 done
