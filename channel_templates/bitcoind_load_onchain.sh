@@ -7,15 +7,16 @@ set -e
 cd "$(dirname "$0")"
 
 #first we need to check if the prism wallet exists in the wallet dir
+WALLET_NAME=prism
 if [[ $(bcli listwalletdir) == *'"name": "prism"'* ]]; then
     # load wallet if not already loaded
     if ! bcli listwallets | grep -q "prism"; then
-        bcli loadwallet prism > /dev/null
+        bcli loadwallet "$WALLET_NAME" > /dev/null
         echo "INFO: Loaded existing '$WALLET_NAME' wallet."
     fi
 else
     #create walllet (gets loaded automatically) if it does not already exist
-    bcli createwallet prism > /dev/null
+    bcli createwallet "$WALLET_NAME" > /dev/null
     echo "INFO: Created '$WALLET_NAME' wallet."
 fi
 
