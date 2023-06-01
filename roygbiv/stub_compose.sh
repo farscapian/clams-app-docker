@@ -154,8 +154,13 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     # non-mainnet nodes get aliases from the names array, else domain name.
     CLN_ALIAS=${names[$CLN_ID]}
+
     if [ "$BTC_CHAIN" = mainnet ]; then
         CLN_ALIAS="$DOMAIN_NAME"
+    fi
+
+    if [ -n "$CLN0_ALIAS_OVERRIDE" ]; then 
+        CLN_ALIAS="$CLN0_ALIAS_OVERRIDE"
     fi
 
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
