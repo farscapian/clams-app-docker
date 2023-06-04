@@ -60,6 +60,7 @@ fi
 PRISM_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"
 if [ ! -d "$PRISM_PATH" ]; then
     git clone https://github.com/daGoodenough/bolt12-prism "$PRISM_PATH"
+    git checkout main
 else
     cd "$PRISM_PATH"
     git checkout main
