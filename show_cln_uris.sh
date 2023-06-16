@@ -26,9 +26,9 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     echo "$CLN_NAME ($CLN_ALIAS) connection info:"
 
 
-    RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID}")
-    echo "  admin_rune: $RUNE"
-    echo ""
+    # RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --type=prismeditor")
+    # echo "  admin_rune: $RUNE"
+    # echo ""
 
     # use the override if specified.
     if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
@@ -53,10 +53,12 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     echo ""
 
-    P2P_QUERY_STRING="?type=p2p&uri=$CLN_P2P_URI&rune=$RUNE"
+    P2P_QUERY_STRING="?type=p2p&uri=$CLN_P2P_URI"
+    #&rune=$RUNE"
     echo "  p2p_query_string: $P2P_QUERY_STRING"
 
-    WEBSOCKET_QUERY_STRING="?type=websocket&uri=$CLN_WEBSOCKET_URI&websocket_proxy=$WEBSOCKET_PROXY&rune=$RUNE"
+    WEBSOCKET_QUERY_STRING="?type=websocket&uri=$CLN_WEBSOCKET_URI&websocket_proxy=$WEBSOCKET_PROXY"
+    #&rune=$RUNE"
 
     echo "  websocket_query_string: $WEBSOCKET_QUERY_STRING"
     echo ""
