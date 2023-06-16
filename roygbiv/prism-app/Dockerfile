@@ -1,9 +1,5 @@
-FROM node:latest
-
+FROM node:18
 ARG GIT_REPO_URL
-ARG GIT_COMMIT
-
-ENV GIT_COMMIT=$GIT_COMMIT
 
 RUN mkdir /output
 VOLUME /output
@@ -19,8 +15,5 @@ RUN git pull
 EXPOSE 5173
 ENV HOST=0.0.0.0
 ENV PORT 5173
-
-# checkout specific tag
-RUN git -c advice.detachedHead=false checkout $GIT_COMMIT
 
 RUN npm i

@@ -88,6 +88,11 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 
     docker volume create clams-browser-app
 
+    if ! docker image inspect node:18 &> /dev/null; then
+        # pull bitcoind down
+        docker pull node:18
+    fi
+
     BROWSER_APP_IMAGE_NAME="browser-app:$BROWSER_APP_GIT_TAG"
 
     # build the browser-app image.
