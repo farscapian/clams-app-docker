@@ -9,6 +9,7 @@ READ_PERMISSIONS=false
 PAY_PERMISSIONS=false
 LIST_PRISMS_PERMISSIONS=false
 CREATE_PRISM_PERMISSIONS=false
+ADMIN_RUNE=false
 RATE_LIMIT=60
 
 # grab any modifications from the command line.
@@ -40,6 +41,10 @@ for i in "$@"; do
             CREATE_PRISM_PERMISSIONS=true
             shift
         ;;
+        --admin)
+            ADMIN_RUNE=true
+            shift
+        ;;
         *)
         echo "Unexpected option: $1"
         exit 1
@@ -49,34 +54,41 @@ done
 
 RUNE_JSON=
 
+# TODO fix this logic here.
 if [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ]; then
-    echo "ERROR: You MUST specify at least one permission."
-    exit 1
+    if [ "$ADMIN_RUNE" = false ]; then
+        echo "ERROR: You MUST specify at least one permission."
+        exit 1
+    fi
 fi
 
-CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='["
+CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune"
 
-if [ -n "$SESSION_ID" ]; then
-    CMD="${CMD}[\"id=$SESSION_ID\"],"
+if [ "$ADMIN_RUNE" = false ]; then
+    CMD="${CMD} restrictions='["
+
+    if [ -n "$SESSION_ID" ]; then
+        CMD="${CMD}[\"id=$SESSION_ID\"],"
+    fi
+
+    if [ "$READ_PERMISSIONS" = true ]; then
+        CMD="${CMD}[\"method^list\",\"method^get\",\"method=summary\",\"method=waitanyinvoice\",\"method=waitinvoice\",\"method/listdatastore\","
+    fi
+
+    if [ "$PAY_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=pay\",\"method=fetchinvoice\","
+    fi
+
+    if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=listprisms\","
+    fi
+
+    if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=createprism\","
+    fi
+
+    CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
-
-if [ "$READ_PERMISSIONS" = true ]; then
-    CMD="${CMD}[\"method^list\",\"method^get\",\"method=summary\",\"method=waitanyinvoice\",\"method=waitinvoice\",\"method/listdatastore\","
-fi
-
-if [ "$PAY_PERMISSIONS" = true ]; then
-    CMD="${CMD}\"method=pay\",\"method=fetchinvoice\","
-fi
-
-if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
-    CMD="${CMD}\"method=listprisms\","
-fi
-
-if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
-    CMD="${CMD}\"method=createprism\","
-fi
-
-CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 
 RUNE_JSON=$(eval "$CMD")
 
