@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# TODO let's first do a sanity check to ensure the 
+# lightning nodes actually have access to the prism api
+
 
 # lets create a prism
 prism=$(../channel_templates/create_prism.sh 2>&1)

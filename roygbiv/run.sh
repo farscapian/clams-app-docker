@@ -47,7 +47,6 @@ if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
     docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
 fi
 
-
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_compose.sh
 ./stub_nginx_conf.sh
