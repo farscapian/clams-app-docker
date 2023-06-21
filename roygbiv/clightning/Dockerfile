@@ -15,3 +15,7 @@ COPY ./cln-plugins/bolt12-prism /plugins/
 RUN chmod +x /plugins/*.py
 
 VOLUME /opt/c-lightning-rest
+
+RUN mkdir /dev-plugins
+
+VOLUME /dev-plugins

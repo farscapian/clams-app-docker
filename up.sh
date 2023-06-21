@@ -57,6 +57,12 @@ if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
 
+# the DEV_PLUGIN_PATH gets mounted into each cln node. this allows you to edit the plugins directly from the filesystem.
+# then using the cli you can reload the plugin. This is nice because you don't need to re-create the 
+if [ -n "$DEV_PLUGIN_PATH" ]; then
+    mkdir -p "$DEV_PLUGIN_PATH"
+fi
+
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
     exit 1
@@ -97,6 +103,7 @@ export STARTING_CLN_PTP_PORT="$STARTING_CLN_PTP_PORT"
 export CLN_P2P_PORT_OVERRIDE="$CLN_P2P_PORT_OVERRIDE"
 export CLN0_ALIAS_OVERRIDE="$CLN0_ALIAS_OVERRIDE"
 export PRISM_APP_GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL"
+export DEV_PLUGIN_PATH="$DEV_PLUGIN_PATH"
 
 PRISM_APP_IMAGE_NAME="prism-browser-app:main"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
@@ -148,6 +155,10 @@ export -f lncli
 if [ "$RUN_CHANNELS" = true ]; then
     # ok, let's do the channel logic
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
+fi
+
+if [ -n "$DEV_PLUGIN_PATH" ] && [ "$BTC_CHAIN" = regtest ] && [ -d "$DEV_PLUGIN_PATH" ]; then
+    ./load_dev_plugins.sh
 fi
 
 if [ "$RUN_TESTS" = true ] && [ "$BTC_CHAIN" = regtest ]; then

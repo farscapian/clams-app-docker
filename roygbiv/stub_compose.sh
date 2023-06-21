@@ -166,7 +166,15 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
-    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --proxy=torproxy-${CLN_NAME}:9050 --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers --experimental-onion-messages"
+    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --proxy=torproxy-${CLN_NAME}:9050 --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages"
+
+    # if we're NOT in development mode, we go ahead and bake
+    #  the existing prism-plugin.py into the docker image.
+    # otherwise we will mount the path later down the road so
+    # plugins can be reloaded quickly without restarting the whole thing.
+    if [ -z "$DEV_PLUGIN_PATH" ]; then
+        CLN_COMMAND="$CLN_COMMAND --plugin=/plugins/prism-plugin.py"
+    fi
 
     if [ "$BTC_CHAIN" = mainnet ]; then
         # mainnet only
@@ -212,6 +220,14 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
       - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:ro
 EOF
+
+    if [ -n "$DEV_PLUGIN_PATH" ]; then
+        if [ -d "$DEV_PLUGIN_PATH" ]; then
+            cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - ${DEV_PLUGIN_PATH}:/dev-plugins
+EOF
+        fi
+    fi
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
