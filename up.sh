@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # This script runs the whole Clams stack as determined by the various ./.env files
 
 # check dependencies
-for cmd in jq docker dig; do
+for cmd in jq docker; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "This script requires \"${cmd}\" to be installed.."
         exit 1
