@@ -158,7 +158,7 @@ if [ "$RUN_CHANNELS" = true ]; then
 fi
 
 if [ -n "$DEV_PLUGIN_PATH" ] && [ "$BTC_CHAIN" = regtest ] && [ -d "$DEV_PLUGIN_PATH" ]; then
-    ./load_dev_plugins.sh
+    ./reload_dev_plugins.sh
 fi
 
 if [ "$RUN_TESTS" = true ] && [ "$BTC_CHAIN" = regtest ]; then
