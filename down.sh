@@ -22,6 +22,15 @@ for i in "$@"; do
     esac
 done
 
+if echo "$ACTIVE_ENV" | grep -q "mainnet"; then
+    read -p "WARNING: You are targeting a mainnet node! Are you sure you want to continue? (Y):  " ANSWER
+
+    if [[ "$ANSWER" != "Y" ]]; then
+        echo "exiting"
+        exit 1
+    fi
+fi
+
 
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then

@@ -1,5 +1,8 @@
 # roygbiv-stack
 
+```
+WARNING: This software is new and should be used for testing and evaluation only!
+```
 ## overview
 
 This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). The main scripts you need to know about are:
