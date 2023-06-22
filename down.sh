@@ -8,6 +8,11 @@ cd "$(dirname "$0")"
 source ./defaults.env
 source ./load_env.sh
 
+if [ "$DO_NOT_DEPLOY" = true ]; then
+    echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
+    exit 1
+fi
+
 RUN_DOCKER_PRUNE=false
 
 # grab any modifications from the command line.

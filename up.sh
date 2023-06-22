@@ -16,6 +16,11 @@ done
 . ./defaults.env
 . ./load_env.sh
 
+if [ "$DO_NOT_DEPLOY" = true ]; then
+    echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
+    exit 1
+fi
+
 if [ "$CLN_COUNT" -gt 15 ]; then
     echo "ERROR: This software only supports up to 15 CLN nodes."
     exit 1
