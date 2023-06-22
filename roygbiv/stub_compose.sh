@@ -21,7 +21,7 @@ if ! docker image list | grep -q python; then
     docker pull python
 fi
 
-RPC_AUTH_TOKEN=$(docker run -t -v "$(pwd)":/scripts python /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+RPC_AUTH_TOKEN=$(docker run -t -v "$(pwd)/scripts":/scripts python /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 
 BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
