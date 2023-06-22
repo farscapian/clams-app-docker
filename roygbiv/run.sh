@@ -33,10 +33,8 @@ fi
 
 NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
-
-CLN_IMAGE_NAME="roygbiv/cln"
-CLN_IMAGE="$CLN_IMAGE_NAME:$ROYGBIV_STACK_VERSION"
-export CLN_IMAGE="$CLN_IMAGE"
+CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
+export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
 BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:25.0"
@@ -75,7 +73,7 @@ fi
 
 
 # build the cln image with our plugins
-docker build -t "$CLN_IMAGE_NAME:$ROYGBIV_STACK_VERSION" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
+docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # create a volume to hold the browser app build output

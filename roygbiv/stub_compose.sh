@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 cd "$(dirname "$0")"
 
 # this script writes out the docker-compose.yml file.
@@ -21,7 +21,7 @@ if ! docker image list | grep -q python; then
     docker pull python
 fi
 
-RPC_AUTH_TOKEN=$(docker run -t -v ./scripts:/scripts python /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+RPC_AUTH_TOKEN=$(docker run -t -v "$(pwd)":/scripts python /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 
 BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
@@ -209,7 +209,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_COMMAND="$CLN_COMMAND\""
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}:
-    image: ${CLN_IMAGE}
+    image: ${CLN_IMAGE_NAME}
     hostname: cln-${CLN_ID}
     command: >-
       ${CLN_COMMAND}
