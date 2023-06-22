@@ -9,8 +9,9 @@ This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern do
 
 - [`./install.sh`](install.sh) - this script installs dockerd and other utilities needed to run the rest of this software.
 - [`./up.sh`](./up.sh) - brings `roygbiv stack` up according to your `active_env.txt` file.
-- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way. You can pass `--purge` and volumes will be deleted.
-- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step. You can also pass `--purge` here.
+- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way.
+- [`./purge.sh`](./purge.sh) - Deletes docker volumes so you can reset your environment. Note mainnet is NEVER deleted.
+- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step.
 
 You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env.txt`](./active_env.txt)
 
@@ -30,7 +31,7 @@ If you don't specify an `env` file, you will get a default set of five CLN nodes
 
 ## Developing Prisms
 
-If you're interested in developing prisms on your local docker engine, consider setting the `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. So, make your changes to the `prism-plugin.py` plugin (or whatever you're developing), then on your various lightning nodes, you can simply run the `reload_dev_plugins.sh` which iterates over all your CLN nodes and instructs them re-register the plugins.
+If you're interested in developing prisms on your local docker engine, consider setting the `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. So, make your changes to the `prism-plugin.py` plugin (or whatever you're developing), then you can simply run the `reload_dev_plugins.sh` which iterates over all your CLN nodes and instructs them re-register the plugins.
 
 ## third party hosting
 
@@ -86,8 +87,7 @@ Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient 
 - `--no-channels` which will only NOT RUN the scripts in channel_templates
   - helpful for testing new network configurations
 - `--retain-cache` to keep and cache files
-
-Pass `--with-tests` WILL RUN run integration tests.
+- `--no-tests` will NOT run integration tests.
 
 ## TODO List
 
