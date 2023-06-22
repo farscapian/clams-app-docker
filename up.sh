@@ -26,7 +26,6 @@ if [ "$CLN_COUNT" -gt 15 ]; then
     exit 1
 fi
 
-
 RUN_CHANNELS=true
 RUN_TESTS=true
 RETAIN_CACHE=false
@@ -54,6 +53,8 @@ for i in "$@"; do
             USER_SAYS_YES=true
         ;;
         *)
+        echo "Unexpected option: $1"
+        exit 1
         ;;
     esac
 done

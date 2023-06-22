@@ -57,14 +57,15 @@ if [ "$RETAIN_CACHE" = false ]; then
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> node_pubkeys.txt
     done
+
     echo "Node pubkeys cached"
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done
-        echo "Node addresses cached"
 
+    echo "Node addresses cached"
 fi
 
 MINIMUM_WALLET_BALANCE=5
