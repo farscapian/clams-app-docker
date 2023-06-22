@@ -29,22 +29,16 @@ fi
 RUN_CHANNELS=true
 RUN_TESTS=true
 RETAIN_CACHE=false
-REFRESH_STACK=true
 USER_SAYS_YES=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --run-channels)
-            RUN_CHANNELS=true
-            shift
+        --no-tests)
+            RUN_TESTS=false
         ;;
-        --no-stack-refresh)
-            REFRESH_STACK=false
-            shift
-        ;;
-        --run-tests)
-            RUN_TESTS=true
+        --no-channels)
+            RUN_CHANNELS=false
         ;;
         --retain-cache)
             RETAIN_CACHE=true
@@ -120,7 +114,9 @@ export ROOT_DIR="$ROOT_DIR"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-if ! docker stack list | grep -q roygbiv-stack || [ "$REFRESH_STACK" = true ]; then
+if ! docker stack list | grep -q roygbiv-stack; then
+    RUN_CHANNELS=true
+
     # bring up the stack; or refresh it
     ./roygbiv/run.sh
 fi
