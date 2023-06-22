@@ -24,5 +24,6 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
         fi
 
         ./lightning-cli.sh --id="$CLN_ID" plugin start "/dev-plugins/$FILE_NAME" > /dev/null
+        echo "INFO: Plugin '$FILE_NAME' has been reloaded on 'cln-$CLN_ID'."
     done
 done
