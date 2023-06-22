@@ -118,7 +118,7 @@ export ROOT_DIR="$ROOT_DIR"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-if [ "$REFRESH_STACK" = true ]; then
+if ! docker stack list | grep -q roygbiv-stack || [ "$REFRESH_STACK" = true ]; then
     # bring up the stack; or refresh it
     ./roygbiv/run.sh
 fi
