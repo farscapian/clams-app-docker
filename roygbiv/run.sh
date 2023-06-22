@@ -51,8 +51,9 @@ fi
 ./stub_compose.sh
 ./stub_nginx_conf.sh
 
-if [[ -z $(docker images -q torproxy:latest) ]]; then
-    docker build -t torproxy:latest ./torproxy/
+TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
+if [[ -z $(docker images -q "$TOR_PROXY_IMAGE_NAME") ]]; then
+    docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
 
 # pull the latest changes from the prism repo
@@ -75,7 +76,7 @@ fi
 
 
 # build the cln image with our plugins
-docker build -t "$CLN_IMAGE_NAME:$CLN_IMAGE_TAG" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
+docker build -t "$CLN_IMAGE_NAME:$ROYGBIV_STACK_VERSION" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # create a volume to hold the browser app build output
@@ -98,7 +99,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # pull the base image from dockerhub and build the ./Dockerfile.
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
         docker build --build-arg GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL" \
-        --build-arg VERSION="$BROWSER_APP_GIT_TAG" \
+        --build-arg VERSION="$ROYGBIV_STACK_VERSION" \
         -t "$BROWSER_APP_IMAGE_NAME" \
         ./browser-app/
 
@@ -109,13 +110,13 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
--t "$PRISM_APP_IMAGE_NAME" \
+-t "$PRISM_APP_IMAGE_NAME:$ROYGBIV_STACK_VERSION" \
 ./prism-app/
 
 sleep 5
 
 
-docker build -t "torproxy:latest" ./torproxy/
+docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 
 sleep 5
 
