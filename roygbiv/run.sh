@@ -35,8 +35,7 @@ NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 
 CLN_IMAGE_NAME="roygbiv/cln"
-CLN_IMAGE_TAG="latest"
-CLN_IMAGE="$CLN_IMAGE_NAME:$CLN_IMAGE_TAG"
+CLN_IMAGE="$CLN_IMAGE_NAME:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE="$CLN_IMAGE"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
@@ -110,7 +109,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
--t "$PRISM_APP_IMAGE_NAME:$ROYGBIV_STACK_VERSION" \
+-t "$PRISM_APP_IMAGE_NAME" \
 ./prism-app/
 
 sleep 5
