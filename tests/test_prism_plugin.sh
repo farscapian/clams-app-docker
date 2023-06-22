@@ -5,6 +5,8 @@
 set -eu
 cd "$(dirname "$0")"
 
+echo "INFO: starting test_prism_plugin.sh."
+
 # lets create a prism
 prism=$(./../channel_templates/create_prism.sh)
 
@@ -41,5 +43,3 @@ fi
 
 echo -e "\033[1A\033[2K"
 echo "All prism plugin tests passed. YAY!"
-
-
