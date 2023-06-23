@@ -44,11 +44,9 @@ if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
     docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
 fi
 
-# stub out the docker-compose.yml file before we bring it up.
-./stub_compose.sh
-./stub_nginx_conf.sh
 
 TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
+export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [[ -z $(docker images -q "$TOR_PROXY_IMAGE_NAME") ]]; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
@@ -124,6 +122,11 @@ docker volume create roygbiv-certs
 if [ "$ENABLE_TLS" = true ]; then
     ./getrenew_cert.sh
 fi
+
+# stub out the docker-compose.yml file before we bring it up.
+./stub_compose.sh
+./stub_nginx_conf.sh
+
 
 docker stack deploy -c docker-compose.yml roygbiv-stack
 

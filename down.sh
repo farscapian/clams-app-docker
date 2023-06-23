@@ -13,20 +13,6 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-RUN_DOCKER_PRUNE=false
-
-# grab any modifications from the command line.
-for i in "$@"; do
-    case $i in
-        --prune)
-            RUN_DOCKER_PRUNE=true
-            shift
-        ;;
-        *)
-        ;;
-    esac
-done
-
 if echo "$ACTIVE_ENV" | grep -q "mainnet"; then
     read -p "WARNING: You are targeting a mainnet node! Are you sure you want to continue? (Y):  " ANSWER
 
@@ -61,8 +47,3 @@ while [ "$(docker ps -q)" ]; do
     sleep $SLEEP_TIME
 done
 sleep $SLEEP_TIME
-
-if [ "$RUN_DOCKER_PRUNE" ]; then
-    # remove any container runtimes.
-    docker system prune -f
-fi
