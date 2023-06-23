@@ -271,7 +271,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   torproxy-cln-${CLN_ID}:
-    image: torproxy:latest
+    image: ${TOR_PROXY_IMAGE_NAME}
     hostname: cln-${CLN_ID}-torproxy
     environment:
       - RPC_PATH=${RPC_PATH}

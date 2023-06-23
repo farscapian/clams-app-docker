@@ -46,6 +46,7 @@ fi
 
 
 TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
+export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [[ -z $(docker images -q "$TOR_PROXY_IMAGE_NAME") ]]; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
