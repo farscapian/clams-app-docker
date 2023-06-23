@@ -9,8 +9,6 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
-./down.sh
-
 # remove any container runtimes.
 docker system prune -f
 
