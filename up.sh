@@ -57,12 +57,6 @@ if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
 
-# the DEV_PLUGIN_PATH gets mounted into each cln node. this allows you to edit the plugins directly from the filesystem.
-# then using the cli you can reload the plugin. This is nice because you don't need to re-create the 
-if [ -n "$DEV_PLUGIN_PATH" ]; then
-    mkdir -p "$DEV_PLUGIN_PATH"
-fi
-
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
     exit 1

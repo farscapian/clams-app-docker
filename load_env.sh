@@ -40,3 +40,13 @@ export DOCKER_HOST="$DOCKER_HOST"
 export DOMAIN_NAME="$DOMAIN_NAME"
 export ENABLE_TLS="$ENABLE_TLS"
 export BTC_CHAIN="$BTC_CHAIN"
+
+
+
+# if we're running this locally, we will mount the plugin path into the containers
+# this allows us to develop the prism-plugin.py and update it locally. Then the user
+# can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
+# cln node that's been deployed
+if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
+    DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+fi
