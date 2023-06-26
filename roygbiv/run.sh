@@ -13,7 +13,6 @@ elif [ "$BTC_CHAIN" = signet ]; then
     BITCOIND_RPC_PORT=38332
 elif [ "$BTC_CHAIN" = mainnet ]; then
     BITCOIND_RPC_PORT=8332
-
 fi
 
 export BITCOIND_RPC_PORT="$BITCOIND_RPC_PORT"
@@ -47,9 +46,10 @@ fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
-if [[ -z $(docker images -q "$TOR_PROXY_IMAGE_NAME") ]]; then
+if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
+
 
 # pull the latest changes from the prism repo
 PRISM_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"
@@ -69,9 +69,12 @@ if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 fi
 
+# Check if the image exists
+if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
+    # build the cln image with our plugins
+    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
+fi
 
-# build the cln image with our plugins
-docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     # create a volume to hold the browser app build output
@@ -90,30 +93,27 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 
     BROWSER_APP_IMAGE_NAME="browser-app:$BROWSER_APP_GIT_TAG"
 
-    # build the browser-app image.
-    # pull the base image from dockerhub and build the ./Dockerfile.
-    if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
-        docker build --build-arg GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL" \
-        --build-arg VERSION="$ROYGBIV_STACK_VERSION" \
-        -t "$BROWSER_APP_IMAGE_NAME" \
-        ./browser-app/
+    if ! docker image inspect "$BROWSER_APP_IMAGE_NAME" &>/dev/null; then
+        # build the browser-app image.
+        # pull the base image from dockerhub and build the ./Dockerfile.
+        if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
+            docker build --build-arg GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL" \
+            --build-arg VERSION="$ROYGBIV_STACK_VERSION" \
+            -t "$BROWSER_APP_IMAGE_NAME" \
+            ./browser-app/
 
-        sleep 5
+            sleep 5
+        fi
     fi
 
     docker run -it --rm -v clams-browser-app:/output --name browser-app "$BROWSER_APP_IMAGE_NAME"
 fi
 
-docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
--t "$PRISM_APP_IMAGE_NAME" \
-./prism-app/
-
-sleep 5
-
-
-docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
-
-sleep 5
+if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
+    docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
+    -t "$PRISM_APP_IMAGE_NAME" \
+    ./prism-app/
+fi
 
 # for the nginx certificates.
 docker volume create roygbiv-certs

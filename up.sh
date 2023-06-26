@@ -13,6 +13,13 @@ for cmd in jq docker; do
     fi
 done
 
+# if we're running this locally, we will mount the plugin path into the containers
+# this allows us to develop the prism-plugin.py and update it locally. Then the user
+# can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
+# cln node that's been deployed
+DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+
+
 . ./defaults.env
 . ./load_env.sh
 
@@ -55,12 +62,6 @@ done
 
 if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
-fi
-
-# the DEV_PLUGIN_PATH gets mounted into each cln node. this allows you to edit the plugins directly from the filesystem.
-# then using the cli you can reload the plugin. This is nice because you don't need to re-create the 
-if [ -n "$DEV_PLUGIN_PATH" ]; then
-    mkdir -p "$DEV_PLUGIN_PATH"
 fi
 
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
