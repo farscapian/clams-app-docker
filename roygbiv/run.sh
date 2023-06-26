@@ -13,7 +13,6 @@ elif [ "$BTC_CHAIN" = signet ]; then
     BITCOIND_RPC_PORT=38332
 elif [ "$BTC_CHAIN" = mainnet ]; then
     BITCOIND_RPC_PORT=8332
-
 fi
 
 export BITCOIND_RPC_PORT="$BITCOIND_RPC_PORT"
@@ -50,6 +49,7 @@ export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [[ -z $(docker images -q "$TOR_PROXY_IMAGE_NAME") ]]; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
+
 
 # pull the latest changes from the prism repo
 PRISM_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"

@@ -90,6 +90,7 @@ Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient 
   - helpful for testing new network configurations
 - `--retain-cache` to keep and cache files
 - `--no-tests` will NOT run integration tests.
+- `--purge` (reset.sh) - deletes regtest/signet on disk.
 
 ## TODO List
 
