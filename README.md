@@ -31,7 +31,9 @@ If you don't specify an `env` file, you will get a default set of five CLN nodes
 
 ## Developing Prisms
 
-If you're interested in developing prisms on your local docker engine, consider setting the `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. So, make your changes to the `prism-plugin.py` plugin (or whatever you're developing), then you can simply run the `reload_dev_plugins.sh` which iterates over all your CLN nodes and instructs them re-register the plugins.
+When deploying your application to a local docker engine, the CLN plugin path will get mounted into the CLN containers. If you want to make updates to the prism-plugin.py, do so then run the `reload_dev_plugins.sh` script. 
+
+If you want, you can set `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. Again, just run `reload_dev_plugins.sh` and your deployed CLN nodes will get refreshed.
 
 ## third party hosting
 
