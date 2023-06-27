@@ -5,8 +5,8 @@ cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.
 
-source ./defaults.env
-source ./load_env.sh
+./defaults.env
+./load_env.sh
 
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
