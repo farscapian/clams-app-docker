@@ -25,11 +25,6 @@ fi
 export WEBSOCKET_PORT_LOCAL="$WEBSOCKET_PORT_LOCAL"
 export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 
-# we're using docker swarm style stacks, so enable swarm mode.
-if docker info | grep -q "Swarm: inactive"; then
-    docker swarm init
-fi
-
 NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"

@@ -22,12 +22,6 @@ if echo "$ACTIVE_ENV" | grep -q "mainnet"; then
     fi
 fi
 
-
-# ensure we're using swarm mode.
-if docker info | grep -q "Swarm: inactive"; then
-    docker swarm init
-fi
-
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then
