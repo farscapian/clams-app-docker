@@ -109,10 +109,7 @@ export ROYGBIV_STACK_VERSION="$ROYGBIV_STACK_VERSION"
 
 PRISM_APP_IMAGE_NAME="prism-browser-app:$ROYGBIV_STACK_VERSION"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export ROOT_DIR="$ROOT_DIR"
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
 if ! docker stack list | grep -q roygbiv-stack; then
