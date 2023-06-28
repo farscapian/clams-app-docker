@@ -50,20 +50,6 @@ if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
 
-
-# pull the latest changes from the prism repo
-PRISM_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"
-if [ ! -d "$PRISM_PATH" ]; then
-    git clone https://github.com/daGoodenough/bolt12-prism "$PRISM_PATH"
-    git checkout main
-else
-    cd "$PRISM_PATH"
-    git checkout main
-    git pull
-    cd -
-fi
-
-
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05"
 if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
