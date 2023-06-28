@@ -1,14 +1,30 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.
 
-source ./defaults.env
-source ./load_env.sh
+. ./defaults.env
+. ./load_env.sh
 
 PURGE=false
+PRUNE=true
+if [ "$DO_NOT_DEPLOY" = true ]; then
+    echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
+    exit 1
+fi
+
+if echo "$BTC_CHAIN" | grep -q "mainnet"; then
+    read -p "WARNING: You are targeting a mainnet node! Are you sure you want to continue? (Y):  " ANSWER
+
+    # Check if the answer is "yes"
+    if [ "$ANSWER" != "yes" ]; then
+        echo "Quitting."
+        exit 1
+    fi
+
+fi
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -17,48 +33,50 @@ for i in "$@"; do
             PURGE=true
             shift
         ;;
-        --purge=*)
-            PURGE="${i#*=}"
+        --no-prune=*)
+            PRUNE=false
             shift
         ;;
         *)
         echo "Unexpected option: $1"
         exit 1
-        ;;
     esac
 done
-
-# ensure we're using swarm mode.
-if docker info | grep -q "Swarm: inactive"; then
-    docker swarm init
-fi
 
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then
-    TIME_PER_CLN_NODE=5
     if docker stack ls --format "{{.Name}}" | grep -q roygbiv-stack; then
-        docker stack rm roygbiv-stack && sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-        sleep 5
+        docker stack rm roygbiv-stack
     fi
 fi
 
 cd ..
 
+# wait until all containers are shut down.
+while true; do
+    COUNT=$(docker ps -q | wc -l)
+    if [ "$COUNT" -gt 0 ]; then
+        sleep 1
+    else
+        break
+    fi
+done
 
-# let's delete all volumes EXCEPT roygbiv-certs
-if [ "$PURGE" = true ]; then
-
+if [ "$PRUNE" = true ]; then
     # remove any container runtimes.
     docker system prune -f
 
     # remote dangling/unnamed volumes.
     docker volume prune -f
-
     sleep 2
+fi
+
+# let's delete all volumes EXCEPT roygbiv-certs
+if [ "$PURGE" = true ]; then
 
     # get a list of all the volumes
-    VOLUMES=$(docker volume list -q)
+    VOLUMES=$(docker volume list -q | grep roygbiv-)
 
     # Iterate over each value in the list
     for VOLUME in $VOLUMES; do

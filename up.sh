@@ -6,55 +6,62 @@ cd "$(dirname "$0")"
 # This script runs the whole Clams stack as determined by the various ./.env files
 
 # check dependencies
-for cmd in jq docker dig; do
+for cmd in jq docker; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "This script requires \"${cmd}\" to be installed.."
         exit 1
     fi
 done
 
+# if we're running this locally, we will mount the plugin path into the containers
+# this allows us to develop the prism-plugin.py and update it locally. Then the user
+# can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
+# cln node that's been deployed
+DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+
+
 . ./defaults.env
 . ./load_env.sh
 
+if [ "$DO_NOT_DEPLOY" = true ]; then
+    echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
+    exit 1
+fi
+
+if [ "$CLN_COUNT" -gt 20 ]; then
+    echo "ERROR: This software only supports up to 20 CLN nodes."
+    exit 1
+fi
 
 RUN_CHANNELS=true
 RUN_TESTS=true
 RETAIN_CACHE=false
-REFRESH_STACK=true
+USER_SAYS_YES=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --run-channels)
-            RUN_CHANNELS=true
-            shift
+        --no-tests)
+            RUN_TESTS=false
         ;;
-        --no-stack-refresh)
-            REFRESH_STACK=false
-            shift
-        ;;
-        --run-tests)
-            RUN_TESTS=true
+        --no-channels)
+            RUN_CHANNELS=false
         ;;
         --retain-cache)
             RETAIN_CACHE=true
         ;;
+        -y)
+            USER_SAYS_YES=true
+        ;;
         *)
+        echo "Unexpected option: $1"
+        exit 1
         ;;
     esac
 done
 
-if [ "$ACTIVE_ENV" != "local.env" ]; then
-    read -p "WARNING: You are targeting something OTHER than a dev/local instance. Are you sure you want to continue? (yes/no): " answer
-
-    # Convert the answer to lowercase
-    ANSWER=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
-
-    # Check if the answer is "yes"
-    if [ "$ANSWER" != "yes" ]; then
-        echo "Quitting."
-        exit 1
-    fi
+if [ "$USER_SAYS_YES" = false ]; then
+    ./prompt.sh
 fi
 
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
@@ -62,7 +69,10 @@ if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     exit 1
 fi
 
-echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
+if [ -n "$DOCKER_HOST" ]; then
+    echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
+fi
+
 echo "INFO: You are targeting '$BTC_CHAIN' using domain '$DOMAIN_NAME'."
 
 if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
@@ -91,43 +101,56 @@ export CLAMS_FQDN="$CLAMS_FQDN"
 export RPC_PATH="$RPC_PATH"
 export STARTING_WEBSOCKET_PORT="$STARTING_WEBSOCKET_PORT"
 export STARTING_CLN_PTP_PORT="$STARTING_CLN_PTP_PORT"
-
+export CLN_P2P_PORT_OVERRIDE="$CLN_P2P_PORT_OVERRIDE"
+export CLN0_ALIAS_OVERRIDE="$CLN0_ALIAS_OVERRIDE"
 export PRISM_APP_GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL"
+export DEV_PLUGIN_PATH="$DEV_PLUGIN_PATH"
+export ROYGBIV_STACK_VERSION="$ROYGBIV_STACK_VERSION"
 
-PRISM_APP_IMAGE_NAME="prism-browser-app:main"
+PRISM_APP_IMAGE_NAME="prism-browser-app:$ROYGBIV_STACK_VERSION"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export ROOT_DIR="$ROOT_DIR"
+if ! docker stack list | grep -q roygbiv-stack; then
+    RUN_CHANNELS=true
 
-if [ "$REFRESH_STACK" = true ]; then
     # bring up the stack; or refresh it
     ./roygbiv/run.sh
+fi
+
+
+bcli() {
+    "$ROOT_DIR/bitcoin-cli.sh" "$@"
+}
+export -f bcli
+
+
+if [ "$BTC_CHAIN" != regtest ]; then
+    # we need to do some kind of readiness check here.
+    # in particular, check to ensure bitcoin-cli is returning json objects and IBD is complete.
+    while true; do
+        BLOCKCHAIN_INFO_JSON=$(bcli getblockchaininfo)
+
+        ibd_status=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.initialblockdownload')
+        verification_progress=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.verificationprogress')
+
+        if [[ $ibd_status == "true" ]]; then
+            echo "Initial Block Download is not complete. Current progress is $verification_progress"
+        else
+            echo "Initial Block Download has completed."
+            break
+        fi
+
+        sleep 10  # Adjust the sleep duration as per your requirement
+    done
 fi
 
 lncli() {
     "$ROOT_DIR/lightning-cli.sh" "$@"
 }
 
-bcli() {
-    "$ROOT_DIR/bitcoin-cli.sh" "$@"
-}
-
 export -f lncli
-export -f bcli
-
-lncli() {
-    "$ROOT_DIR/lightning-cli.sh" "$@"
-}
-
-bcli() {
-    "$ROOT_DIR/bitcoin-cli.sh" "$@"
-}
-
-export -f lncli
-export -f bcli
 
 
 if [ "$RUN_CHANNELS" = true ]; then
@@ -135,6 +158,10 @@ if [ "$RUN_CHANNELS" = true ]; then
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
-if [ "$RUN_TESTS" == true ]; then
+if [ -n "$DEV_PLUGIN_PATH" ] && [ "$BTC_CHAIN" = regtest ] && [ -d "$DEV_PLUGIN_PATH" ]; then
+    ./reload_dev_plugins.sh
+fi
+
+if [ "$RUN_TESTS" = true ] && [ "$BTC_CHAIN" = regtest ]; then
     ./tests/run.sh 
 fi

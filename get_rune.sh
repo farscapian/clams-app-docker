@@ -3,8 +3,14 @@
 set -e
 
 NODE_ID=0
-RUNE_TYPE="admin"
 SESSION_ID=
+
+READ_PERMISSIONS=false
+PAY_PERMISSIONS=false
+LIST_PRISMS_PERMISSIONS=false
+CREATE_PRISM_PERMISSIONS=false
+ADMIN_RUNE=false
+RATE_LIMIT=60
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -13,12 +19,30 @@ for i in "$@"; do
             NODE_ID="${i#*=}"
             shift
         ;;
-        --type=*)
-            RUNE_TYPE="${i#*=}"
-            shift
-        ;;
         --session-id=*)
             SESSION_ID="${i#*=}"
+            shift
+        ;;
+        --read)
+            READ_PERMISSIONS=true
+            shift
+        ;;
+        --pay)
+            READ_PERMISSIONS=true
+            PAY_PERMISSIONS=true
+            shift
+        ;;
+        --listprisms)
+            LIST_PRISMS_PERMISSIONS=true
+            shift
+        ;;
+        --createprism)
+            LIST_PRISMS_PERMISSIONS=true
+            CREATE_PRISM_PERMISSIONS=true
+            shift
+        ;;
+        --admin)
+            ADMIN_RUNE=true
             shift
         ;;
         *)
@@ -29,19 +53,49 @@ for i in "$@"; do
 done
 
 RUNE_JSON=
-if [ "$RUNE_TYPE" = admin ]; then
-    # if no session ID is specified, we return an ADMIN RUNE
-    # TODO input validation on the session id.
-    if [ -n "$SESSION_ID" ]; then
-        RUNE_JSON=$(bash -c "./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='[[\"id=${SESSION_ID}\"], [\"rate=60\"]]'")
-    else
-        RUNE_JSON=$(bash -c "./lightning-cli.sh --id=${NODE_ID} commando-rune")
-    fi 
-elif [ "$RUNE_TYPE" = read-only ]; then
-    RUNE_JSON=$(bash -c "./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='[[\"id=$SESSION_ID\"], [\"method^list\",\"method^get\",\"method=summary\",\"method=waitanyinvoice\",\"method=waitinvoice\"],[\"method/listdatastore\"], [\"rate=60\"]]'")
-elif [ "$RUNE_TYPE" = clams ]; then
-    RUNE_JSON=$(bash -c "./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='[[\"id=$SESSION_ID\"], [\"method^list\",\"method^get\",\"method=summary\",\"method=pay\",\"method=keysend\",\"method=invoice\",\"method=waitanyinvoice\",\"method=waitinvoice\", \"method=signmessage\", \"method^bkpr-\"],[\"method/listdatastore\"], [\"rate=60\"]]'")
+
+# TODO fix this logic here.
+if [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ]; then
+    if [ "$ADMIN_RUNE" = false ]; then
+        echo "ERROR: You MUST specify at least one permission."
+        exit 1
+    fi
 fi
 
-RUNE=$(echo "$RUNE_JSON" | jq -r '.rune')
-echo "${RUNE}"
+CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune"
+
+if [ "$ADMIN_RUNE" = false ]; then
+    CMD="${CMD} restrictions='["
+
+    if [ -n "$SESSION_ID" ]; then
+        CMD="${CMD}[\"id=$SESSION_ID\"],"
+    fi
+
+    if [ "$READ_PERMISSIONS" = true ]; then
+        CMD="${CMD}[\"method^list\",\"method^get\",\"method=summary\",\"method=waitanyinvoice\",\"method=waitinvoice\",\"method/listdatastore\","
+    fi
+
+    if [ "$PAY_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=pay\",\"method=fetchinvoice\","
+    fi
+
+    if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=listprisms\","
+    fi
+
+    if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
+        CMD="${CMD}\"method=createprism\","
+    fi
+
+    CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
+fi
+
+RUNE_JSON=$(eval "$CMD")
+
+if [ -n "$RUNE_JSON" ]; then
+    RUNE=$(echo "$RUNE_JSON" | jq -r '.rune')
+    echo "${RUNE}"
+else
+    echo "ERROR: the command did not complete."
+    exit 1
+fi

@@ -7,14 +7,17 @@ set -e
 cd "$(dirname "$0")"
 
 #first we need to check if the prism wallet exists in the wallet dir
+WALLET_NAME=prism
 if [[ $(bcli listwalletdir) == *'"name": "prism"'* ]]; then
     # load wallet if not already loaded
     if ! bcli listwallets | grep -q "prism"; then
-        bcli loadwallet prism > /dev/null
+        bcli loadwallet "$WALLET_NAME" > /dev/null
+        echo "INFO: Loaded existing '$WALLET_NAME' wallet."
     fi
 else
     #create walllet (gets loaded automatically) if it does not already exist
-    bcli createwallet prism > /dev/null
+    bcli createwallet "$WALLET_NAME" > /dev/null
+    echo "INFO: Created '$WALLET_NAME' wallet."
 fi
 
 WALLET_INFO=$(bcli getwalletinfo)
@@ -23,7 +26,6 @@ WALLET_INFO=$(bcli getwalletinfo)
 WALLET_BALANCE=$(echo "$WALLET_INFO" | jq -r '.balance')
 WALLET_NAME=$(echo "$WALLET_INFO" | jq -r '.walletname')
 
-echo "$WALLET_NAME wallet initialized"
 MIN_WALLET_BALANCE=50
 if [ "$BTC_CHAIN" = signet ]; then
     MIN_WALLET_BALANCE=0.0001
@@ -50,7 +52,7 @@ elif [ "$BTC_CHAIN" == signet ]; then
     # if the wallet doesn't have the minimum required, then we error out.
     # otherwise it's all good and we keep going.
     if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
-        echo "WARNING: Your signet wallet is not properly funded. Send signet coins to: ${CLEAN_BTC_ADDRESS}"
+        echo "WARNING: Your signet wallet is not funded. Send at least 0.01000000 signet coins to: ${CLEAN_BTC_ADDRESS}"
         echo "INFO:    Here's two faucets:"
         echo "           - https://signetfaucet.com/"
         echo "           - https://alt.signetfaucet.com/"
@@ -58,17 +60,11 @@ elif [ "$BTC_CHAIN" == signet ]; then
     fi
 
 else
-    # if the wallet doesn't have the minimum required, then we error out.
-    # otherwise it's all good and we keep going.
-    if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
-        echo "WARNING: Your ${BTC_CHAIN} wallet is not properly funded. Send at least '$MINIMUM_WALLET_BALANCE' btc to: ${CLEAN_BTC_ADDRESS}"
-
-        if [ "$BTC_CHAIN" = mainnet ]; then
-            echo "ERROR: mainnet is not yet enabled."
-            exit 1
-            echo "WARNING: You are running on mainnet! Please be sure you want to send real btc to this node!"
+    if [ "$BTC_CHAIN" != mainnet ]; then
+        # if the wallet doesn't have the minimum required, then we error out.
+        # otherwise it's all good and we keep going.
+        if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
+            echo "WARNING: Your ${BTC_CHAIN} wallet is not properly funded. Send at least '$MINIMUM_WALLET_BALANCE' btc to: ${CLEAN_BTC_ADDRESS}"
         fi
-
-        exit 1
     fi
 fi

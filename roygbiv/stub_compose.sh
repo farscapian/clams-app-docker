@@ -16,7 +16,13 @@ touch "$DOCKER_COMPOSE_YML_PATH"
 # let's generate a random username and password and get our -rpcauth=<token>
 BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
 BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
-RPC_AUTH_TOKEN=$(./rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+
+if ! docker image list | grep -q python; then
+    docker pull python
+fi
+
+RPC_AUTH_TOKEN=$(docker run -t -v ./scripts:/scripts python:latest /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 
 BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -prune=50000"
 
@@ -25,6 +31,10 @@ for CHAIN in regtest signet; do
         BITCOIND_COMMAND="$BITCOIND_COMMAND -${BTC_CHAIN}" 
     fi
 done
+
+if [ "$BTC_CHAIN" = mainnet ]; then  
+    BITCOIND_COMMAND="$BITCOIND_COMMAND -dbcache=512 -assumevalid=000000000000000000035c5d77449f404b15de2c1662b48b241659e92d3daa14"
+fi
 
 cat > "$DOCKER_COMPOSE_YML_PATH" <<EOF
 version: '3.8'
@@ -131,7 +141,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 
 # we persist data for signet, testnet, and mainnet
-
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
@@ -148,20 +157,59 @@ EOF
 # so we will use the replication feature
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_NAME="cln-${CLN_ID}"
+
+    # non-mainnet nodes get aliases from the names array, else domain name.
     CLN_ALIAS=${names[$CLN_ID]}
+
+    if [ "$BTC_CHAIN" = mainnet ]; then
+        CLN_ALIAS="$DOMAIN_NAME"
+    fi
+
+    if [ -n "$CLN0_ALIAS_OVERRIDE" ]; then 
+        CLN_ALIAS="$CLN0_ALIAS_OVERRIDE"
+    fi
+
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
-    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --announce-addr=${CLN_NAME}:9735 --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --log-level=debug --dev-bitcoind-poll=20 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --plugin=/plugins/prism-plugin.py --experimental-offers"
+    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --proxy=torproxy-${CLN_NAME}:9050 --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages"
 
-    if [ "$BTC_CHAIN" != mainnet ]; then
+    # if we're NOT in development mode, we go ahead and bake
+    #  the existing prism-plugin.py into the docker image.
+    # otherwise we will mount the path later down the road so
+    # plugins can be reloaded quickly without restarting the whole thing.
+    if [ -z "$DEV_PLUGIN_PATH" ]; then
+        CLN_COMMAND="$CLN_COMMAND --plugin=/plugins/prism-plugin.py"
+    fi
+
+    if [ "$BTC_CHAIN" = mainnet ]; then
+        # mainnet only
+        if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
+            CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
+        fi
+
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
+    fi
+    
+    if [ "$BTC_CHAIN" = signet ]; then
+        # signet only
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
+        CLN_COMMAND="$CLN_COMMAND --log-level=debug --dev-bitcoind-poll=20"
+
+    fi
+
+    if [ "$BTC_CHAIN" = regtest ]; then
+        # regtest only
+        CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735"
+        CLN_COMMAND="$CLN_COMMAND --log-level=debug --dev-bitcoind-poll=20"
     fi
 
     CLN_COMMAND="$CLN_COMMAND\""
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}:
-    image: ${CLN_IMAGE}
+    image: ${CLN_IMAGE_NAME}
     hostname: cln-${CLN_ID}
     command: >-
       ${CLN_COMMAND}
@@ -176,12 +224,22 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
       - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
+      - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:ro
 EOF
+
+    if [ -n "$DEV_PLUGIN_PATH" ]; then
+        if [ -d "$DEV_PLUGIN_PATH" ]; then
+            cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - ${DEV_PLUGIN_PATH}:/dev-plugins
+EOF
+        fi
+    fi
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
       - bitcoindnet
       - clnnet-${CLN_ID}
+      - torproxynet-cln-${CLN_ID}
 EOF
 
 
@@ -205,6 +263,39 @@ EOF
 
 done
 
+
+# insert cln-torproxy here
+# this tor proxy is use EXCLUSIVELY for the the cln node to establish and maintain channels with remote onion endpoints.
+# Remote lightning nodes will BE UNABLE to establish a tor based channel atm.
+for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  torproxy-cln-${CLN_ID}:
+    image: ${TOR_PROXY_IMAGE_NAME}
+    hostname: cln-${CLN_ID}-torproxy
+    environment:
+      - RPC_PATH=${RPC_PATH}
+    volumes:
+      - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:rw
+    networks:
+      - torproxynet-cln-${CLN_ID}
+    deploy:
+      mode: replicated
+      replicas: 1
+
+EOF
+
+done
+
+
+
+
+
+
+
+##############################3
+
+
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 networks:
   bitcoindnet:
@@ -219,6 +310,7 @@ fi
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clnnet-${CLN_ID}:
+  torproxynet-cln-${CLN_ID}:
 EOF
 
 done
@@ -247,6 +339,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}-${BTC_CHAIN}:
   cln-${CLN_ID}-certs-${BTC_CHAIN}:
+  cln-${CLN_ID}-torproxy-${BTC_CHAIN}:
 EOF
 
 done
