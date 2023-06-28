@@ -1,43 +1,90 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.
 
-./defaults.env
-./load_env.sh
+. ./defaults.env
+. ./load_env.sh
 
+PURGE=false
+PRUNE=true
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
     exit 1
 fi
 
-if echo "$ACTIVE_ENV" | grep -q "mainnet"; then
+if echo "$BTC_CHAIN" | grep -q "mainnet"; then
     read -p "WARNING: You are targeting a mainnet node! Are you sure you want to continue? (Y):  " ANSWER
 
-    if [[ "$ANSWER" != "Y" ]]; then
-        echo "exiting"
+    # Check if the answer is "yes"
+    if [ "$ANSWER" != "yes" ]; then
+        echo "Quitting."
         exit 1
     fi
+
 fi
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --purge)
+            PURGE=true
+            shift
+        ;;
+        --no-prune=*)
+            PRUNE=false
+            shift
+        ;;
+        *)
+        echo "Unexpected option: $1"
+        exit 1
+    esac
+done
 
 cd ./roygbiv/
 
 if [ -f ./docker-compose.yml ]; then
-    TIME_PER_CLN_NODE=5
     if docker stack ls --format "{{.Name}}" | grep -q roygbiv-stack; then
-        docker stack rm roygbiv-stack && sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-        sleep 5
+        docker stack rm roygbiv-stack
     fi
 fi
 
 cd ..
 
-# ensure all docker related processes have quit.
-SLEEP_TIME=1
-if [ "$BTC_CHAIN" = mainnet ]; then SLEEP_TIME=5; fi
-while [ "$(docker ps -q)" ]; do
-    sleep $SLEEP_TIME
+# wait until all containers are shut down.
+while true; do
+    COUNT=$(docker ps -q | wc -l)
+    if [ "$COUNT" -gt 0 ]; then
+        sleep 1
+    else
+        break
+    fi
 done
-sleep $SLEEP_TIME
+
+if [ "$PRUNE" = true ]; then
+    # remove any container runtimes.
+    docker system prune -f
+
+    # remote dangling/unnamed volumes.
+    docker volume prune -f
+    sleep 2
+fi
+
+# let's delete all volumes EXCEPT roygbiv-certs
+if [ "$PURGE" = true ]; then
+
+    # get a list of all the volumes
+    VOLUMES=$(docker volume list -q | grep roygbiv-)
+
+    # Iterate over each value in the list
+    for VOLUME in $VOLUMES; do
+        if ! echo "$VOLUME" | grep -q "roygbiv-certs"; then
+            if echo "$VOLUME" | grep -q "roygbiv"; then
+                docker volume rm "$VOLUME"
+            fi
+        fi
+    done
+
+fi

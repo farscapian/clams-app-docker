@@ -24,7 +24,7 @@ fi
 RPC_AUTH_TOKEN=$(docker run -t -v ./scripts:/scripts python:latest /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 
-BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
+BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=${BITCOIND_RPC_PORT:-18443} -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -prune=50000"
 
 for CHAIN in regtest signet; do
     if [ "$CHAIN" = "$BTC_CHAIN" ]; then  
