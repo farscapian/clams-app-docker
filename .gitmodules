@@ -1,3 +1,4 @@
 [submodule "roygbiv/clightning/cln-plugins/bolt12-prism"]
 	path = roygbiv/clightning/cln-plugins/bolt12-prism
 	url = https://github.com/daGoodenough/bolt12-prism.git
+
