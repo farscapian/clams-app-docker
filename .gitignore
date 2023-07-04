@@ -1,2 +1,4 @@
 active_env.txt
 .vscode
+output/
+output/*
