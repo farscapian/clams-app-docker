@@ -86,6 +86,9 @@ if [ "$PRUNE" = true ]; then
     # remote dangling/unnamed volumes.
     docker volume prune -f
     sleep 2
+
+    rm -f ./channel_templates/node_addrs.txt
+    rm -f ./channel_templates/node_pubkeys.txt
 fi
 
 # let's delete all volumes EXCEPT roygbiv-certs
