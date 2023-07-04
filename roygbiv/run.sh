@@ -38,6 +38,12 @@ if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
     docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
 fi
 
+BITCOIND_MANAGER_IMAGE_NAME="roygbiv-manager:$ROYGBIV_STACK_VERSION"
+export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
+if ! docker image list | grep -q "$BITCOIND_MANAGER_IMAGE_NAME"; then
+    # pull bitcoind down
+    docker build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./bitcoind-manager/
+fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
