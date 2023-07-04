@@ -19,7 +19,6 @@ done
 # cln node that's been deployed
 DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
 
-
 . ./defaults.env
 . ./load_env.sh
 

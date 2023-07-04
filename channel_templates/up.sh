@@ -75,8 +75,10 @@ fi
 
 export MINIMUM_WALLET_BALANCE="$MINIMUM_WALLET_BALANCE"
 
+
 # this is called for all btc_chains
 ./bitcoind_load_onchain.sh
+
 
 # With mainnet, all channel opens and spend must be done through a wallet app or the CLI
 if [ "$BTC_CHAIN" = regtest ] || [ "$BTC_CHAIN" = signet ]; then

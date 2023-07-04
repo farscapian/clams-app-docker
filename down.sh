@@ -1,15 +1,17 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.
+
 
 . ./defaults.env
 . ./load_env.sh
 
 PURGE=false
 PRUNE=true
+
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
     exit 1
@@ -72,6 +74,7 @@ while true; do
     if [ "$COUNT" -gt 0 ]; then
         sleep 1
     else
+        sleep 3
         break
     fi
 done

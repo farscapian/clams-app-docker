@@ -9,5 +9,3 @@ echo "==========================================="
 
 echo "Testing prism plugin"
 ./test_prism_plugin.sh
-
-
