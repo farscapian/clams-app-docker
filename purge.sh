@@ -31,7 +31,7 @@ docker volume prune -f
 sleep 2
 
 # get a list of all the volumes
-VOLUMES=$(docker volume list -q)
+VOLUMES=$(docker volume list -q | grep roygbiv-)
 
 # Iterate over each value in the list
 for VOLUME in $VOLUMES; do
