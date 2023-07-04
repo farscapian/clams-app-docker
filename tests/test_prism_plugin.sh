@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 echo "INFO: starting test_prism_plugin.sh."
 
 # lets create a prism
-prism=$(./../channel_templates/create_prism.sh)
+prism=$(./create_prism.sh)
 
 #make sure there were no errors in the createprism script
 if [[ $? -ne 0 ]]; then
