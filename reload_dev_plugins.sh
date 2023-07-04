@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     # iterate over py scripts.
