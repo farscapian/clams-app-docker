@@ -22,6 +22,11 @@ DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
 . ./defaults.env
 . ./load_env.sh
 
+# ensure we're using swarm mode.
+if docker info | grep -q "Swarm: inactive"; then
+    docker swarm init --default-addr-pool 10.10.0.0/16 --default-addr-pool-mask-length 22 > /dev/null
+fi
+
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
     exit 1
