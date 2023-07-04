@@ -43,15 +43,28 @@ for i in "$@"; do
     esac
 done
 
-cd ./roygbiv/
 
-if [ -f ./docker-compose.yml ]; then
-    if docker stack ls --format "{{.Name}}" | grep -q roygbiv-stack; then
+cd "$(pwd)/roygbiv/stacks"
+
+# write out service for CLN; style is a docker stack deploy style,
+# so we will use the replication feature
+STACKS=$(docker stack ls --format "{{.Name}}")
+for (( CLN_ID=CLN_COUNT; CLN_ID>=0; CLN_ID-- )); do
+    STACK_NAME="roygbiv-cln-${CLN_ID}"
+    if echo "$STACKS" | grep -q "$STACK_NAME"; then
+        docker stack rm "$STACK_NAME"
+        sleep 1
+    fi
+done
+
+
+if [ -f ./roygbiv-stack.yml ]; then
+    if echo "$STACKS" | grep -q roygbiv-stack; then
         docker stack rm roygbiv-stack
     fi
 fi
 
-cd ..
+cd -
 
 # wait until all containers are shut down.
 while true; do

@@ -104,13 +104,33 @@ if [ "$ENABLE_TLS" = true ]; then
     ./getrenew_cert.sh
 fi
 
+DOCKER_COMPOSE_YML_PATH="$(pwd)/stacks/roygbiv-stack.yml"
+export DOCKER_COMPOSE_YML_PATH="$DOCKER_COMPOSE_YML_PATH"
+touch "$DOCKER_COMPOSE_YML_PATH"
+
+
+# let's generate a random username and password and get our -rpcauth=<token>
+BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
+BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
+export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
+export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
+
+
+
+
 # stub out the docker-compose.yml file before we bring it up.
-./stub_compose.sh
+./stub_roygbiv-stack_compose.sh
 ./stub_nginx_conf.sh
 
+# this is the main bitcoind/nginx etc., everything sans CLN nodes.
+docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" roygbiv-stack
 
-docker stack deploy -c docker-compose.yml roygbiv-stack
+if ! docker network list | grep -q roygbiv-p2pnet; then
+    docker network create roygbiv-p2pnet -d overlay
+    sleep 1
+fi
 
+./stub_cln_composes.sh
 
 # the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
 echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"

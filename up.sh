@@ -28,8 +28,8 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-if [ "$CLN_COUNT" -gt 20 ]; then
-    echo "ERROR: This software only supports up to 20 CLN nodes."
+if [ "$CLN_COUNT" -gt 500 ]; then
+    echo "ERROR: This software only supports up to 500 CLN nodes."
     exit 1
 fi
 
