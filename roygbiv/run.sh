@@ -96,6 +96,16 @@ if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
     ./prism-app/
 fi
 
+PYTHON_IMAGE="python:$ROYGBIV_STACK_VERSION"
+export PYTHON_IMAGE="$PYTHON_IMAGE"
+if !  docker image inspect "python:latest" &>/dev/null; then
+    docker pull python:latest
+fi
+
+if ! docker image inspect "$PYTHON_IMAGE" &>/dev/null; then
+    docker build -t "python:$ROYGBIV_STACK_VERSION" ./scripts/
+fi
+
 # for the nginx certificates.
 docker volume create roygbiv-certs
 
