@@ -119,7 +119,7 @@ EOF
 
     if [ "$DISABLE_TOR" = false ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-        - torproxynet-cln-${CLN_ID}
+      - torproxynet
 EOF
     fi
 
@@ -163,7 +163,7 @@ EOF
     volumes:
       - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:rw
     networks:
-      - torproxynet-cln-${CLN_ID}
+      - torproxynet
     deploy:
       mode: replicated
       replicas: 1
@@ -199,7 +199,7 @@ EOF
 
     if [ "$DISABLE_TOR" = false ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  torproxynet-cln-${CLN_ID}:
+  torproxynet:
 EOF
     fi
 
