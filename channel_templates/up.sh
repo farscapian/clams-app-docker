@@ -10,8 +10,8 @@ function check_containers {
   fi
 
   # Loop through all CLN nodes and check if they are running
-  for (( i=0; i<CLN_COUNT; i++ )); do
-    if ! docker ps --filter "name=roygbiv-stack_cln-$i" --filter "status=running" | grep -q roygbiv/cln; then
+  for (( CLN_ID=0; i<CLN_COUNT; i++ )); do
+    if ! docker ps --filter "name=roygbiv-cln-${CLN_ID}_" --filter "status=running" | grep -q roygbiv/cln; then
       return 1
     fi
   done
@@ -90,20 +90,10 @@ if [ "$BTC_CHAIN" != mainnet ]; then
     ./bootstrap_p2p.sh
 fi
 
-# this represents the number of seconds per cln node we wait for service to come down
-# TODO maybe poll for this? 
-TIME_PER_CLN_NODE=3
-sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
 # automatically open channels if on regtest or signet.
 if [ "$BTC_CHAIN" = regtest ]; then
 
     ./cln_load_onchain.sh
 
-    ./bootstrap_p2p.sh
-    TIME_PER_CLN_NODE=3
-    
-    sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
-    ./regtest_prism.sh
+    ./create_prism_channels.sh
 fi

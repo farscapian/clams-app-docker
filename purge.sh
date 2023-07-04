@@ -9,6 +9,19 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+
+# wait until all containers are shut down.
+while true; do
+    COUNT=$(docker ps -q | wc -l)
+    if [ "$COUNT" -gt 0 ]; then
+        sleep 1
+    else
+        sleep 3
+        break
+    fi
+done
+
+
 # remove any container runtimes.
 docker system prune -f
 

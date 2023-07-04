@@ -36,6 +36,11 @@ if [ "$DOMAIN_NAME" = "domain.tld" ]; then
     exit 1
 fi
 
+if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$ENABLE_TLS" = true ]; then
+    echo "ERROR: Hey, you can't use TLS when your DOMAIN_NAME is equal to 127.0.0.1."
+    exit 1
+fi
+
 export DOCKER_HOST="$DOCKER_HOST"
 export DOMAIN_NAME="$DOMAIN_NAME"
 export ENABLE_TLS="$ENABLE_TLS"
