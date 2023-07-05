@@ -140,6 +140,30 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 EOF
 
+
+
+
+############ BITCOIND MANAGER SERVICE
+
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+
+  bitcoind-manager:
+    image: ${BITCOIND_MANAGER_IMAGE_NAME}
+    hostname: bitcoind-manager
+    networks:
+      - bitcoindnet
+    environment:
+      - BLOCK_TIME=${REGTEST_BLOCK_TIME}
+      - BITCOIND_SERVICE_NAME=bitcoind
+      - BITCOIND_RPC_USERNAME=${BITCOIND_RPC_USERNAME}
+      - BITCOIND_RPC_PASSWORD=${BITCOIND_RPC_PASSWORD}
+    deploy:
+      
+      mode: global
+      
+EOF
+
+
 ##############################
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 networks:
