@@ -39,7 +39,7 @@ EOF
 
     CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=\${BITCOIND_RPC_PORT:-18443} --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages"
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
         CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
     fi
 
@@ -97,7 +97,7 @@ EOF
       - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
 EOF
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:ro
 EOF
@@ -117,7 +117,7 @@ EOF
 EOF
 
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - torproxynet
 EOF
@@ -152,7 +152,7 @@ EOF
 EOF
 
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
 
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   torproxy-cln-${CLN_ID}:
@@ -197,7 +197,7 @@ EOF
 EOF
 
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   torproxynet:
 EOF
@@ -215,7 +215,7 @@ EOF
   cln-${CLN_ID}-certs-${BTC_CHAIN}:
 EOF
 
-    if [ "$DISABLE_TOR" = false ]; then
+    if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}-torproxy-${BTC_CHAIN}:
 EOF
