@@ -5,9 +5,13 @@ set -e
 
 mapfile -t pubkeys < node_pubkeys.txt
 
+P2PBOOSTRAP_COUNT=5
+if [ "$CLN_COUNT" -lt 5 ]; then
+    P2PBOOSTRAP_COUNT="$CLN_COUNT"
+fi
 
 # iterate through each node and it open 4 P2P connections to its neigh neighbor.
-for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+for ((NODE_ID=0; NODE_ID<P2PBOOSTRAP_COUNT; NODE_ID++)); do
 
     # first we should check if the node has any peers already
     NODE_PEER_COUNT="$(lncli --id=${NODE_ID} listpeers | jq -r '.peers | length')"
