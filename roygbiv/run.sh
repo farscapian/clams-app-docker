@@ -33,16 +33,16 @@ export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
 BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:25.0"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
-if ! docker image list | grep -q "$BITCOIND_DOCKER_IMAGE_NAME"; then
+if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
     docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
 fi
 
 BITCOIND_MANAGER_IMAGE_NAME="roygbiv-manager:$ROYGBIV_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
-if ! docker image list | grep -q "$BITCOIND_MANAGER_IMAGE_NAME"; then
+if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
-    docker build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./bitcoind-manager/
+    docker build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/
 fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
@@ -52,7 +52,7 @@ if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
 fi
 
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05"
-if ! docker image list | grep -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"; then
+if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 fi
 
