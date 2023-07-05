@@ -3,14 +3,6 @@
 set -e
 cd "$(dirname "$0")"
 
-# check dependencies
-for cmd in urlencode; do
-    if ! command -v "$cmd" >/dev/null 2>&1; then
-        echo "This script requires \"${cmd}\" to be installed.. Hint: apt-get install gridsite-clients"
-        exit 1
-    fi
-done
-
 PRODUCE_QR_CODE=false
 
 # grab any modifications from the command line.
@@ -45,21 +37,23 @@ fi
 readarray -t names < ./roygbiv/names.txt
 
 OUTPUT_FILE="$(pwd)/output/cln_connection_info-${DOMAIN_NAME}.csv"
-echo "" > "$OUTPUT_FILE"
+printf "" > "$OUTPUT_FILE"
+
+echo "INFO: Writing direct links to $OUTPUT_FILE"
 
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_NAME=${names[$CLN_ID]}
     CLN_ALIAS="cln-${CLN_ID}"
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
-    CLN_P2P_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
+    # CLN_P2P_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
     echo "$CLN_NAME ($CLN_ALIAS) connection info:"
 
-    # use the override if specified.
-    if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
-        CLN_P2P_PORT="$CLN_P2P_PORT_OVERRIDE"
-    fi
+    # # use the override if specified.
+    # if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
+    #     CLN_P2P_PORT="$CLN_P2P_PORT_OVERRIDE"
+    # fi
 
     #CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_P2P_PORT}")
 
