@@ -23,7 +23,7 @@ version: '3.8'
 services:
 
   reverse-proxy:
-    image: nginx:latest
+    image: ${NGINX_DOCKER_IMAGE_NAME}
 EOF
 
 

@@ -112,6 +112,12 @@ if ! docker image inspect "$PYTHON_IMAGE" &>/dev/null; then
     docker build -t "python:$ROYGBIV_STACK_VERSION" ./scripts/
 fi
 
+NGINX_DOCKER_IMAGE_NAME="nginx:latest"
+export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
+if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
+    docker pull "$NGINX_DOCKER_IMAGE_NAME"
+fi
+
 # for the nginx certificates.
 docker volume create roygbiv-certs
 
