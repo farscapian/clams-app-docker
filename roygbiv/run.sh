@@ -99,9 +99,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-    docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
-    -t "$PRISM_APP_IMAGE_NAME" \
-    ./prism-app/
+    docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
 fi
 
 PYTHON_IMAGE="python:$ROYGBIV_STACK_VERSION"
