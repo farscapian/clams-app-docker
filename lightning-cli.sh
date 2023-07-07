@@ -24,7 +24,7 @@ done
 CLN_CONTAINER_ID="$(docker ps | grep "roygbiv-cln-${NODE_ID}_cln-${NODE_ID}" | head -n1 | awk '{print $1;}')"
 
 if [ -z "$CLN_CONTAINER_ID" ]; then 
-    echo "ERROR: Cannot find the clightning container. Did you run it?"
+    echo "ERROR: Cannot find the clightning container."
     exit 1
 fi
 

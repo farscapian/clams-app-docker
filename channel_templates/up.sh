@@ -25,11 +25,6 @@ while ! check_containers; do
   sleep 3
 done
 
-# sleep a little longer
-TIME_PER_CLN_NODE=6
-sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
-
 RETAIN_CACHE=false
 
 for i in "$@"; do

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 echo "INFO: starting bitcoind manager process"
 

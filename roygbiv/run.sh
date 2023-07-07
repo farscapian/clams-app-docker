@@ -25,7 +25,7 @@ fi
 export WEBSOCKET_PORT_LOCAL="$WEBSOCKET_PORT_LOCAL"
 export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 
-NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
+NGINX_CONFIG_PATH="$(pwd)/stacks/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
@@ -143,6 +143,7 @@ export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_roygbiv-stack_compose.sh
 ./stub_nginx_conf.sh
+
 
 # this is the main bitcoind/nginx etc., everything sans CLN nodes.
 docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" roygbiv-stack
