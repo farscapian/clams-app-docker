@@ -141,11 +141,9 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 
 
-
-
 ############ BITCOIND MANAGER SERVICE
-
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+if [ "$BTC_CHAIN" == regtest ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
   bitcoind-manager:
     image: ${BITCOIND_MANAGER_IMAGE_NAME}
@@ -162,7 +160,7 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       mode: global
       
 EOF
-
+fi
 
 ##############################
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
