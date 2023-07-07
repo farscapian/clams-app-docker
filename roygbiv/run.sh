@@ -25,7 +25,7 @@ fi
 export WEBSOCKET_PORT_LOCAL="$WEBSOCKET_PORT_LOCAL"
 export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 
-NGINX_CONFIG_PATH="$(pwd)/nginx.conf"
+NGINX_CONFIG_PATH="$(pwd)/stacks/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
@@ -51,13 +51,15 @@ if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05"
+LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
+REBUILD_CLN_IMAGE=false
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+    REBUILD_CLN_IMAGE=true
 fi
 
 # Check if the image exists
-if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
+if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 fi
@@ -97,9 +99,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 fi
 
 if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-    docker build --build-arg GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL" \
-    -t "$PRISM_APP_IMAGE_NAME" \
-    ./prism-app/
+    docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
 fi
 
 PYTHON_IMAGE="python:$ROYGBIV_STACK_VERSION"
@@ -110,6 +110,12 @@ fi
 
 if ! docker image inspect "$PYTHON_IMAGE" &>/dev/null; then
     docker build -t "python:$ROYGBIV_STACK_VERSION" ./scripts/
+fi
+
+NGINX_DOCKER_IMAGE_NAME="nginx:latest"
+export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
+if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
+    docker pull "$NGINX_DOCKER_IMAGE_NAME"
 fi
 
 # for the nginx certificates.
@@ -137,6 +143,7 @@ export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_roygbiv-stack_compose.sh
 ./stub_nginx_conf.sh
+
 
 # this is the main bitcoind/nginx etc., everything sans CLN nodes.
 docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" roygbiv-stack
