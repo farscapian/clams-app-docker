@@ -51,13 +51,15 @@ if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05"
+LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
+REBUILD_CLN_IMAGE=false
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+    REBUILD_CLN_IMAGE=true
 fi
 
 # Check if the image exists
-if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
+if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
 fi
