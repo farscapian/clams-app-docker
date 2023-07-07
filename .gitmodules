@@ -2,3 +2,6 @@
 	path = roygbiv/clightning/cln-plugins/bolt12-prism
 	url = https://github.com/daGoodenough/bolt12-prism.git
 
+[submodule "roygbiv/prism-app/ROYGBIV-frontend"]
+	path = roygbiv/prism-app/ROYGBIV-frontend
+	url = https://github.com/farscapian/ROYGBIV-frontend
