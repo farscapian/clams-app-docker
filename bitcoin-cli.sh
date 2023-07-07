@@ -7,7 +7,7 @@ cd "$(dirname "$0")"
 . ./load_env.sh
 
 if docker ps | grep -q bitcoind; then
-    BITCOIND_CONTAINER_ID="$(docker ps | grep bitcoind | head -n1 | awk '{print $1;}')"
+    BITCOIND_CONTAINER_ID="$(docker ps | grep 'roygbiv-stack_bitcoind\.' | head -n1 | awk '{print $1;}')"
 
     if [ "$BTC_CHAIN" = mainnet ]; then
         docker exec -t -u 1000:1000 "$BITCOIND_CONTAINER_ID" bitcoin-cli "$@"
@@ -16,6 +16,6 @@ if docker ps | grep -q bitcoind; then
         docker exec -t -u 1000:1000 "$BITCOIND_CONTAINER_ID" bitcoin-cli -"$BTC_CHAIN" "$@"
     fi
 else
-    echo "ERROR: Cannot find the bitcoind container. Did you run it?"
+    echo "ERROR: Cannot find the bitcoind container."
     exit 1
 fi 
