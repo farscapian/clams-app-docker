@@ -87,8 +87,5 @@ fi
 
 # automatically open channels if on regtest or signet.
 if [ "$BTC_CHAIN" = regtest ]; then
-
-    ./cln_load_onchain.sh
-
     ./create_prism_channels.sh
 fi
