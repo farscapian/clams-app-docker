@@ -48,6 +48,7 @@ done
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
+      - nginxnet
 EOF
 
 if [ "$BTC_CHAIN" != regtest ]; then
@@ -57,11 +58,8 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - clnnet-${CLN_ID}
 EOF
     done
-else
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - nginxnet
-EOF
 fi
+
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -167,18 +165,20 @@ networks:
     attachable: true
 EOF
 
-# for regtest environments with lots of CLN nodes, instead of 
-# isolating each service on a specific network segment, we instead
-# place all the nodes on a common network. This is a security/scalbility trade-off.
-# but since we're only doing regtest environments and we have immutable infrastructure,
-# we think it seems like a reasonable tradeoff. Let's hope it works.
-if [ "$BTC_CHAIN" = regtest ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   nginxnet:
     attachable: true
 EOF
-fi
 
+if [ "$BTC_CHAIN" != regtest ]; then
+    for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+        CLN_ALIAS="cln-${BTC_CHAIN}"
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  clnnet-${CLN_ID}:
+EOF
+    done
+fi
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
