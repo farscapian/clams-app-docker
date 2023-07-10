@@ -126,9 +126,6 @@ BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | hea
 export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
 export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 
-
-
-
 # stub out the docker-compose.yml file before we bring it up.
 ./stub_roygbiv-stack_compose.sh
 ./stub_nginx_conf.sh
