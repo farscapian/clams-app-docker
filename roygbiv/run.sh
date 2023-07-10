@@ -5,17 +5,6 @@ cd "$(dirname "$0")"
 
 # this script brings up the backend needed (i.e., lightningd+bitcoind) to test Clams app
 
-# defaults are for regtest
-BITCOIND_RPC_PORT=18443
-if [ "$BTC_CHAIN" = testnet ]; then
-    BITCOIND_RPC_PORT=18332
-elif [ "$BTC_CHAIN" = signet ]; then
-    BITCOIND_RPC_PORT=38332
-elif [ "$BTC_CHAIN" = mainnet ]; then
-    BITCOIND_RPC_PORT=8332
-fi
-
-export BITCOIND_RPC_PORT="$BITCOIND_RPC_PORT"
 WEBSOCKET_PORT_LOCAL=9736
 CLIGHTNING_LOCAL_BIND_ADDR="127.0.0.1"
 if [ "$ENABLE_TLS" = false ]; then
