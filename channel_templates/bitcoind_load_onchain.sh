@@ -6,34 +6,18 @@
 set -e
 cd "$(dirname "$0")"
 
-#first we need to check if the prism wallet exists in the wallet dir
-WALLET_NAME=prism
-if [[ $(bcli listwalletdir) == *'"name": "prism"'* ]]; then
-    # load wallet if not already loaded
-    if ! bcli listwallets | grep -q "prism"; then
-        bcli loadwallet "$WALLET_NAME" > /dev/null
-        echo "INFO: Loaded existing '$WALLET_NAME' wallet."
-    fi
-else
-    #create walllet (gets loaded automatically) if it does not already exist
-    bcli createwallet "$WALLET_NAME" > /dev/null
-    echo "INFO: Created '$WALLET_NAME' wallet."
-fi
-
 WALLET_INFO=$(bcli getwalletinfo)
 # The above command will only work if only one wallet it loaded
 # TODO: specify which wallet to target
 WALLET_BALANCE=$(echo "$WALLET_INFO" | jq -r '.balance')
 WALLET_NAME=$(echo "$WALLET_INFO" | jq -r '.walletname')
 
-MIN_WALLET_BALANCE=50
-if [ "$BTC_CHAIN" = signet ]; then
-    MIN_WALLET_BALANCE=0.0001
-else
-    MIN_WALLET_BALANCE=0.0001
+# min wallet balance is 1*CLN_COUNT; so each CLN node gets 1 BTC.
+MIN_WALLET_BALANCE=0.0001
+if [ "$BTC_CHAIN" = regtest ]; then
+    ((MIN_WALLET_BALANCE = 1 * CLN_COUNT + 1))
 fi
 
-    
 BTC_ADDRESS=$(bcli getnewaddress)
 CLEAN_BTC_ADDRESS=$(echo -n "$BTC_ADDRESS" | tr -d '\r')
 if [ "$BTC_CHAIN" == regtest ]; then

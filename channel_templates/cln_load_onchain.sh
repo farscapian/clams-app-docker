@@ -3,39 +3,36 @@
 # the purpose of this script is to ensure that all CLN nodes have on-chain funds.
 # assumes bitcoind has a loaded wallet with spendable funds
 
-set -e
+set -ex
 
 mapfile -t node_addrs < node_addrs.txt
 
 SENDMANY_JSON="{"
-SEND_AMT=5
+SEND_AMT=1
 NEED_TO_SEND=false
 
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
-    BALANCE_MSAT_STR=$(lncli --id="$CLN_ID" bkpr-listbalances | jq -r '.accounts[0].balances[0].balance_msat')
-    BALANCE_MSAT=${BALANCE_MSAT_STR%msat}
+    # cln nodes 2-4 DO NOT receive an on-chain balance.
+    if (( CLN_ID >= 2 && CLN_ID <=4 )); then
+        continue;
+    fi
 
-    #check that we have at least 5 btc
-    if (("$BALANCE_MSAT" > "$SEND_AMT" * 100000000000 )); then
+    OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
+
+    # if at least one output exists in the CLN node, then we know
+    # the node has been funded previously, and we can therefore skip
+    if [ "$OUTPUT_EXISTS" = true ]; then
         echo "INFO: cln-$CLN_ID has sufficient funds: $BALANCE_MSAT mSats"
         continue
     fi
 
     NEED_TO_SEND=true
 
-    echo "Insufficient funds. Sending 5 btc to cln-$CLN_ID"
+    echo "Insufficient funds. Sending $SEND_AMT btc to cln-$CLN_ID"
     CLN_ADDR=${node_addrs[$CLN_ID]}
 
     SENDMANY_JSON+="\"$CLN_ADDR\":$SEND_AMT,"
-
-    if [ "$CLN_ID" = 1 ]; then
-        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
-        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
-        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
-        bcli sendtoaddress "$CLN_ADDR" "$SEND_AMT" > /dev/null
-    fi
-
 done
 
 if [ "$NEED_TO_SEND" = true ]; then

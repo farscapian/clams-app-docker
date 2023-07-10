@@ -58,12 +58,11 @@ for (( CLN_ID=CLN_COUNT; CLN_ID>=0; CLN_ID-- )); do
     fi
 done
 
-
-if [ -f ./roygbiv-stack.yml ]; then
-    if echo "$STACKS" | grep -q roygbiv-stack; then
-        docker stack rm roygbiv-stack
-    fi
+# now bring down the main roygbiv stack.
+if echo "$STACKS" | grep -q roygbiv-stack; then
+    docker stack rm roygbiv-stack
 fi
+
 
 cd -
 
