@@ -27,4 +27,4 @@ if [ "$PRISM_COUNT" = 0 ]; then
     PRISM_NAME="roygbiv_demo"
 fi
 
-echo "$(lncli --id=1 createprism label="\"$PRISM_NAME"\" members="[{\"name\" : \"carol\", \"destination\": \"$CAROL_OFFER\", \"split\": 5, \"type\":\"bolt12\"}, {\"name\": \"dave\", \"destination\": \"$DAVE_PUBKEY\", \"split\": 10, \"type\":\"keysend\"}, {\"name\": \"erin\", \"destination\": \"$ERIN_OFFER\", \"split\": 5, \"type\":\"bolt12\"}]")"
+echo "$(lncli --id=1 createprism label="\"$PRISM_NAME"\" members="[{\"name\" : \"carol\", \"destination\": \"$CAROL_OFFER\", \"split\": 5, \"type\":\"bolt12\"}, {\"name\": \"dave\", \"destination\": \"$DAVE_OFFER\", \"split\": 10, \"type\":\"bolt12\"}, {\"name\": \"erin\", \"destination\": \"$ERIN_OFFER\", \"split\": 5, \"type\":\"bolt12\"}]")"
