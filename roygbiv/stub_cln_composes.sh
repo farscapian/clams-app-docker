@@ -22,7 +22,7 @@ EOF
 
     # non-mainnet nodes get aliases from the names array, else domain name.
     CLN_ALIAS=""
-    if [[ "$CLN_ID" -lt 20 ]]; then
+    if [[ "$CLN_ID" -lt 200 ]]; then
         CLN_ALIAS=${names[$CLN_ID]}
     fi
 
