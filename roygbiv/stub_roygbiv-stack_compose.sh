@@ -140,23 +140,21 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 EOF
 
-
 ############ BITCOIND MANAGER SERVICE
 if [ "$BTC_CHAIN" == regtest ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
-  bitcoind-manager:
+  roygbiv-manager:
     image: ${BITCOIND_MANAGER_IMAGE_NAME}
-    hostname: bitcoind-manager
+    hostname: roygbiv-manager
     networks:
       - bitcoindnet
-    environment:
-      - BLOCK_TIME=${REGTEST_BLOCK_TIME}
+    environment: 
+      - BLOCK_TIME=${REGTEST_BLOCK_TIME:-15}
       - BITCOIND_SERVICE_NAME=bitcoind
       - BITCOIND_RPC_USERNAME=${BITCOIND_RPC_USERNAME}
       - BITCOIND_RPC_PASSWORD=${BITCOIND_RPC_PASSWORD}
     deploy:
-      
       mode: global
       
 EOF
