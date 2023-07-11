@@ -4,7 +4,6 @@ set -ex
 
 mapfile -t pubkeys < node_pubkeys.txt
 
-
 # let's wait for an output to exist before we start any channels.
 OUTPUT_EXISTS=false
 while ((OUTPUT_EXIST = false)); do
@@ -19,9 +18,7 @@ while ((OUTPUT_EXIST = false)); do
     fi
 done
 
-
-
-
+sleep 5
 
 # get node pubkeys
 #ALICE_PUBKEY=$(lncli --id=0 getinfo | jq -r ".id")

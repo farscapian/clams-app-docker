@@ -4,25 +4,25 @@ set -e
 cd "$(dirname "$0")"
 
 function check_containers {
-  # Check if bitcoind container is running
-  if ! docker ps --filter "name=roygbiv-stack_bitcoind" --filter "status=running" | grep -q polarlightning/bitcoind; then
-    return 1
-  fi
-
-  # Loop through all CLN nodes and check if they are running
-  for (( CLN_ID=0; i<CLN_COUNT; i++ )); do
-    if ! docker ps --filter "name=roygbiv-cln-${CLN_ID}_" --filter "status=running" | grep -q roygbiv/cln; then
-      return 1
+    # Check if bitcoind container is running
+    if ! docker ps --filter "name=roygbiv-stack_bitcoind" --filter "status=running" | grep -q polarlightning/bitcoind; then
+        return 1
     fi
-  done
 
-  # If all containers are running, return 0
-  return 0
+    # Loop through all CLN nodes and check if they are running
+    for (( CLN_ID=0; i<CLN_COUNT; i++ )); do
+        if ! docker ps --filter "name=roygbiv-cln-${CLN_ID}_" --filter "status=running" | grep -q roygbiv/cln; then
+            return 1
+        fi
+    done
+
+    # If all containers are running, return 0
+    return 0
 }
 
 # Wait for all containers to be up and running
 while ! check_containers; do
-  sleep 3
+    sleep 3
 done
 
 RETAIN_CACHE=false
@@ -39,7 +39,6 @@ for i in "$@"; do
         ;;
     esac
 done
-
 
 # recache node addrs and pubkeys if not specified otherwise
 if [ "$RETAIN_CACHE" = false ]; then

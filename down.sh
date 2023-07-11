@@ -44,9 +44,6 @@ for i in "$@"; do
     esac
 done
 
-
-cd "$(pwd)/roygbiv/stacks"
-
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature
 STACKS=$(docker stack ls --format "{{.Name}}")
@@ -62,9 +59,6 @@ done
 if echo "$STACKS" | grep -q roygbiv-stack; then
     docker stack rm roygbiv-stack
 fi
-
-
-cd -
 
 # wait until all containers are shut down.
 while true; do

@@ -156,7 +156,6 @@ lncli() {
 
 export -f lncli
 
-
 if [ "$RUN_CHANNELS" = true ]; then
     # ok, let's do the channel logic
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
