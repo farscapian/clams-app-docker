@@ -62,14 +62,6 @@ if [ "$RETAIN_CACHE" = false ]; then
     echo "Node addresses cached"
 fi
 
-MINIMUM_WALLET_BALANCE=5
-if [ "$BTC_CHAIN" = signet ] || [ "$BTC_CHAIN" = mainnet ]; then
-    MINIMUM_WALLET_BALANCE=0.004
-fi
-
-export MINIMUM_WALLET_BALANCE="$MINIMUM_WALLET_BALANCE"
-
-# 
 ./bitcoind_load_onchain.sh
 
 # With mainnet, all channel opens and spend must be done through a wallet app or the CLI
