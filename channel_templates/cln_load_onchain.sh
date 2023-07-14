@@ -23,7 +23,7 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     # if at least one output exists in the CLN node, then we know
     # the node has been funded previously, and we can therefore skip
     if [ "$OUTPUT_EXISTS" = true ]; then
-        echo "INFO: cln-$CLN_ID has sufficient funds: $BALANCE_MSAT mSats"
+        echo "INFO: cln-$CLN_ID has sufficient funds."
         continue
     fi
 

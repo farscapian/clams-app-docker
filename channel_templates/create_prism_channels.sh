@@ -6,14 +6,14 @@ mapfile -t pubkeys < node_pubkeys.txt
 
 # let's wait for an output to exist before we start any channels.
 OUTPUT_EXISTS=false
-while ((OUTPUT_EXIST = false)); do
+while [ "$OUTPUT_EXIST" = false ]; do
     # pool to ensure we have enough outputs to spend with.
     OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
 
     # if at least one output exists in the CLN node, then we know
     # the node has been funded previously, and we can therefore skip
     if [ "$OUTPUT_EXISTS" = true ]; then
-        echo "INFO: cln-$CLN_ID has sufficient funds: $BALANCE_MSAT mSats"
+        echo "INFO: cln-$CLN_ID has sufficient funds."
         break
     fi
 done

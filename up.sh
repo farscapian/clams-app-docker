@@ -161,6 +161,8 @@ if [ "$RUN_CHANNELS" = true ]; then
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
+./show_cln_uris.sh
+
 if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$BTC_CHAIN" = regtest ]; then
     ./reload_dev_plugins.sh
 fi
