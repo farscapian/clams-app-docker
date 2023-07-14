@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 PRODUCE_QR_CODE=false
@@ -77,8 +77,21 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         HTTP_PROTOCOL="https"
     fi
 
+
+    RUNE=
+    if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" = regtest ]; then
+        if [ "$CLN_ID" = 0 ]; then
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay")
+        elif [ "$CLN_ID" = 1 ]; then
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --prism-writer")
+        else
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read")
+        fi
+    elif [ "$CHANNEL_SETUP" = llarp ]; then
     RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
-    echo "  admin_rune: $RUNE"
+    fi
+
+    echo "  rune: $RUNE"
     WEBSOCKET_QUERY_STRING="https://staging.app.clams.tech/connect?address=$CLN_WEBSOCKET_URI&type=direct&value=$PROTOCOL&rune=$RUNE"
 
     # if the output file is specified, write out the query string

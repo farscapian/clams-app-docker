@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -e
+set -eu
 
-NODE_ID=0
+NODE_ID=
 SESSION_ID=
 
 READ_PERMISSIONS=false
@@ -32,11 +32,11 @@ for i in "$@"; do
             PAY_PERMISSIONS=true
             shift
         ;;
-        --listprisms)
+        --prism-reader)
             LIST_PRISMS_PERMISSIONS=true
             shift
         ;;
-        --createprism)
+        --prism-writer)
             LIST_PRISMS_PERMISSIONS=true
             CREATE_PRISM_PERMISSIONS=true
             shift
@@ -52,49 +52,55 @@ for i in "$@"; do
     esac
 done
 
+if [ -z "$NODE_ID" ]; then
+    echo "ERROR: You MUST specify a --node-id="
+    exit 1
+fi
+
 RUNE_JSON=
 
 # TODO fix this logic here.
-if [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ] && [ "$READ_PERMISSIONS" = false ]; then
-    if [ "$ADMIN_RUNE" = false ]; then
+if [ "$READ_PERMISSIONS" = false ] && \
+   [ "$PAY_PERMISSIONS" = false ] && \
+   [ "$LIST_PRISMS_PERMISSIONS" = false ] && \
+   [ "$CREATE_PRISM_PERMISSIONS" = false ] && \
+   [ "$ADMIN_RUNE" = false ]; then
         echo "ERROR: You MUST specify at least one permission."
         exit 1
-    fi
 fi
 
-CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune"
+CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='["
 
 if [ "$ADMIN_RUNE" = false ]; then
-    CMD="${CMD} restrictions='["
 
     if [ -n "$SESSION_ID" ]; then
         CMD="${CMD}[\"id=$SESSION_ID\"],"
     fi
 
     if [ "$READ_PERMISSIONS" = true ]; then
-        CMD="${CMD}[\"method^list\",\"method^get\",\"method=summary\",\"method=waitanyinvoice\",\"method=waitinvoice\",\"method/listdatastore\","
+        CMD="${CMD}[\"method/listdatastore\"],[\"method^list\",\"method^get\",\"method=waitanyinvoice\",\"method=waitinvoice\""
     fi
 
     if [ "$PAY_PERMISSIONS" = true ]; then
-        CMD="${CMD}\"method=pay\",\"method=fetchinvoice\","
+        CMD="${CMD},\"method=pay\",\"method=fetchinvoice\""
     fi
 
     if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
-        CMD="${CMD}\"method=listprisms\","
+        CMD="${CMD},\"method=listprisms\""
     fi
 
     if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
-        CMD="${CMD}\"method=createprism\","
+        CMD="${CMD},\"method=createprism\""
     fi
-
-    CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
+
+CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 
 RUNE_JSON=$(eval "$CMD")
 
+
 if [ -n "$RUNE_JSON" ]; then
-    RUNE=$(echo "$RUNE_JSON" | jq -r '.rune')
-    echo "${RUNE}"
+    echo "$RUNE_JSON" | jq -r '.rune'
 else
     echo "ERROR: the command did not complete."
     exit 1
