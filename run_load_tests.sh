@@ -18,4 +18,4 @@ fi
 docker system prune -f
 
 # next let's call the load testing script.
-./tests/load/run.sh --connection-csv-path="$OUTPUT_FILE"
+bash -c "./tests/load/run.sh --connection-csv-path=$OUTPUT_FILE"
