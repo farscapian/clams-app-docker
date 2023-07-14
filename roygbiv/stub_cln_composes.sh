@@ -66,12 +66,23 @@ EOF
     if [ "$BTC_CHAIN" = regtest ]; then
         # regtest only
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
-        CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735"
+        CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735 --announce-addr-dns=true"
         CLN_COMMAND="$CLN_COMMAND --dev-fast-gossip"
 
         # todo make the poll value proportional to 
         # CLN node count. That is, more nodes, the higher the value.
         CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=5"
+        # CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
+        # CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
+        # CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
+        # CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=100000"
+        # CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
+        # CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
+        # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
+        # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
+        # CLN_COMMAND="$CLN_COMMAND --log-level=debug"
+        CLN_COMMAND="$CLN_COMMAND --fee-base=1"
+        CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
     fi
 
     CLN_COMMAND="$CLN_COMMAND\""

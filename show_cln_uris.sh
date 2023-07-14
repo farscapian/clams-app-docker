@@ -88,7 +88,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
             RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read")
         fi
     elif [ "$CHANNEL_SETUP" = llarp ]; then
-    RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
+        RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
     fi
 
     echo "  rune: $RUNE"
