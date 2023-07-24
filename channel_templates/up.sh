@@ -46,15 +46,16 @@ if [ "$RETAIN_CACHE" = false ]; then
 
     rm -f ./node_addrs.txt
     rm -f ./node_pubkeys.txt
+    rm -f ./any_offers.txt
 
-    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> node_pubkeys.txt
     done
 
     echo "Node pubkeys cached"
 
-    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done

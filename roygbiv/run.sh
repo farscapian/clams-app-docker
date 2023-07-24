@@ -61,7 +61,6 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
         sleep 2
     fi
 
-
     docker volume create clams-browser-app
 
     if ! docker image inspect node:18 &> /dev/null; then

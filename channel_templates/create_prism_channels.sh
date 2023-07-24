@@ -2,59 +2,61 @@
 
 set -eu
 
+# the objective of this script is to create channels in the prism format.
+# Alice -> Bob, then Bob creates a channels to all subsequent nodes.
+# this allows creating Prisms with an arbitrary number of prism recipients.
 
 mapfile -t pubkeys < node_pubkeys.txt
 
-# let's wait for an output to exist before we start any channels.
-OUTPUT_EXISTS=false
-while [ "$OUTPUT_EXIST" = false ]; do
-    # pool to ensure we have enough outputs to spend with.
-    OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
+function checkOutputs {
+    # let's wait for an output to exist before we start creating any channels.
+    OUTPUT_EXISTS=false
+    while [ "$OUTPUT_EXISTS" = false ]; do
+        # pool to ensure we have enough outputs to spend with.
+        OUTPUT_EXISTS=$(lncli --id="$1" listfunds | jq '.outputs | length > 0')
 
-    # if at least one output exists in the CLN node, then we know
-    # the node has been funded previously, and we can therefore skip
-    if [ "$OUTPUT_EXISTS" = true ]; then
-        echo "INFO: cln-$CLN_ID has sufficient funds."
-        break
-    fi
-done
-
+        # if at least one output exists in the CLN node, then we know
+        # the node has been funded previously, and we can therefore skip
+        if [ "$OUTPUT_EXISTS" = true ]; then
+            echo "INFO: cln-$1 has sufficient funds."
+            break
+        else
+            sleep 3
+        fi
+    done
+}
 sleep 5
 
-# get node pubkeys
-#ALICE_PUBKEY=$(lncli --id=0 getinfo | jq -r ".id")
-BOB_PUBKEY=${pubkeys[1]}
-CAROL_PUBKEY=${pubkeys[2]}
-DAVE_PUBKEY=${pubkeys[3]}
-ERIN_PUBKEY=${pubkeys[4]}
-
-# now lets wire them up
-# Alice --> Bob
-lncli --id=0 fundchannel "$BOB_PUBKEY" 6000000 > /dev/null
-echo "Alice opened a channel to Bob"
-
-sleep 20
-
-# Bob --> Carol
-lncli --id=1 fundchannel "$CAROL_PUBKEY" 2000000 > /dev/null
-echo "Bob opened a channel to Carol"
-bcli -generate 3 > /dev/null
+CHANNEL_COUNT=$(lncli --id=0 listchannels | jq '.channels | length')
+if [ "$CHANNEL_COUNT" = 0 ]; then
+    # ensure Alice has outputs to spend from
+    checkOutputs 0
+    lncli --id=0 fundchannel "${pubkeys[1]}" 10000000 > /dev/null
+    echo "Alice opened a 10000000 sat channel to Bob"
+fi
 
 
-sleep 20
+# ensure Bob has outputs to spend from
+checkOutputs 1
 
-# Bob --> Dave
-lncli --id=1 fundchannel "$DAVE_PUBKEY" 2000000 > /dev/null
-echo "Bob opened a channel to Dave"
-bcli -generate 3 > /dev/null
+# next we use fundmultichannel so Bob can create channels to the remaining nodes.
+SENDMANY_JSON="["
 
+# we increase the CLN count by one here so we can reserve at least one UTXO
+# for things like RBF and other things I'm sure.
+#CLN_COUNT_PLUS_ONE=((CLN_COUNT++))
+SEND_AMT=16777215
+#$((100000000 / CLN_COUNT))
 
-sleep 20
+# fund each cln node starting at node 2 (Carol)
+for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
+    NODE_PUBKEY=${pubkeys[$CLN_ID]}
+    SENDMANY_JSON+="{\"id\": \"$NODE_PUBKEY@cln-${CLN_ID}:9735\",\"amount\": \"$SEND_AMT\""
+    SENDMANY_JSON="${SENDMANY_JSON}},"
+done
 
-#  Bob --> Erin
-lncli --id=1 fundchannel "$ERIN_PUBKEY" 2000000 > /dev/null
-echo "Bob opened a channel to Erin"
-bcli -generate 10 > /dev/null
+# close off the json
+SENDMANY_JSON="${SENDMANY_JSON::-1}]"
 
-
-sleep 20
+# execute multifundchannel from bob.
+lncli --id=1 multifundchannel "$SENDMANY_JSON"
