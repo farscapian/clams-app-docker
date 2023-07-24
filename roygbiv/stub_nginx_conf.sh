@@ -83,15 +83,17 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
         }
     }
 EOF
+fi
 
-    if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-        cat >> "$NGINX_CONFIG_PATH" <<EOF
+
+if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+    cat >> "$NGINX_CONFIG_PATH" <<EOF
 
     # https server block for the clams-browser-app
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
 
-        server_name ${CLAMS_FQDN};
+        server_name ${DOMAIN_NAME};
 
         location / {
             autoindex off;
@@ -103,10 +105,9 @@ EOF
     }
 
 EOF
-    fi
 fi
 
-    cat >> "$NGINX_CONFIG_PATH" <<EOF
+cat >> "$NGINX_CONFIG_PATH" <<EOF
     map \$http_upgrade \$connection_upgrade {
         default upgrade;
         '' close;

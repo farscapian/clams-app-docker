@@ -8,3 +8,6 @@
 [submodule "tests/load"]
 	path = tests/load
 	url = https://github.com/farscapian/ROYGBIV-stack-load-tester
+[submodule "roygbiv/clams/app"]
+	path = roygbiv/clams/app
+	url = https://github.com/clams-tech/App.git

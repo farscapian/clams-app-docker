@@ -69,21 +69,18 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
         docker pull node:18
     fi
 
-    BROWSER_APP_IMAGE_NAME="browser-app:$BROWSER_APP_GIT_TAG"
-
+    BROWSER_APP_IMAGE_NAME="clams-app:$BROWSER_APP_GIT_TAG"
     if ! docker image inspect "$BROWSER_APP_IMAGE_NAME" &>/dev/null; then
         # build the browser-app image.
         # pull the base image from dockerhub and build the ./Dockerfile.
         if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
-            docker build --build-arg GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL" \
-            --build-arg VERSION="$ROYGBIV_STACK_VERSION" \
-            -t "$BROWSER_APP_IMAGE_NAME" \
-            ./browser-app/
+            docker build -t "$BROWSER_APP_IMAGE_NAME" ./clams/
 
             sleep 5
         fi
     fi
 
+    # copy the build output to the clams-browser-app docker volume.
     docker run -it --rm -v clams-browser-app:/output --name browser-app "$BROWSER_APP_IMAGE_NAME"
 fi
 
@@ -141,13 +138,7 @@ fi
 
 ./stub_cln_composes.sh
 
-# the entrypoint is http in all cases; if ENABLE_TLS=true, then we rely on the 302 redirect to https.
-echo "The prism-browser-app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
-
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    echo "The clams-browser-app is available at http://${CLAMS_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
-fi
-
+echo "INFO: You app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
 
 if [ "$BTC_CHAIN" = mainnet ]; then
     sleep 120
