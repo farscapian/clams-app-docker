@@ -53,11 +53,6 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     echo "$CLN_NAME ($CLN_ALIAS) connection info:"
 
-    # # use the override if specified.
-    # if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
-    #     CLN_P2P_PORT="$CLN_P2P_PORT_OVERRIDE"
-    # fi
-
     if [ "$BTC_CHAIN" = regtest ]; then
         CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=9735 --internal-only")
     else

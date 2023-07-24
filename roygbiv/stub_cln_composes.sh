@@ -47,11 +47,10 @@ EOF
         CLN_COMMAND="$CLN_COMMAND --plugin=/plugins/prism-plugin.py"
     fi
 
-    if [ "$BTC_CHAIN" = mainnet ]; then
-        # mainnet only
-        if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
-            CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
-        fi
+    # mainnet only
+    if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
+        CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
+    fi
 
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
     fi
