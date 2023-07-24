@@ -1,4 +1,4 @@
 *
 
 !.gitignore
-!local.env
+local.env
