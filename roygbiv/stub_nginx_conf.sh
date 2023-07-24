@@ -75,7 +75,7 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
             proxy_set_header Host \$http_host;
             proxy_cache_bypass \$http_upgrade;
 
-            proxy_read_timeout     60;
+            proxy_read_timeout     120;
             proxy_connect_timeout  60;
             proxy_redirect         off;
 
@@ -121,8 +121,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
-    # server block for the clightning websockets path;
-    # this server block terminates TLS sessions and passes them to ws://.
+    # server block for ${CLN_ALIAS} websocket
     server {
         listen ${CLN_WEBSOCKET_PORT}${SSL_TAG};
 
@@ -130,6 +129,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
         location / {
             proxy_http_version 1.1;
+            proxy_read_timeout 120;
             proxy_set_header Upgrade \$http_upgrade;
             proxy_set_header Connection "Upgrade";
             proxy_set_header Proxy "";
