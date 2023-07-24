@@ -142,7 +142,6 @@ echo "INFO: You app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL
 
 if [ "$BTC_CHAIN" = mainnet ]; then
     sleep 120
-else
-    sleep 20
 fi
+
 # TODO poll for container existence.

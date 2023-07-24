@@ -7,7 +7,6 @@ cd "$(dirname "$0")"
 
 echo "INFO: starting test_prism_plugin.sh."
 
-
 ./create_prism.sh
 
 echo -e "\033[1A\033[2K"

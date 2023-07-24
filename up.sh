@@ -117,7 +117,7 @@ export ROOT_DIR="$ROOT_DIR"
 if ! docker stack list | grep -q roygbiv-stack; then
     RUN_CHANNELS=true
 
-    # bring up the stack; or refresh it
+    # bring up the stack;
     ./roygbiv/run.sh
 fi
 
@@ -126,6 +126,8 @@ bcli() {
     "$ROOT_DIR/bitcoin-cli.sh" "$@"
 }
 export -f bcli
+
+# wait for bitcoind to come oneline.
 
 
 if [ "$BTC_CHAIN" != regtest ]; then

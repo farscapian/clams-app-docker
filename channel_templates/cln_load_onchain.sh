@@ -22,17 +22,15 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     fi
 
     OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
-
+    
     # if at least one output exists in the CLN node, then we know
     # the node has been funded previously, and we can therefore skip
     if [ "$OUTPUT_EXISTS" = true ]; then
-        echo "INFO: cln-$CLN_ID has sufficient funds."
         continue
     fi
 
     NEED_TO_SEND=true
 
-    echo "Insufficient funds. Sending $SEND_AMT btc to cln-$CLN_ID"
     CLN_ADDR=${node_addrs[$CLN_ID]}
 
     # we don't fund nodes 2-n on the prism setup.
@@ -53,5 +51,5 @@ if [ "$NEED_TO_SEND" = true ]; then
 
     bcli sendmany "" "$SENDMANY_JSON" > /dev/null
 
-    bcli -generate 10 > /dev/null
+    sleep "$REGTEST_BLOCK_TIME"
 fi
