@@ -58,8 +58,18 @@ if [ "$RETAIN_CACHE" = false ]; then
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done
-
     echo "Node addresses cached"
+
+    # if we're deploying prisms, then we also standard any offers on each node.
+    if [ "$CHANNEL_SETUP" = prism ]; then
+        for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+            BOLT12_OFFER=$(lncli --id=${NODE_ID} offer any default | jq -r '.bolt12')
+            echo "$BOLT12_OFFER" >> any_offers.txt
+        done
+
+        echo "BOLT12 any offers cached"
+    fi
+
 fi
 
 ./bitcoind_load_onchain.sh

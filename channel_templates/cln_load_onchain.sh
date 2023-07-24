@@ -13,9 +13,12 @@ NEED_TO_SEND=false
 
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
-    # cln nodes 2-4 DO NOT receive an on-chain balance.
-    if (( CLN_ID >= 2 && CLN_ID <=4 )); then
-        continue;
+
+    if [ "$CHANNEL_SETUP" = prism ]; then
+        # cln nodes 2-4 DO NOT receive an on-chain balance.
+        if (( CLN_ID >= 2 && CLN_ID <=4 )); then
+            continue;
+        fi
     fi
 
     OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
@@ -32,7 +35,17 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     echo "Insufficient funds. Sending $SEND_AMT btc to cln-$CLN_ID"
     CLN_ADDR=${node_addrs[$CLN_ID]}
 
-    SENDMANY_JSON+="\"$CLN_ADDR\":$SEND_AMT,"
+    # we don't fund nodes 2-n on the prism setup.
+    if [ "$CHANNEL_SETUP" = prism ]; then
+        if ((CLN_ID < 2 )); then
+            SENDMANY_JSON="${SENDMANY_JSON}\"$CLN_ADDR\":$SEND_AMT,"
+        fi
+    fi
+
+    # in llarp, everybody gets a bitcoin
+    if [ "$CHANNEL_SETUP" = llarp ]; then
+        SENDMANY_JSON="${SENDMANY_JSON}\"$CLN_ADDR\":$SEND_AMT,"
+    fi
 done
 
 if [ "$NEED_TO_SEND" = true ]; then

@@ -76,7 +76,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
 
     RUNE=
-    if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" = regtest ]; then
+    if [ "$CHANNEL_SETUP" = prism ]; then
         if [ "$CLN_ID" = 0 ]; then
             RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
         elif [ "$CLN_ID" = 1 ]; then
