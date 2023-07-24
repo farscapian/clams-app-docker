@@ -16,16 +16,7 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-if echo "$BTC_CHAIN" | grep -q "mainnet"; then
-    read -p "WARNING: You are targeting a mainnet node! Are you sure you want to continue? (Y):  " ANSWER
-
-    # Check if the answer is "yes"
-    if [ "$ANSWER" != "yes" ]; then
-        echo "Quitting."
-        exit 1
-    fi
-
-fi
+./prompt.sh
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -75,27 +66,12 @@ if [ "$PRUNE" = true ]; then
     # remove any container runtimes.
     docker system prune -f
 
-    # remote dangling/unnamed volumes.
-    docker volume prune -f
-    sleep 2
-
     rm -f ./channel_templates/node_addrs.txt
     rm -f ./channel_templates/node_pubkeys.txt
+    rm -f ./channel_templates/any_offers.txt
 fi
 
 # let's delete all volumes EXCEPT roygbiv-certs
 if [ "$PURGE" = true ]; then
-
-    # get a list of all the volumes
-    VOLUMES=$(docker volume list -q | grep roygbiv-)
-
-    # Iterate over each value in the list
-    for VOLUME in $VOLUMES; do
-        if ! echo "$VOLUME" | grep -q "roygbiv-certs"; then
-            if echo "$VOLUME" | grep -q "roygbiv"; then
-                docker volume rm "$VOLUME"
-            fi
-        fi
-    done
-
+    ./purge.sh
 fi
