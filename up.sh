@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 # This script runs the whole Clams stack as determined by the various ./.env files

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -ex
+set -eu
+
 
 mapfile -t pubkeys < node_pubkeys.txt
 
