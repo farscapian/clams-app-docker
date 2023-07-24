@@ -7,8 +7,10 @@ SESSION_ID=
 
 READ_PERMISSIONS=false
 PAY_PERMISSIONS=false
+RECEIVE_PERMISSIONS=false
 LIST_PRISMS_PERMISSIONS=false
 CREATE_PRISM_PERMISSIONS=false
+BKPR_PERMISSIONS=false
 ADMIN_RUNE=false
 RATE_LIMIT=60
 
@@ -25,6 +27,15 @@ for i in "$@"; do
         ;;
         --read)
             READ_PERMISSIONS=true
+            shift
+        ;;
+        --receive)
+            READ_PERMISSIONS=true
+            RECEIVE_PERMISSIONS=true
+            shift
+        ;;
+        --bkpr)
+            BKPR_PERMISSIONS=true
             shift
         ;;
         --pay)
@@ -64,15 +75,17 @@ if [ "$READ_PERMISSIONS" = false ] && \
    [ "$PAY_PERMISSIONS" = false ] && \
    [ "$LIST_PRISMS_PERMISSIONS" = false ] && \
    [ "$CREATE_PRISM_PERMISSIONS" = false ] && \
+   [ "$RECEIVE_PERMISSIONS" = false ] && \
+   [ "$BKPR_PERMISSIONS" = false ] && \
    [ "$ADMIN_RUNE" = false ]; then
         echo "ERROR: You MUST specify at least one permission."
         exit 1
 fi
 
-CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune restrictions='["
+CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune"
 
 if [ "$ADMIN_RUNE" = false ]; then
-
+    CMD="${CMD} restrictions='["
     if [ -n "$SESSION_ID" ]; then
         CMD="${CMD}[\"id=$SESSION_ID\"],"
     fi
@@ -81,8 +94,16 @@ if [ "$ADMIN_RUNE" = false ]; then
         CMD="${CMD}[\"method/listdatastore\"],[\"method^list\",\"method^get\",\"method=waitanyinvoice\",\"method=waitinvoice\""
     fi
 
+    if [ "$RECEIVE_PERMISSIONS" = true ]; then
+        CMD="${CMD},\"method=waitanyinvoice\",\"method=waitinvoice\",\"method=invoice\",\"method^offer\""
+    fi
+
     if [ "$PAY_PERMISSIONS" = true ]; then
-        CMD="${CMD},\"method=pay\",\"method=fetchinvoice\""
+        CMD="${CMD},\"method=pay\",\"method=fetchinvoice\",\"method=createinvoice\""
+    fi
+
+    if [ "$BKPR_PERMISSIONS" = true ]; then
+        CMD="${CMD},\"method~bkpr\""
     fi
 
     if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
@@ -92,9 +113,10 @@ if [ "$ADMIN_RUNE" = false ]; then
     if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
         CMD="${CMD},\"method=createprism\""
     fi
+
+    CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
 
-CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 
 RUNE_JSON=$(eval "$CMD")
 

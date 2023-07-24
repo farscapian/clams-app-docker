@@ -83,11 +83,11 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     RUNE=
     if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" = regtest ]; then
         if [ "$CLN_ID" = 0 ]; then
-            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay")
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
         elif [ "$CLN_ID" = 1 ]; then
-            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --prism-writer")
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --prism-writer --receive --pay --bkpr")
         else
-            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read")
+            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
         fi
     elif [ "$CHANNEL_SETUP" = llarp ]; then
         RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
