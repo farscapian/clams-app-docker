@@ -85,6 +85,14 @@ EOF
         CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
     fi
 
+    # the CLN poll interval should grow linearly with CLN_COUNT.
+    # Right now we reserve 1 second for every 10 CLN nodes there are.
+    # so if you're running 160 nodes, it'll take 16 seconds for all the
+    # CLN nodes to come into consensus.
+    SECONDS_PER_TEN_NODES=1
+    CLN_POLL_INTERVAL_SECONDS=$(( (CLN_COUNT+11) / 10 ))
+    CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=$((SECONDS_PER_TEN_NODES * CLN_POLL_INTERVAL_SECONDS ))"
+
     CLN_COMMAND="$CLN_COMMAND\""
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}:
