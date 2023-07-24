@@ -52,6 +52,7 @@ EOF
         CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
     fi
 
+    if [ "$BTC_CHAIN" = mainnet ]; then
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
     fi
 
@@ -59,7 +60,7 @@ EOF
         # signet only
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
-        CLN_COMMAND="$CLN_COMMAND --log-level=debug --dev-bitcoind-poll=5"
+        #CLN_COMMAND="$CLN_COMMAND --log-level=debug"
     fi
 
     if [ "$BTC_CHAIN" = regtest ]; then
@@ -70,7 +71,7 @@ EOF
 
         # todo make the poll value proportional to 
         # CLN node count. That is, more nodes, the higher the value.
-        CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=5"
+        #CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=5"
         # CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
         # CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
         # CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
