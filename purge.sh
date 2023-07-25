@@ -28,5 +28,9 @@ for VOLUME in $VOLUMES; do
         continue
     fi
 
-    docker volume rm "$VOLUME"
+    if echo "$VOLUME" | grep -q 'mainnet'; then
+        echo "WARNING: there are mainnet volumes on this host. You should AVOID co-mingling mainnet with other environments."
+    else
+        docker volume rm "$VOLUME"
+    fi
 done
