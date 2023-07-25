@@ -69,12 +69,12 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     fi
 
     BROWSER_APP_IMAGE_NAME="clams-app:$BROWSER_APP_GIT_TAG"
+    BROWSER_APP_BASE_IMAGE_NAME="node:19.7"
     if ! docker image inspect "$BROWSER_APP_IMAGE_NAME" &>/dev/null; then
         # build the browser-app image.
         # pull the base image from dockerhub and build the ./Dockerfile.
         if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
-            docker build -t "$BROWSER_APP_IMAGE_NAME" ./clams/
-
+            docker build -t "$BROWSER_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${BROWSER_APP_BASE_IMAGE_NAME}" ./clams/
             sleep 5
         fi
     fi
@@ -137,7 +137,7 @@ fi
 
 ./stub_cln_composes.sh
 
-echo "INFO: You app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
+echo "INFO: Clams app is available at http://${DOMAIN_NAME}:${BROWSER_APP_EXTERNAL_PORT}"
 
 if [ "$BTC_CHAIN" = mainnet ]; then
     sleep 120

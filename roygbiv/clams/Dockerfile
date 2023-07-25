@@ -1,4 +1,6 @@
-FROM node:19.7
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
 
 RUN mkdir /output
 VOLUME /output
