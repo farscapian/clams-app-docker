@@ -43,12 +43,6 @@ if [ "$ENABLE_TLS" = true ]; then
 
 EOF
 
-# else
-
-    cat >> "$NGINX_CONFIG_PATH" <<EOF
-    resolver 127.0.0.11;
-EOF
-
 fi
 
 
