@@ -60,7 +60,6 @@ EOF
         # signet only
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
-        #CLN_COMMAND="$CLN_COMMAND --log-level=debug"
     fi
 
     if [ "$BTC_CHAIN" = regtest ]; then
@@ -80,9 +79,12 @@ EOF
         # CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
         # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
         # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
-        # CLN_COMMAND="$CLN_COMMAND --log-level=debug"
         CLN_COMMAND="$CLN_COMMAND --fee-base=1"
         CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
+    fi
+
+    if [ "$ENABLE_DEBUGGING_OUTPUT" = true ]; then
+        CLN_COMMAND="$CLN_COMMAND --log-level=debug"
     fi
 
     # the CLN poll interval should grow linearly with CLN_COUNT.
