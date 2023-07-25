@@ -159,6 +159,10 @@ EOF
     deploy:
       mode: replicated
       replicas: 1
+EOF
+
+    if [ "$BTC_CHAIN" != mainnet ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       resources:
         limits:
           cpus: '2'
@@ -168,7 +172,7 @@ EOF
         #  memory: 100M
 
 EOF
-
+fi
 
     if [ "$ENABLE_TOR" = true ]; then
 
