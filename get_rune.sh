@@ -49,11 +49,11 @@ for i in "$@"; do
             PAY_PERMISSIONS=true
             shift
         ;;
-        --prism-reader)
+        --list-prisms)
             LIST_PRISMS_PERMISSIONS=true
             shift
         ;;
-        --prism-writer)
+        --create-prism)
             LIST_PRISMS_PERMISSIONS=true
             CREATE_PRISM_PERMISSIONS=true
             shift

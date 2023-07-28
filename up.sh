@@ -115,6 +115,11 @@ export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
 ROOT_DIR="$(pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
+if (( "$CLN_COUNT" < 3 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
+    echo "ERROR: You MUST have AT LEAST THREE CLN nodes when deploying the prism channel setup."
+    exit 1
+fi
+
 if ! docker stack list | grep -q roygbiv-stack; then
     RUN_CHANNELS=true
 
