@@ -20,7 +20,7 @@ fi
 
 BTC_ADDRESS=$(bcli getnewaddress)
 CLEAN_BTC_ADDRESS=$(echo -n "$BTC_ADDRESS" | tr -d '\r')
-if [ "$BTC_CHAIN" == regtest ]; then
+if [ "$BTC_CHAIN" = regtest ]; then
 
     # if the wallet balance is not big enough, we mine some blocks to ourselves
     if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
@@ -28,10 +28,9 @@ if [ "$BTC_CHAIN" == regtest ]; then
         # in regtest we can just generate some blocks; not so with signet and mainnet
         bcli generatetoaddress 105 "$CLEAN_BTC_ADDRESS" > /dev/null
         echo "105 blocks mined to $WALLET_NAME"
-
     fi
 
-elif [ "$BTC_CHAIN" == signet ]; then
+elif [ "$BTC_CHAIN" = signet ]; then
         
     # if the wallet doesn't have the minimum required, then we error out.
     # otherwise it's all good and we keep going.

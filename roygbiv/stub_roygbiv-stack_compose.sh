@@ -53,7 +53,6 @@ EOF
 
 if [ "$BTC_CHAIN" != regtest ]; then
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-        CLN_ALIAS="cln-${BTC_CHAIN}"
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - clnnet-${CLN_ID}
 EOF
@@ -173,7 +172,6 @@ EOF
 
 if [ "$BTC_CHAIN" != regtest ]; then
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-        CLN_ALIAS="cln-${BTC_CHAIN}"
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clnnet-${CLN_ID}:
 EOF

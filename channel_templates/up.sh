@@ -62,7 +62,7 @@ if [ "$RETAIN_CACHE" = false ]; then
     echo "Node addresses cached"
 
     # if we're deploying prisms, then we also standard any offers on each node.
-    if [ "$CHANNEL_SETUP" = prism ]; then
+    if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
         for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
             BOLT12_OFFER=$(lncli --id=${NODE_ID} offer any default | jq -r '.bolt12')
             echo "$BOLT12_OFFER" >> any_offers.txt
@@ -73,7 +73,9 @@ if [ "$RETAIN_CACHE" = false ]; then
 
 fi
 
-./bitcoind_load_onchain.sh
+if [ "$BTC_CHAIN" != mainnet ]; then
+    ./bitcoind_load_onchain.sh
+fi
 
 # With mainnet, all channel opens and spend must be done through a wallet app or the CLI
 if [ "$BTC_CHAIN" = regtest ] || [ "$BTC_CHAIN" = signet ]; then

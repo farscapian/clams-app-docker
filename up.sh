@@ -125,6 +125,8 @@ if ! docker stack list | grep -q roygbiv-stack; then
 
     # bring up the stack;
     ./roygbiv/run.sh
+
+    sleep 5
 fi
 
 
