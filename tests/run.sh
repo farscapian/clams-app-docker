@@ -9,5 +9,5 @@ echo "==========================================="
 
 if [ "$CHANNEL_SETUP" = prism ]; then
     echo "Testing prism plugin"
-    ./test_prism_plugin.sh
+    ./create_prism.sh
 fi

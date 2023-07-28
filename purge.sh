@@ -30,7 +30,13 @@ for VOLUME in $VOLUMES; do
 
     if echo "$VOLUME" | grep -q 'mainnet'; then
         echo "WARNING: there are mainnet volumes on this host. You should AVOID co-mingling mainnet with other environments."
-    else
+    fi
+    
+    if echo "$VOLUME" | grep -q "-${BTC_CHAIN}"; then
         docker volume rm "$VOLUME"
     fi
 done
+
+rm -f ./channel_templates/node_addrs.txt
+rm -f ./channel_templates/node_pubkeys.txt
+rm -f ./channel_templates/any_offers.txt

@@ -1,20 +1,16 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")" || exit 1
-
-lncli() {
-    "./../lightning-cli.sh" "$@"
-}
 
 mapfile -t pubkeys < ../channel_templates/node_pubkeys.txt
 mapfile -t anyoffers < ../channel_templates/any_offers.txt
 mapfile -t names < ../roygbiv/names.txt
 
-# next we use fundmultichannel so Bob can create channels to the remaining nodes.
+# start the createprism json string
 PRISM_JSON_STRING="["
 
-# add 
+# do every other keysend/bolt12
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_PUBKEY=${pubkeys[$CLN_ID]}
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}

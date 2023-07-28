@@ -65,10 +65,6 @@ done
 if [ "$PRUNE" = true ]; then
     # remove any container runtimes.
     docker system prune -f
-
-    rm -f ./channel_templates/node_addrs.txt
-    rm -f ./channel_templates/node_pubkeys.txt
-    rm -f ./channel_templates/any_offers.txt
 fi
 
 # let's delete all volumes EXCEPT roygbiv-certs
