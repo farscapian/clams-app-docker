@@ -40,8 +40,8 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
         fi
     fi
 
-    # in llarp, everybody gets a bitcoin
-    if [ "$CHANNEL_SETUP" = llarp ]; then
+    # in CHANNEL_SETUP=none, everybody gets a bitcoin
+    if [ "$CHANNEL_SETUP" = none ]; then
         SENDMANY_JSON="${SENDMANY_JSON}\"$CLN_ADDR\":$SEND_AMT,"
     fi
 done
