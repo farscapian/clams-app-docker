@@ -8,6 +8,7 @@ SESSION_ID=
 READ_PERMISSIONS=false
 PAY_PERMISSIONS=false
 RECEIVE_PERMISSIONS=false
+LIST_PAYS_PERMISSIONS=false
 LIST_PRISMS_PERMISSIONS=false
 CREATE_PRISM_PERMISSIONS=false
 BKPR_PERMISSIONS=false
@@ -27,6 +28,11 @@ for i in "$@"; do
         ;;
         --read)
             READ_PERMISSIONS=true
+            LIST_PAYS_PERMISSIONS=true
+            shift
+        ;;
+        --list-pays)
+            LIST_PAYS_PERMISSIONS=true
             shift
         ;;
         --receive)
@@ -74,6 +80,7 @@ RUNE_JSON=
 if [ "$READ_PERMISSIONS" = false ] && \
    [ "$PAY_PERMISSIONS" = false ] && \
    [ "$LIST_PRISMS_PERMISSIONS" = false ] && \
+   [ "$LIST_PAYS_PERMISSIONS" = false ] && \
    [ "$CREATE_PRISM_PERMISSIONS" = false ] && \
    [ "$RECEIVE_PERMISSIONS" = false ] && \
    [ "$BKPR_PERMISSIONS" = false ] && \
@@ -92,6 +99,10 @@ if [ "$ADMIN_RUNE" = false ]; then
 
     if [ "$READ_PERMISSIONS" = true ]; then
         CMD="${CMD}[\"method/listdatastore\"],[\"method^list\",\"method^get\",\"method=waitanyinvoice\",\"method=waitinvoice\""
+    fi
+
+    if [ "$LIST_PAYS_PERMISSIONS" = true ]; then
+        CMD="${CMD},\"method=listpays\""
     fi
 
     if [ "$RECEIVE_PERMISSIONS" = true ]; then
@@ -117,9 +128,8 @@ if [ "$ADMIN_RUNE" = false ]; then
     CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
 
-
+CMD=$(echo "${CMD//[,/[[}")
 RUNE_JSON=$(eval "$CMD")
-
 
 if [ -n "$RUNE_JSON" ]; then
     echo "$RUNE_JSON" | jq -r '.rune'
