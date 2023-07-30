@@ -85,36 +85,18 @@ fi
 mapfile -t pubkeys < node_pubkeys.txt
 
 function connect_cln_nodes {
-    # iterate over each node and create one or more p2p connections.
-    for ((NODE_ID=STARTING_ID; NODE_ID<P2PBOOTSTRAP_COUNT; NODE_ID++)); do
-
-        # first we should check if the node has any peers already
-        NODE_PEER_COUNT="$(lncli --id=${NODE_ID} listpeers | jq -r '.peers | length')"
-        if [ "$NODE_PEER_COUNT" -gt "$NODE_CONNECTIONS_MAX" ]; then
-            echo "Node $NODE_ID has $NODE_PEER_COUNT peers."
-            continue
-        fi
-
-        for ((i=1; i <= $NODE_CONNECTIONS_MAX; i++)); do
-            NEXT_NODE_ID=$((NODE_ID + i))
-            NODE_MOD_COUNT=$((NEXT_NODE_ID % CLN_COUNT))
-            NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
-
-            lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735 > /dev/null
-
-            echo "CLN-$NODE_ID connected to cln-$NODE_MOD_COUNT having pubkey $NEXT_NODE_PUBKEY."
-        done
+    # connect each node n to node [n+1]
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+        NEXT_NODE_ID=$((NODE_ID + 1))
+        NODE_MOD_COUNT=$((NEXT_NODE_ID % CLN_COUNT))
+        NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
+        lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735
+        echo "CLN-$NODE_ID connected to cln-$NODE_MOD_COUNT having pubkey $NEXT_NODE_PUBKEY."
     done
 }
 
-
 if [ "$BTC_CHAIN" = regtest ]; then
     echo "INFO: Running the prism P2P network bootstrap."
-    STARTING_ID=0
-    P2PBOOTSTRAP_COUNT=$CLN_COUNT
-    NODE_CONNECTIONS_MAX=3
-
-    # connect each node to 3 adjacent nodes.
     connect_cln_nodes
 
     # if we're doing a prism CHANNEL_SETUP, 
