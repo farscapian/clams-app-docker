@@ -3,86 +3,112 @@
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
-## overview
+## About ROYGBIV-stack
 
-This repo allows you to deploy the `roygbiv-stack` stack quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). The main scripts you need to know about are:
+This repo allows you to deploy the `roygbiv-stack` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is ROYGBIV-stack? It's Bitcoin-only BOLT12 Prism Infrastructure. `roygbiv-stack` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interactving with your various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., regtest, signet, mainnet), various channel setups, all integrated with Clams wallet.
 
-- [`./install.sh`](install.sh) - this script installs dockerd and other utilities needed to run the rest of this software.
-- [`./up.sh`](./up.sh) - brings `roygbiv stack` up according to your `active_env.txt` file.
-- [`./down.sh`](./down.sh) - brings your `roygbiv stack` down in a non-destructive way.
-- [`./purge.sh`](./purge.sh) - Deletes docker volumes so you can reset your environment. Note mainnet is NEVER deleted.
-- [`./reset.sh`](./reset.sh) - this is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step.
+To get started, clone this repo to your linux host with `git clone --recurse-submodules https://github.com/farscapian/roygbiv-stack`
 
-You can specify your env file to customize your deployment. First create a file looking something like below in `./environments/domain.tld`. Then enter `domain.tld` in [`./active_env.txt`](./active_env.txt)
+`Don't have docker engine installed? You can run the ./install.sh file to install the latest version of docker. After running it, you may need to restart your computer or refresh group membership.`
+
+The remaining scripts all depend on your active environment.
+
+## Environments
+
+Each environment file (contained in ./environments/) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `llarp.fun` that will deploy 5 CLN nodes to a VM at `40.25.56.35` running `signet` with TLS enabled.
 
 ```config
-DOCKER_HOST=ssh://ubuntu@domain.tld
-DOMAIN_NAME=domain.tld
+DOCKER_HOST=ssh://ubuntu@40.25.56.35
+DOMAIN_NAME=llarp.fun
 ENABLE_TLS=true
+BTC_CHAIN=signet
 ```
+## User Interface
 
-An `env` file overrides anything in [`./defaults.env`](./defaults.env). You can specify whether to deploy TLS and importantly, which domain you want to use (note this MUST be publicly resolvable in the DNS AND ports 80 and 443 are REQUIRED for certificate issuance and renewal).
+### [`./up.sh`](./up.sh)
 
-Since we are using docker stacks, services are exposed on ALL IP addresses (you cannot specify a bind address). This is usually fine if you're running a dedicated VM in the cloud, but if you're self-hosting, ensure the host is on a protected DMZ.
+Brings `roygbiv-stack` up according to your active environment definition.
 
-If you don't specify an `env` file, you will get a default set of five CLN nodes running on regtest, all connnected to a single bitcoind backend. In addition, the [prism-browser-app](https://github.com/johngribbin/ROYGBIV-frontend) becomes available on port 80/443 at `https://domain.tld`. You may also deploy the [`clams-browser-app`](https://github.com/clams-tech/browser-app) at `https://clams.domain.tld` by updating your `env` file. All CLN nodes are configured to accept [websocket connections](https://lightning.readthedocs.io/lightningd-config.5.html) from remote web clients. The nginx server that gets deployed terminates all client TLS sessions and proxies websocket requests to the appropriate CLN node based on port number: `wss://${DOMAIN_NAME}:[9736+CLN_ID]`
+### [`./down.sh`](./down.sh)
 
-> When `ENABLE_TLS=true` you MUST forward ports 80/tcp and 443/tcp during certificate issuance and renewal (i.e., PUBLIC->IP_ADDRESS:80/443) for everything to work.
+Brings your `roygbiv-stack` down in a non-destructive way.
 
-## Developing Prisms
+### [`./purge.sh`](./purge.sh) 
 
-When deploying your application to a local docker engine, the CLN plugin path will get mounted into the CLN containers. If you want to make updates to the prism-plugin.py, do so then run the `reload_dev_plugins.sh` script. 
+Deletes docker volumes related to your active env so you can reset your environment. This is very useful for development. Note mainnet is NEVER deleted! But if you absolutely must, you can run `docker volume rm VOLUME_NAME` .
 
-If you want, you can set `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. Again, just run `reload_dev_plugins.sh` and your deployed CLN nodes will get refreshed.
+### [`./reset.sh`](./reset.sh) 
 
-## third party hosting
+This is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step. Like `down.sh`, you can pass the `--purge` option to invoke `purge.sh`.
 
-Lets say you want to create a server in the cloud so you can run `roygbiv-stack`. All we assume is you're running ubuntu 22.04 server. After getting SSH access the to VM you should copy the contents of ./install.sh and paste them into the remote VM (will try to automate this later). This installs dockerd in the instance. Then log out.
+## Public Deployments
 
-### DNS
+If you want to deploy public instances of `roygbiv-stack`, there are a few things to consider.
 
-When running in a public VM, you MUST use TLS (ENABLE_TLS=true). This means you need to set up DNS records for the system. The best setup is an ALIAS record which points to the DNS name provided by your hosting provider. If you want to deploy the Clams browser-app, you will need a CNAME for `clams.domain.tld`.
+### Public DNS (ENABLE_TLS=true)
 
-```
-ALIAS,@,HOSTNAME_OF_REMOTE_VM_IN_CLOUD_PROVIDER
-```
+Configure an `A` record that points to the public IP address of your server. If self-hosting, set configure the the internal DNS server resolve to the internal IP address of the host.
 
 ### SSH
 
-You will also want to ensure that your `~/.ssh/config` file has a host defined for the remote host. An example is show below. `domain.tld.pem` is the SSH private key that enables you to SSH into the remote VM that is resolvele to `domain.tld`.
+On your management machine, You will also want to ensure that your `~/.ssh/config` file has a host defined for the remote host. An example is show below. `llarp.fun.pem` is the SSH private key that enables you to SSH into the remote VM that resolves to you domain, e.g., `llarp.fun`.
 
 ```
-Host domain.tld
+Host llarp.fun
+    HostName 40.25.56.35
     User ubuntu
-    IdentityFile /home/ubuntu/.ssh/domain.tld.pem
+    IdentityFile /home/ubuntu/.ssh/llarp.fun.pem
 ```
+## BTC_CHAIN=[regtest|signet|mainnet]
+### regtest
 
-Ok, now run `ssh domain.tld` and ensure you can log into the VM before running any scripts (up/down/reset).
+The default environment `local.env` deploys everything in `regtest` mode to you local docker daemon. By default there are 5 CLN nodes all backed by a single bitcoind node having a block time of 5 seconds. Each CLN node is connected to each other so they're gossiping on the same P2P network. No channels are created, but each CLN node is funded with `100,000,000 sats`.
 
-## regtest setup
+### signet
 
-The default regtest setup consists of a single bitcoind backend and five CLN nodes. After these nodes are deployed, they are funded then connected to each other over the p2p network. Then the following channels are opened, where `*` means all the initial btc is on that side of the channel, and `[n]` where n is the CLN index number.
+If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if signet wallet is inadequately funded (TODO allow user to specify wallet descriptor). If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. We recommend having a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
+
+By default this runs the public signet having a 10 minute block time. Over time we may add [MutinyNet](https://blog.mutinywallet.com/mutinynet/) or other popular signets, as well as deploy private signets (which is like a private regtest, but enables scale-out for larger internet-scale llarps.
+
+### mainnet
+
+We do not recommend running mainnet at this time due to how new this software is. But it runs similarly to signet.
+## Configuration Settings
+
+The following table shows the most common
+
+|Environment Variable|default value|Description|
+|---|---|---|
+|`BTC_CHAIN`|`regtest`|Set the chain you want to deploy: regtest, signet, mainnet.|
+|`CLN_COUNT`|`5`|The total number of CLN nodes to deploy.|
+|`ENABLE_TOR`|`false`|Deploy a TOR proxy for each CLN node so you can create lightning channels with onion-only endpoints.|
+|`ENABLE_TLS`|`false`|If true, letsencrypt certificates will be generated. This requires DNS and firewall settings to be properly configured.|
+|`REGTEST_BLOCK_TIME`|`5`|Adjust the blocktime (in seconds) used in regtest environments.|
+|`CHANNEL_SETUP`|`none`|By default, no channels are created. If `prism`, a prism layout will be established.|
+|`ENABLE_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
+|`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet node 0.|
+
+There are other options in there that might be worth overriding, but the above list should cover most use cases.
+
+## CHANNEL_SETUP=prism
+
+The `prism` channel setup is useful for testing `n-member prisms`, where `n` is the number of split recipients in the prism. Here's the basic setup: Alice opens a channel to Bob, then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob. This allows Alice to pay Bob's BOLT12 Prism Offer, and Bob can split the payment to the remaining `n` nodes (to do a 50-member split, set `CLN_COUNT=52`).
 
 1.  Alice\*[0]->Bob[1]
 2.  Bob\*[1]->Carol[2]
 3.  Bob\*[1]->Dave[3]
-4.  Bob\*[1]->Erin[4]
+4.  Bob\*[1]->...
+5.  Bob\*[1]->Finney[n+2]
 
-This setup is useful for testing [lightning prisms](https://dergigi.com/2023/03/12/lightning-prisms/). After everything is stood up, you can control any deployed cln node using [clams-wallet](https://app.clams.tech). Using Clams, you can pay to BOLT12 offers from Alice to Bob, create and manage prisms on Bob, and see incoming payments splits on Carol, Dave, and Erin.
+This setup is useful for testing and developing [BOLT12 Prisms](https://www.roygbiv.guide). After the channels are created you can control any deployed cln node using [clams-wallet](https://clams.tech). With Clams, you can pay to `BOLT12 Prism Offers` from Alice to Bob. From Bob you can create and manage prisms and view incoming payments and outgoing payment splits. Finally on Carol, Dave, and Erin, you can see incoming payments as a result of prism payouts on Bob. For more information, [take a look at the ROYGBIV demo environment](https://www.roygbiv.guide/demo)
 
-Configure the `prism-browser-app` against Bob who will create the prism and expose the BOLT12 offer that Alice can pay. All payments to the BOLT12 offer can be done in Alice's Clams app. Finally, you can use Clams wallet against Bob to see that BOLT12 invoices are being received and prism splits are subsequently being paid to downstream recipients.
+## Connection Information
 
-## signet
-
-When running signet, everything will get spun up as usual, but things will stop if signet wallet is inadequately funded. If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. We recommend having a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
-
-If you want to run signet, set BTC_CHAIN=signet in your active env file. By default this runs the public signet having a 10 minute block time. (The plan to to connect to [MutinyNet](https://blog.mutinywallet.com/mutinynet/) by default with 30 second block times.)
+When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) script will emit connection information, but also saves [direct links](https://github.com/clams-tech/App/commit/97cb83a3bd519248da3cba08dd438846cb6d212d) to `./output/cln_connection_info_${DOMAIN_NAME}.csv`. This file can be used as input for 1) the [load testing repo](https://github.com/aaronbarnardsound/coreln-network-loadtest) or 2) the [clams-qr-generator](https://github.com/clams-tech/clams-qr-generator). These QR codes can be printed out and given to individuals so they can connect to the respective core lightning node. All connectivity between a browser and the back-end core lightning services use the `--experimental-websocket-port` functionality in core lightning.
 
 ## Testing
 
 All the scripts are configured such that you should only ever have to run `up.sh`, `down.sh`, and `reset.sh` from the root dir.
-
-If you have already run `up.sh` certain things like building docker images and caching node info will already be taken care of.
 
 Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient are:
 
@@ -92,9 +118,8 @@ Some flags you can add to `up.sh` and `reset.sh` to make testing more efficient 
 - `--no-tests` will NOT run integration tests.
 - `--purge` (reset.sh) - deletes regtest/signet on disk.
 
-## TODO List
+## Developing Plugins using ROYGBIV-stack
 
-## QR codes
+When deploying your application to a local docker engine, the CLN plugin path will get mounted into echo CLN container. If you want to make updates to the `prism-plugin.py`, for example, you can make change, then just run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the newly updated prism plugin.
 
-STATUS: NOT STARTED
-DESCRIPTION: Add option for creating QR codes that contain url-encoded BASE64(NODE_URI+RUNE) information so they can be printed on a postcard and scanned by browser-apps for quiclky connecting to your node. This requires that the browser app is capable of scanning a qr code and parsing the query string parameters.
+If you want, you can set `DEV_PLUGIN_PATH=/home/username/cln-plugins` in your environment file. When this variable is set, the `roygbiv-stack` scripts will mount the path into the CLN containers. Again, just run `reload_dev_plugins.sh` and your deployed CLN nodes will get refreshed.

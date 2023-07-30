@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 
 PRODUCE_QR_CODE=false
 OUTPUT_FILE=
+SPAWN_BROWSER_TAB=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -15,6 +16,10 @@ for i in "$@"; do
         ;;
         --output-file=*)
             OUTPUT_FILE="${i#*=}"
+            shift
+        ;;
+        --browser)
+            SPAWN_BROWSER_TAB=true
             shift
         ;;
         *)
@@ -93,7 +98,8 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     fi
 
     echo "  rune: $RUNE"
-    WEBSOCKET_QUERY_STRING="https://staging.app.clams.tech/connect?address=$CLN_WEBSOCKET_URI&type=direct&value=$PROTOCOL&rune=$RUNE"
+    #WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${DOMAIN_NAME}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
+    WEBSOCKET_QUERY_STRING="https://app.clams.tech/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
 
     # if the output file is specified, write out the query string
     if [ -n "$OUTPUT_FILE" ]; then
@@ -107,6 +113,10 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     echo "  direct_link: $WEBSOCKET_QUERY_STRING"
     if [ "$PRODUCE_QR_CODE" = true ]; then
         qrencode -o "$(pwd)/output/qrcodes/${DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
+    fi
+
+    if [ "$SPAWN_BROWSER_TAB" = true ]; then
+        chromium --temp-profile --disable-extensions "$WEBSOCKET_QUERY_STRING" &
     fi
 
     echo ""
