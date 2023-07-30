@@ -41,6 +41,11 @@ if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$ENABLE_TLS" = true ]; then
     exit 1
 fi
 
+if ! [[ $CLN_COUNT =~ ^[0-9]+$ ]]; then
+    echo "ERROR: CLN_COUNT MUST be a number."
+    exit 1
+fi
+
 export DOCKER_HOST="$DOCKER_HOST"
 export DOMAIN_NAME="$DOMAIN_NAME"
 export ENABLE_TLS="$ENABLE_TLS"
