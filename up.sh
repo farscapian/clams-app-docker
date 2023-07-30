@@ -38,16 +38,12 @@ if [ "$CLN_COUNT" -gt 500 ]; then
 fi
 
 RUN_CHANNELS=true
-RUN_TESTS=true
 RETAIN_CACHE=false
 USER_SAYS_YES=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --no-tests)
-            RUN_TESTS=false
-        ;;
         --no-channels)
             RUN_CHANNELS=false
         ;;
@@ -175,6 +171,6 @@ if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$BTC_CHAIN" = regtest ]; then
     ./reload_dev_plugins.sh
 fi
 
-if [ "$RUN_TESTS" = true ] && [ "$BTC_CHAIN" = regtest ]; then
+if [ "$BTC_CHAIN" = regtest ]; then
     ./tests/run.sh 
 fi
