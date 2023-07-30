@@ -90,8 +90,8 @@ function connect_cln_nodes {
         NEXT_NODE_ID=$((NODE_ID + 1))
         NODE_MOD_COUNT=$((NEXT_NODE_ID % CLN_COUNT))
         NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
+        echo "Connecting 'cln-$NODE_ID' to 'cln-$NODE_MOD_COUNT' having pubkey '$NEXT_NODE_PUBKEY'."
         lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735
-        echo "CLN-$NODE_ID connected to cln-$NODE_MOD_COUNT having pubkey $NEXT_NODE_PUBKEY."
     done
 }
 
