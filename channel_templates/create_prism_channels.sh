@@ -44,9 +44,8 @@ SENDMANY_JSON="["
 
 # we increase the CLN count by one here so we can reserve at least one UTXO
 # for things like RBF and other things I'm sure.
-#CLN_COUNT_PLUS_ONE=((CLN_COUNT++))
-SEND_AMT=16777215
-#$((100000000 / CLN_COUNT))
+CLN_COUNT_PLUS_ONE=$((CLN_COUNT + 2))
+SEND_AMT=$((100000000 / CLN_COUNT_PLUS_ONE))
 
 # fund each cln node starting at node 2 (Carol)
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
