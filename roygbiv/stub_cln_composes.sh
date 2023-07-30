@@ -66,10 +66,6 @@ EOF
         CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
         CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735 --announce-addr-dns=true"
         CLN_COMMAND="$CLN_COMMAND --dev-fast-gossip"
-
-        # todo make the poll value proportional to 
-        # CLN node count. That is, more nodes, the higher the value.
-        #CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=5"
         # CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
         # CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
         # CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"

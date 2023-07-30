@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")" || exit 1
 
 mapfile -t pubkeys < ../channel_templates/node_pubkeys.txt
