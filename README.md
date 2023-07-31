@@ -11,11 +11,11 @@ To get started, clone this repo and its submodules:
 
 `git clone --recurse-submodules https://github.com/farscapian/roygbiv-stack`
 
-> Don't have docker engine installed? You can run the [./install.sh](./install.sh) file to install the latest version of docker. After running it, you may need to restart your computer or refresh group membership.
+> Don't have docker engine installed? You can run the [./install.sh](./install.sh) file to install the latest version. After running it, you may need to restart your computer or log out and back in to refresh your group membership (or use `newgrp docker`).
 
 ## Environments
 
-Each environment file (contained in ./environments/) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `llarp.fun` that will deploy 5 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `40.25.56.35` in `signet` with TLS enabled.
+Each environment file (contained in [./environments/](./environments)) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `llarp.fun` that will deploy 5 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `40.25.56.35` in `signet` with TLS enabled.
 
 ```config
 DOCKER_HOST=ssh://ubuntu@40.25.56.35
@@ -24,6 +24,8 @@ ENABLE_TLS=true
 BTC_CHAIN=signet
 ```
 ## Running the scripts
+
+First, update `active_env.txt` to set the active environment file, then run the following scripts:
 
 ### [`./up.sh`](./up.sh)
 
@@ -50,7 +52,7 @@ Allows you to interact with the current bitcoind instance.
 
 ### [`./lightning-cli.sh`](./lightning-cli.sh)
 
-Allows you to interact with the CLN instances. Just add the `--id=12` to access specific node ID. For example: `./lightning-cli.sh --id=12 getinfo`
+Allows you to interact with the CLN instances. Just add the `--id=12` to access a specific core lightning node. For example: `./lightning-cli.sh --id=12 getinfo`
 
 ## Public Deployments
 
@@ -58,7 +60,11 @@ If you want to deploy public instances of `roygbiv-stack`, there are a few thing
 
 ### Public DNS (ENABLE_TLS=true)
 
-Configure an `A` record that points to the public IP address of your server. If self-hosting, set configure the the internal DNS server resolve to the internal IP address of the host.
+Configure an `A` record that points to the public IP address of your server. If self-hosting, set the internal DNS server resolve to the internal IP address of the host.
+
+### Firewall
+
+Your perimeter firewall should forward ports 80 and 443 to the host running dockerd.
 
 ### SSH
 
@@ -73,17 +79,17 @@ Host llarp.fun
 ## BTC_CHAIN=[regtest|signet|mainnet]
 ### regtest
 
-The default environment `local.env` deploys everything in `regtest` mode to you local docker daemon. By default there are 5 CLN nodes all backed by a single bitcoind node having a block time of 5 seconds. Each CLN node is connected to each other so they're gossiping on the same P2P network. No channels are created, but each CLN node is funded with `100,000,000 sats`.
+The default environment deploys everything in `regtest` mode to you local docker daemon. By default there are 5 CLN nodes all backed by a single bitcoind node having a block time of 5 seconds. Each CLN node is connected to each other so they're gossiping on the same P2P network. No channels are created, but each CLN node is funded with `100,000,000 sats`.
 
 ### signet
 
-If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if signet wallet is inadequately funded (TODO allow user to specify wallet descriptor). If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. We recommend having a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
+If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if signet wallet is inadequately funded (TODO allow user to specify wallet descriptor). If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. It is recommended to have a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
 
 By default this runs the public signet having a 10 minute block time. Over time we may add [MutinyNet](https://blog.mutinywallet.com/mutinynet/) or other popular signets, as well as deploy private signets (which is like a private regtest, but enables scale-out for larger internet-scale llarps.
 
 ### mainnet
 
-We do not recommend running mainnet at this time due to how new this software is. But it runs similarly to signet.
+It is not recommend to run `mainnet`` at this time due to how new this software is. But it runs similarly to signet.
 
 ## Configuration Settings
 
