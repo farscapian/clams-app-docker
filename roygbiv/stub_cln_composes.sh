@@ -4,7 +4,7 @@
 set -eu
 cd "$(dirname "$0")"
 
-readarray -t names < ./names.txt
+readarray -t names < "$NAMES_FILE_PATH"
 
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature

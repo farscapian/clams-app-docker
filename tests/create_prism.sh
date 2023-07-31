@@ -5,7 +5,7 @@ cd "$(dirname "$0")" || exit 1
 
 mapfile -t pubkeys < ../channel_templates/node_pubkeys.txt
 mapfile -t anyoffers < ../channel_templates/any_offers.txt
-mapfile -t names < ../roygbiv/names.txt
+mapfile -t names < "$NAMES_FILE_PATH"
 
 # start the createprism json string
 PRISM_JSON_STRING="["

@@ -47,7 +47,7 @@ if [ -z "$OUTPUT_FILE" ]; then
     OUTPUT_FILE="$(pwd)/output/cln_connection_info-${DOMAIN_NAME}.csv"""
 fi
 
-readarray -t names < ./roygbiv/names.txt
+readarray -t names < "$NAMES_FILE_PATH"
 
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do

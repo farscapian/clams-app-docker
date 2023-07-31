@@ -105,6 +105,7 @@ The following table shows the most common configuration settings.
 |`CHANNEL_SETUP`|`none`|By default, no channels are created. If `prism`, a prism layout will be established.|
 |`ENABLE_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
 |`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet node 0.|
+|`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
 
 There are [other options](./defaults.env) in there that might be worth overriding, but the above list should cover most use cases.
 
@@ -126,4 +127,4 @@ When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) sc
 
 ## Developing Plugins using ROYGBIV-stack
 
-When deploying your application to a local docker engine, the CLN plugin path will get mounted into each CLN instance (container). If you want to make updates to the `prism-plugin.py`, for example, you can make change, then just run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the newly updated plugin.
+When deploying your application to a local docker engine, the CLN plugin path will get mounted into each CLN instance (container). If you want to make updates to the `prism-plugin.py`, for example, make the change, then run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the newly updated plugin.
