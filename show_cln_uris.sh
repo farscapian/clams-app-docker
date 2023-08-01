@@ -98,8 +98,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     fi
 
     echo "  rune: $RUNE"
-    #WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${DOMAIN_NAME}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
-    WEBSOCKET_QUERY_STRING="https://app.clams.tech/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
+    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${DOMAIN_NAME}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
 
     # if the output file is specified, write out the query string
     if [ -n "$OUTPUT_FILE" ]; then

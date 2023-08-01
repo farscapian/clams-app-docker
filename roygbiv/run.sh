@@ -55,35 +55,27 @@ fi
 
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    # create a volume to hold the browser app build output
-    if docker volume list | grep -q "clams-browser-app"; then
-        docker volume rm clams-browser-app
-        sleep 2
-    fi
-
-    docker volume create clams-browser-app
 
     if ! docker image inspect node:18 &> /dev/null; then
         # pull bitcoind down
         docker pull node:18
     fi
 
-    BROWSER_APP_IMAGE_NAME="clams-app:$BROWSER_APP_GIT_TAG"
-    BROWSER_APP_BASE_IMAGE_NAME="node:19.7"
-    if ! docker image inspect "$BROWSER_APP_IMAGE_NAME" &>/dev/null; then
-        # build the browser-app image.
-        # pull the base image from dockerhub and build the ./Dockerfile.
-        if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BROWSER_APP_IMAGE_NAME"; then
-            docker build -t "$BROWSER_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${BROWSER_APP_BASE_IMAGE_NAME}" ./clams/
-            sleep 5
-        fi
+    CLAMS_APP_IMAGE_NAME="roygbiv/clams-app:$ROYGBIV_STACK_VERSION"
+    CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
+    if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
+        docker build -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/
+        sleep 5
     fi
 
-    # copy the build output to the clams-browser-app docker volume.
-    docker run -it --rm -v clams-browser-app:/output --name browser-app "$BROWSER_APP_IMAGE_NAME"
 fi
 
-    
+export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
+
+if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
+    if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
+        docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
+    fi
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"

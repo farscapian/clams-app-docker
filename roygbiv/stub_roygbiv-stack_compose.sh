@@ -51,6 +51,14 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - nginxnet
 EOF
 
+
+
+if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - clams-appnet
+EOF
+fi
+
 if [ "$BTC_CHAIN" != regtest ]; then
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -73,24 +81,28 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
         target: /etc/nginx/nginx.conf
 EOF
 
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ] || [ "$ENABLE_TLS" = true ]; then
+if [ "$ENABLE_TLS" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
+      - certs:/certs
 EOF
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - clams-browser-app:/browser-app
-EOF
-fi
 
-if [ "$ENABLE_TLS" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - certs:/certs
+  clams-app:
+    image: ${CLAMS_APP_IMAGE_NAME}
+    networks:
+      - clams-appnet
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5173
+    deploy:
+      mode: global
 EOF
-fi
 
+fi
 
 
 
@@ -172,10 +184,16 @@ EOF
 
 if [ "$BTC_CHAIN" != regtest ]; then
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clnnet-${CLN_ID}:
 EOF
     done
+fi
+
+if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  clams-appnet:
+EOF
 fi
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
@@ -195,15 +213,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   bitcoind-${BTC_CHAIN}:
 EOF
 
-
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
-  clams-browser-app:
-    external: true
-    name: clams-browser-app
-EOF
-fi
 
 if [ "$ENABLE_TLS" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
