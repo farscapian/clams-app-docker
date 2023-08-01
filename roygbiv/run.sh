@@ -83,18 +83,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     docker run -it --rm -v clams-browser-app:/output --name browser-app "$BROWSER_APP_IMAGE_NAME"
 fi
 
-if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-    docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
-fi
-
-PYTHON_IMAGE="python:$ROYGBIV_STACK_VERSION"
-export PYTHON_IMAGE="$PYTHON_IMAGE"
-if !  docker image inspect "python:latest" &>/dev/null; then
-    docker pull python:latest
-fi
-
-if ! docker image inspect "$PYTHON_IMAGE" &>/dev/null; then
-    docker build -t "python:$ROYGBIV_STACK_VERSION" ./scripts/
+    
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
