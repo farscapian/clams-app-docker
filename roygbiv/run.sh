@@ -20,12 +20,17 @@ CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
-BITCOIND_DOCKER_IMAGE_NAME="polarlightning/bitcoind:25.0"
+BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:25.0"
+BITCOIND_DOCKER_IMAGE_NAME="roygbiv/bitcoind:$ROYGBIV_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
-if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
-    # pull bitcoind down
-    docker pull "$BITCOIND_DOCKER_IMAGE_NAME"
-fi
+
+# pull down the base image
+docker pull "$BITCOIND_BASE_IMAGE_NAME"
+
+#if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
+    # build custom bitcoind image
+    docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/
+#fi
 
 BITCOIND_MANAGER_IMAGE_NAME="roygbiv-manager:$ROYGBIV_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
