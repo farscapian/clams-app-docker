@@ -161,10 +161,7 @@ EOF
       resources:
         limits:
           cpus: '2'
-          memory: 150M
-        #reservations:
-        #  cpus: '0.2'
-        #  memory: 100M
+          memory: 120M
 
 EOF
 fi
