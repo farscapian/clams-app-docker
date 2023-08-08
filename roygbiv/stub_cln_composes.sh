@@ -239,6 +239,5 @@ EOF
         fi
 
     docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "roygbiv-cln-${CLN_ID}"
-    sleep 0.5
 
 done

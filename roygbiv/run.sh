@@ -55,12 +55,6 @@ fi
 
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-
-    if ! docker image inspect node:18 &> /dev/null; then
-        # pull bitcoind down
-        docker pull node:18
-    fi
-
     CLAMS_APP_IMAGE_NAME="roygbiv/clams-app:$ROYGBIV_STACK_VERSION"
     CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
@@ -73,6 +67,11 @@ fi
 export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
+    if ! docker image inspect node:18 &> /dev/null; then
+        # pull bitcoind down
+        docker pull node:18
+    fi
+
     if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
         docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
     fi

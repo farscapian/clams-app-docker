@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
@@ -146,7 +146,6 @@ EOF
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     deploy:
       mode: global
-
 EOF
 
 ############ BITCOIND MANAGER SERVICE

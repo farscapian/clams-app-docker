@@ -41,8 +41,6 @@ fi
 . ./defaults.env
 . ./load_env.sh
 
-./prompt.sh
-
 if [ -z "$OUTPUT_FILE" ]; then
     OUTPUT_FILE="$(pwd)/output/cln_connection_info-${DOMAIN_NAME}.csv"""
 fi

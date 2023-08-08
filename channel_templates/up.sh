@@ -4,14 +4,15 @@ set -eu
 cd "$(dirname "$0")"
 
 function check_containers {
+
     # Check if bitcoind container is running
-    if ! docker ps --filter "name=roygbiv-stack_bitcoind" --filter "status=running" | grep -q polarlightning/bitcoind; then
+    if ! docker service list | grep roygbiv-stack_bitcoind | grep -q "1/1"; then
         return 1
     fi
 
     # Loop through all CLN nodes and check if they are running
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-        if ! docker ps --filter "name=roygbiv-cln-${CLN_ID}_" --filter "status=running" | grep -q roygbiv/cln; then
+        if ! docker service list | grep "roygbiv-cln-${CLN_ID}_cln-${CLN_ID}" | grep -q "1/1"; then
             return 1
         fi
     done
@@ -23,6 +24,7 @@ function check_containers {
 # Wait for all containers to be up and running
 while ! check_containers; do
     sleep 3
+    echo "INFO: Waiting for containers to come online..."
 done
 
 RETAIN_CACHE=false
