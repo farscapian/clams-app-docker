@@ -14,6 +14,10 @@ for CHAIN in regtest signet; do
     fi
 done
 
+if [ "$BTC_CHAIN" = regtest ]; then
+    BITCOIND_COMMAND="${BITCOIND_COMMAND} -rpcthreads=256 -rpcworkqueue=256"
+fi
+
 if [ "$BTC_CHAIN" = mainnet ]; then
     BITCOIND_COMMAND="${BITCOIND_COMMAND} -dbcache=512 -assumevalid=000000000000000000035c5d77449f404b15de2c1662b48b241659e92d3daa14"
 fi
