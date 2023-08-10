@@ -1,34 +1,31 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 function check_containers {
-  # Check if bitcoind container is running
-  if ! docker ps --filter "name=roygbiv-stack_bitcoind" --filter "status=running" | grep -q polarlightning/bitcoind; then
-    return 1
-  fi
 
-  # Loop through all CLN nodes and check if they are running
-  for (( i=0; i<CLN_COUNT; i++ )); do
-    if ! docker ps --filter "name=roygbiv-stack_cln-$i" --filter "status=running" | grep -q roygbiv/cln; then
-      return 1
+    # Check if bitcoind container is running
+    if ! docker service list | grep roygbiv-stack_bitcoind | grep -q "1/1"; then
+        return 1
     fi
-  done
 
-  # If all containers are running, return 0
-  return 0
+    # Loop through all CLN nodes and check if they are running
+    for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+        if ! docker service list | grep "roygbiv-cln-${CLN_ID}_cln-${CLN_ID}" | grep -q "1/1"; then
+            return 1
+        fi
+    done
+
+    # If all containers are running, return 0
+    return 0
 }
 
 # Wait for all containers to be up and running
 while ! check_containers; do
-  sleep 3
+    sleep 3
+    echo "INFO: Waiting for containers to come online..."
 done
-
-# sleep a little longer
-TIME_PER_CLN_NODE=6
-sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
 
 RETAIN_CACHE=false
 
@@ -45,63 +42,72 @@ for i in "$@"; do
     esac
 done
 
-
 # recache node addrs and pubkeys if not specified otherwise
 if [ "$RETAIN_CACHE" = false ]; then
     echo "Caching node info..."
 
     rm -f ./node_addrs.txt
     rm -f ./node_pubkeys.txt
+    rm -f ./any_offers.txt
 
-    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> node_pubkeys.txt
     done
 
     echo "Node pubkeys cached"
 
-    for ((NODE_ID=0; NODE_ID<CLN_COUNT;NODE_ID++)); do
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> node_addrs.txt
     done
-
     echo "Node addresses cached"
+
+    # if we're deploying prisms, then we also standard any offers on each node.
+    if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
+        for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+            BOLT12_OFFER=$(lncli --id=${NODE_ID} offer any default | jq -r '.bolt12')
+            echo "$BOLT12_OFFER" >> any_offers.txt
+        done
+
+        echo "BOLT12 any offers cached"
+    fi
+
 fi
 
-MINIMUM_WALLET_BALANCE=5
-if [ "$BTC_CHAIN" = signet ] || [ "$BTC_CHAIN" = mainnet ]; then
-    MINIMUM_WALLET_BALANCE=0.004
+if [ "$BTC_CHAIN" != mainnet ]; then
+    ./bitcoind_load_onchain.sh
 fi
-
-export MINIMUM_WALLET_BALANCE="$MINIMUM_WALLET_BALANCE"
-
-# this is called for all btc_chains
-./bitcoind_load_onchain.sh
 
 # With mainnet, all channel opens and spend must be done through a wallet app or the CLI
 if [ "$BTC_CHAIN" = regtest ] || [ "$BTC_CHAIN" = signet ]; then
     ./cln_load_onchain.sh
 fi
 
+mapfile -t pubkeys < node_pubkeys.txt
 
-if [ "$BTC_CHAIN" != mainnet ]; then
-    ./bootstrap_p2p.sh
-fi
+function connect_cln_nodes {
+    # connect each node n to node [n+1]
+    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+        NEXT_NODE_ID=$((NODE_ID + 1))
+        NODE_MOD_COUNT=$((NEXT_NODE_ID % CLN_COUNT))
+        NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
+        echo "Connecting 'cln-$NODE_ID' to 'cln-$NODE_MOD_COUNT' having pubkey '$NEXT_NODE_PUBKEY'."
+        lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735
+    done
+}
 
-# this represents the number of seconds per cln node we wait for service to come down
-# TODO maybe poll for this? 
-TIME_PER_CLN_NODE=3
-sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
-# automatically open channels if on regtest or signet.
 if [ "$BTC_CHAIN" = regtest ]; then
+    echo "INFO: Running the prism P2P network bootstrap."
+    connect_cln_nodes
 
-    ./cln_load_onchain.sh
+    # if we're doing a prism CHANNEL_SETUP, 
+    # we bootstrap the nodes so they're well-connected,
+    # then we open up the canonical channel setup.
+    if [ "$CHANNEL_SETUP" = prism ]; then
+        # now call the script that opens the channels.
+        ./create_prism_channels.sh
+        #echo "skipping"
+    fi
 
-    ./bootstrap_p2p.sh
-    TIME_PER_CLN_NODE=3
-    
-    sleep $((CLN_COUNT * TIME_PER_CLN_NODE))
-
-    ./regtest_prism.sh
 fi

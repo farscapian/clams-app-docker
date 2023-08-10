@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 # this script delete various docker volumes containing applcation and/or user data
@@ -9,29 +9,34 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
-# remove any container runtimes.
-docker system prune -f
+if [ "$BTC_CHAIN" = mainnet ]; then
+    echo "ERROR: you're on mainnet. You must delete mainnet volumes manually. For God's sake be careful."
+    echo "       ensure you have the hsm_secret at a minimum. Creating an SCB is also advised."
+    exit 1
+fi
+
 
 # remote dangling/unnamed volumes.
 docker volume prune -f
 
-sleep 2
-
 # get a list of all the volumes
-VOLUMES=$(docker volume list -q)
+VOLUMES=$(docker volume list -q | grep roygbiv-)
 
 # Iterate over each value in the list
 for VOLUME in $VOLUMES; do
-    if ! echo "$VOLUME" | grep -q "roygbiv-certs"; then
-        if echo "$VOLUME" | grep -q "roygbiv"; then
-            # we don't delete anything on mainnet. The administrator must do that
-            # manually through the use of 'docker volume rm' command.
-            if ! echo "$VOLUME" | grep -q mainnet; then
-                docker volume rm "$VOLUME"
-            else
-                echo "INFO: The mainnet volume '$VOLUME' was NOT removed. You must run the following command manually:"
-                echo "  docker volume rm $VOLUME"
-            fi
-        fi
+    if echo "$VOLUME" | grep -q 'roygbiv-certs'; then
+        continue
+    fi
+
+    if echo "$VOLUME" | grep -q 'mainnet'; then
+        echo "WARNING: there are mainnet volumes on this host. You should AVOID co-mingling mainnet with other environments."
+    fi
+    
+    if echo "$VOLUME" | grep -q "-${BTC_CHAIN}"; then
+        docker volume rm "$VOLUME"
     fi
 done
+
+rm -f ./channel_templates/node_addrs.txt
+rm -f ./channel_templates/node_pubkeys.txt
+rm -f ./channel_templates/any_offers.txt

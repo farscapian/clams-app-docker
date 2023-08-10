@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+SHOW_INTERNAL=false
 NODE_ID=0
 PORT=9735
 
@@ -20,10 +21,19 @@ for i in "$@"; do
             PORT="${i#*=}"
             shift
         ;;
+        --internal-only)
+            SHOW_INTERNAL=true
+            shift
+        ;;
         *)
         ;;
     esac
 done
 
 NODE_PUBKEY=$(bash -c "./lightning-cli.sh --id=$NODE_ID getinfo" | jq -r '.id')
-echo "$NODE_PUBKEY@$DOMAIN_NAME:$PORT"
+
+if [ "$SHOW_INTERNAL" = true ]; then
+    echo "$NODE_PUBKEY@cln-${NODE_ID}:$PORT"
+else
+    echo "$NODE_PUBKEY@$DOMAIN_NAME:$PORT"
+fi

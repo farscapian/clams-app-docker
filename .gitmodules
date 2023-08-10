@@ -1,3 +1,13 @@
 [submodule "roygbiv/clightning/cln-plugins/bolt12-prism"]
 	path = roygbiv/clightning/cln-plugins/bolt12-prism
 	url = https://github.com/daGoodenough/bolt12-prism.git
+
+[submodule "roygbiv/prism-app/ROYGBIV-frontend"]
+	path = roygbiv/prism-app/ROYGBIV-frontend
+	url = https://github.com/farscapian/ROYGBIV-frontend
+[submodule "tests/load"]
+	path = tests/load
+	url = https://github.com/farscapian/ROYGBIV-stack-load-tester
+[submodule "roygbiv/clams/app"]
+	path = roygbiv/clams/app
+	url = https://github.com/clams-tech/App.git

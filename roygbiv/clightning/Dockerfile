@@ -19,3 +19,12 @@ VOLUME /opt/c-lightning-rest
 RUN mkdir /dev-plugins
 
 VOLUME /dev-plugins
+
+
+
+# add some scripts for python since cln has it installed.
+RUN mkdir /scripts
+
+COPY ./rpc-auth.py /scripts/rpc-auth.py
+
+RUN chmod +x /scripts/rpc-auth.py

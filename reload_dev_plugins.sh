@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
     # iterate over py scripts.
@@ -24,6 +26,6 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
         fi
 
         ./lightning-cli.sh --id="$CLN_ID" plugin start "/dev-plugins/$FILE_NAME" > /dev/null
-        echo "INFO: Plugin '$FILE_NAME' has been reloaded on 'cln-$CLN_ID'."
+        echo "INFO: Plugin '$FILE_NAME' is available on 'cln-$CLN_ID'."
     done
 done

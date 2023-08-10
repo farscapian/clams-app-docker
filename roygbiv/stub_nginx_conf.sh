@@ -43,12 +43,6 @@ if [ "$ENABLE_TLS" = true ]; then
 
 EOF
 
-# else
-
-    cat >> "$NGINX_CONFIG_PATH" <<EOF
-    resolver 127.0.0.11;
-EOF
-
 fi
 
 
@@ -75,36 +69,49 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
             proxy_set_header Host \$http_host;
             proxy_cache_bypass \$http_upgrade;
 
-            proxy_read_timeout     60;
-            proxy_connect_timeout  60;
+            proxy_read_timeout     120;
+            proxy_connect_timeout  120;
             proxy_redirect         off;
 
             proxy_pass http://prism-browser-app:5173;
         }
     }
 EOF
+fi
 
-    if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-        cat >> "$NGINX_CONFIG_PATH" <<EOF
+if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+    cat >> "$NGINX_CONFIG_PATH" <<EOF
 
-    # https server block for the clams-browser-app
+    # https server block for the clams app
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
 
-        server_name ${CLAMS_FQDN};
+        server_name ${DOMAIN_NAME};
 
         location / {
-            autoindex off;
-            server_tokens off;
-            gzip_static on;
-            root /browser-app;
-            index 200.html;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host \$http_host;
+            proxy_cache_bypass \$http_upgrade;
+
+            proxy_read_timeout     120;
+            proxy_connect_timeout  120;
+            proxy_redirect         off;
+
+            proxy_pass http://clams-app:5173;
         }
     }
 
 EOF
-    fi
 fi
+
+cat >> "$NGINX_CONFIG_PATH" <<EOF
+    map \$http_upgrade \$connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+EOF
 
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature
@@ -112,13 +119,8 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_ALIAS="cln-${CLN_ID}"
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
     cat >> "$NGINX_CONFIG_PATH" <<EOF
-    map \$http_upgrade \$connection_upgrade {
-        default upgrade;
-        '' close;
-    }
 
-    # server block for the clightning websockets path;
-    # this server block terminates TLS sessions and passes them to ws://.
+    # server block for ${CLN_ALIAS} websocket
     server {
         listen ${CLN_WEBSOCKET_PORT}${SSL_TAG};
 
@@ -126,6 +128,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
         location / {
             proxy_http_version 1.1;
+            proxy_read_timeout 120;
             proxy_set_header Upgrade \$http_upgrade;
             proxy_set_header Connection "Upgrade";
             proxy_set_header Proxy "";

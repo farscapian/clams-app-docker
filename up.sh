@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu
 cd "$(dirname "$0")"
 
 # This script runs the whole Clams stack as determined by the various ./.env files
@@ -19,7 +19,6 @@ done
 # cln node that's been deployed
 DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
 
-
 . ./defaults.env
 . ./load_env.sh
 
@@ -28,22 +27,18 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-if [ "$CLN_COUNT" -gt 20 ]; then
-    echo "ERROR: This software only supports up to 20 CLN nodes."
+if [ "$CLN_COUNT" -gt 500 ]; then
+    echo "ERROR: This software only supports up to 500 CLN nodes."
     exit 1
 fi
 
 RUN_CHANNELS=true
-RUN_TESTS=true
 RETAIN_CACHE=false
 USER_SAYS_YES=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --no-tests)
-            RUN_TESTS=false
-        ;;
         --no-channels)
             RUN_CHANNELS=false
         ;;
@@ -64,6 +59,12 @@ if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
 
+# ensure we're using swarm mode.
+if docker info | grep -q "Swarm: inactive"; then
+    docker swarm init --default-addr-pool 10.10.0.0/16 --default-addr-pool-mask-length 22 > /dev/null
+fi
+
+
 if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     echo "ERROR: You can't use TLS with with a DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
     exit 1
@@ -80,7 +81,6 @@ if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" !
     exit 1
 fi
 
-
 RPC_PATH="/root/.lightning/${BTC_CHAIN}/lightning-rpc"
 if [ "$BTC_CHAIN" = mainnet ]; then
     RPC_PATH="/root/.lightning/bitcoin/lightning-rpc"
@@ -91,32 +91,39 @@ export CLIGHTNING_WEBSOCKET_EXTERNAL_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
 export ENABLE_TLS="$ENABLE_TLS"
 export BROWSER_APP_EXTERNAL_PORT="$BROWSER_APP_EXTERNAL_PORT"
 export BROWSER_APP_GIT_REPO_URL="$BROWSER_APP_GIT_REPO_URL"
-export BROWSER_APP_GIT_TAG="$BROWSER_APP_GIT_TAG"
+
 export CLN_COUNT="$CLN_COUNT"
 export DEPLOY_CLAMS_BROWSER_APP="$DEPLOY_CLAMS_BROWSER_APP"
 export DEPLOY_PRISM_BROWSER_APP="$DEPLOY_PRISM_BROWSER_APP"
 export DOMAIN_NAME="$DOMAIN_NAME"
-CLAMS_FQDN="clams.${DOMAIN_NAME}"
-export CLAMS_FQDN="$CLAMS_FQDN"
 export RPC_PATH="$RPC_PATH"
 export STARTING_WEBSOCKET_PORT="$STARTING_WEBSOCKET_PORT"
 export STARTING_CLN_PTP_PORT="$STARTING_CLN_PTP_PORT"
 export CLN_P2P_PORT_OVERRIDE="$CLN_P2P_PORT_OVERRIDE"
-export CLN0_ALIAS_OVERRIDE="$CLN0_ALIAS_OVERRIDE"
-export PRISM_APP_GIT_REPO_URL="$PRISM_APP_GIT_REPO_URL"
 export DEV_PLUGIN_PATH="$DEV_PLUGIN_PATH"
 export ROYGBIV_STACK_VERSION="$ROYGBIV_STACK_VERSION"
+export ENABLE_TOR="$ENABLE_TOR"
+export REGTEST_BLOCK_TIME="$REGTEST_BLOCK_TIME"
+export CHANNEL_SETUP="$CHANNEL_SETUP"
+export ENABLE_DEBUGGING_OUTPUT="$ENABLE_DEBUGGING_OUTPUT"
 
 PRISM_APP_IMAGE_NAME="prism-browser-app:$ROYGBIV_STACK_VERSION"
 export PRISM_APP_IMAGE_NAME="$PRISM_APP_IMAGE_NAME"
 ROOT_DIR="$(pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
+if (( "$CLN_COUNT" < 5 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
+    echo "ERROR: You MUST have AT LEAST FIVE CLN nodes when deploying the prism channel setup."
+    exit 1
+fi
+
 if ! docker stack list | grep -q roygbiv-stack; then
     RUN_CHANNELS=true
 
-    # bring up the stack; or refresh it
+    # bring up the stack;
     ./roygbiv/run.sh
+
+    sleep 5
 fi
 
 
@@ -124,6 +131,8 @@ bcli() {
     "$ROOT_DIR/bitcoin-cli.sh" "$@"
 }
 export -f bcli
+
+# wait for bitcoind to come oneline.
 
 
 if [ "$BTC_CHAIN" != regtest ]; then
@@ -152,16 +161,17 @@ lncli() {
 
 export -f lncli
 
-
 if [ "$RUN_CHANNELS" = true ]; then
     # ok, let's do the channel logic
     ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
 fi
 
-if [ -n "$DEV_PLUGIN_PATH" ] && [ "$BTC_CHAIN" = regtest ] && [ -d "$DEV_PLUGIN_PATH" ]; then
+./show_cln_uris.sh
+
+if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$BTC_CHAIN" = regtest ]; then
     ./reload_dev_plugins.sh
 fi
 
-if [ "$RUN_TESTS" = true ] && [ "$BTC_CHAIN" = regtest ]; then
+if [ "$BTC_CHAIN" = regtest ]; then
     ./tests/run.sh 
 fi

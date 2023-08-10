@@ -7,10 +7,7 @@ sudo apt install -y jq dnsutils
 
 
 # the rest is needed for docker to work
-sudo apt-get install \
-    ca-certificates \
-    curl \
-    gnupg
+sudo apt-get install ca-certificates curl gnupg
 
 
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -25,9 +22,3 @@ sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 sudo usermod -aG docker "$(whoami)"
-
-
-# ensure we're using swarm mode.
-if docker info | grep -q "Swarm: inactive"; then
-    docker swarm init
-fi
