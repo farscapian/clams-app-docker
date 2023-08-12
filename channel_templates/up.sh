@@ -99,7 +99,10 @@ function connect_cln_nodes {
 
 if [ "$BTC_CHAIN" = regtest ]; then
     echo "INFO: Running the prism P2P network bootstrap."
-    connect_cln_nodes
+
+    if [ "$CLN_COUNT" -gt 1 ]; then
+        connect_cln_nodes
+    fi
 
     # if we're doing a prism CHANNEL_SETUP, 
     # we bootstrap the nodes so they're well-connected,
