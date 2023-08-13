@@ -98,7 +98,7 @@ function connect_cln_nodes {
 }
 
 if [ "$BTC_CHAIN" = regtest ]; then
-    echo "INFO: Running the prism P2P network bootstrap."
+    echo "INFO: bootstrapping the P2P network."
 
     if [ "$CLN_COUNT" -gt 1 ]; then
         connect_cln_nodes

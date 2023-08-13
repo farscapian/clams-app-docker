@@ -10,7 +10,7 @@ readarray -t names < "$NAMES_FILE_PATH"
 # so we will use the replication feature
 
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-    DOCKER_COMPOSE_YML_PATH=$(pwd)/stacks/cln-${CLN_ID}.yml
+    DOCKER_COMPOSE_YML_PATH="$CLAMS_SERVER_PATH/cln-${CLN_ID}.yml"
 
     cat > "$DOCKER_COMPOSE_YML_PATH" <<EOF
 version: '3.8'

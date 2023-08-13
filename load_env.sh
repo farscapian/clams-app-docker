@@ -10,7 +10,6 @@ if [ ! -f ./active_env.txt ]; then
     # stub one out
     echo "local.env" >> ./active_env.txt
     echo "INFO: '$(pwd)/active_env.txt' was just stubbed out. You may need to update it. Right now you're targeting your local dockerd."
-    exit 1
 fi
 
 ACTIVE_ENV=$(cat ./active_env.txt | head -n1 | awk '{print $1;}')
