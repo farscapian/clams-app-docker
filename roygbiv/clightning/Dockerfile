@@ -17,6 +17,4 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
-STOPSIGNAL SIGINT
-
 ENTRYPOINT [ "/usr/bin/tini", "--", "/entrypoint.sh" ]
