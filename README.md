@@ -103,7 +103,7 @@ The following table shows the most common configuration settings.
 |`ENABLE_TLS`|`false`|If true, letsencrypt certificates will be generated. This requires DNS and firewall settings to be properly configured.|
 |`REGTEST_BLOCK_TIME`|`5`|Adjust the blocktime (in seconds) used in regtest environments.|
 |`CHANNEL_SETUP`|`none`|By default, no channels are created. If `prism`, a prism layout will be established.|
-|`ENABLE_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
+|`ENABLE_CLN_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
 |`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet node 0.|
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
 |`CLAMS_SERVER_PATH`|`$(pwd)/roygbiv/stacks`|Specify where deployment articfacts are stored.|

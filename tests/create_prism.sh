@@ -3,8 +3,8 @@
 set -eu
 cd "$(dirname "$0")" || exit 1
 
-mapfile -t pubkeys < ../channel_templates/node_pubkeys.txt
-mapfile -t anyoffers < ../channel_templates/any_offers.txt
+mapfile -t pubkeys < "$CLAMS_SERVER_PATH/node_pubkeys.txt"
+mapfile -t anyoffers < "$CLAMS_SERVER_PATH/any_offers.txt"
 mapfile -t names < "$NAMES_FILE_PATH"
 
 # start the createprism json string

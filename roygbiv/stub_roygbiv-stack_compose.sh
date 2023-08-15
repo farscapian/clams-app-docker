@@ -14,6 +14,12 @@ for CHAIN in regtest signet; do
     fi
 done
 
+
+if [ "$ENABLE_BITCOIND_DEBUGGING_OUTPUT" = true ]; then
+    BITCOIND_COMMAND="$BITCOIND_COMMAND -debug=1"
+fi
+
+
 if [ "$BTC_CHAIN" = regtest ]; then
     BITCOIND_COMMAND="${BITCOIND_COMMAND} -rpcthreads=256 -rpcworkqueue=256"
 fi
