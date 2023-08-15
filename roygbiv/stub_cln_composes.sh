@@ -30,57 +30,15 @@ EOF
         CLN_ALIAS="$DOMAIN_NAME"
     fi
 
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  cln-${CLN_ID}:
+    image: ${CLN_IMAGE_NAME}
+    hostname: cln-${CLN_ID}
+EOF
+
+
+
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
-    CLN_COMMAND="sh -c \"chown 1000:1000 /opt/c-lightning-rest/certs && lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
-
-    if [ "$ENABLE_TOR" = true ]; then
-        CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
-    fi
-
-    # if we're NOT in development mode, we go ahead and bake
-    #  the existing prism-plugin.py into the docker image.
-    # otherwise we will mount the path later down the road so
-    # plugins can be reloaded quickly without restarting the whole thing.
-    if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
-        CLN_COMMAND="$CLN_COMMAND --plugin=/plugins/prism-plugin.py"
-    fi
-
-    # an admin can override the external port if necessary.
-    if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
-        # set the announce-addr override
-        if [ -n "$CLN_P2P_PORT_OVERRIDE" ]; then
-            CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
-        fi
-
-        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    fi
-
-    if [ "$BTC_CHAIN" = signet ]; then
-        # signet only
-        CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
-        CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    fi
-
-    if [ "$BTC_CHAIN" = regtest ]; then
-        # regtest only
-        CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
-        CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735 --announce-addr-dns=true"
-        CLN_COMMAND="$CLN_COMMAND --dev-fast-gossip"
-        # CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
-        # CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
-        # CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
-        # CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=100000"
-        # CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
-        # CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
-        # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
-        # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
-        CLN_COMMAND="$CLN_COMMAND --fee-base=1"
-        CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
-    fi
-
-    if [ "$ENABLE_DEBUGGING_OUTPUT" = true ]; then
-        CLN_COMMAND="$CLN_COMMAND --log-level=debug"
-    fi
 
     # the CLN poll interval should grow linearly with CLN_COUNT.
     # Right now we reserve 1 second for every 10 CLN nodes there are.
@@ -88,20 +46,22 @@ EOF
     # CLN nodes to come into consensus.
     SECONDS_PER_TEN_NODES=1
     CLN_POLL_INTERVAL_SECONDS=$(( (CLN_COUNT+11) / 10 ))
-    CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=$((SECONDS_PER_TEN_NODES * CLN_POLL_INTERVAL_SECONDS ))"
-
-    CLN_COMMAND="$CLN_COMMAND\""
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  cln-${CLN_ID}:
-    image: ${CLN_IMAGE_NAME}
-    hostname: cln-${CLN_ID}
-    command: >-
-      ${CLN_COMMAND}
-EOF
+    BITCOIND_POLL_SETTING="$((SECONDS_PER_TEN_NODES * CLN_POLL_INTERVAL_SECONDS ))"
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     environment:
       - RPC_PATH=${RPC_PATH}
+      - ENABLE_TOR=${ENABLE_TOR}
+      - CLN_ALIAS=${CLN_ALIAS}
+      - BITCOIND_RPC_USERNAME=${BITCOIND_RPC_USERNAME}
+      - BITCOIND_RPC_PASSWORD=${BITCOIND_RPC_PASSWORD}
+      - CLN_NAME=${CLN_NAME}
+      - BTC_CHAIN=${BTC_CHAIN}
+      - CLN_PTP_PORT=${CLN_PTP_PORT}
+      - ENABLE_CLN_DEBUGGING_OUTPUT=${ENABLE_CLN_DEBUGGING_OUTPUT}
+      - CLN_P2P_PORT_OVERRIDE=${CLN_P2P_PORT_OVERRIDE}
+      - BITCOIND_POLL_SETTING=${BITCOIND_POLL_SETTING}
+      - DOMAIN_NAME=${DOMAIN_NAME}
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF

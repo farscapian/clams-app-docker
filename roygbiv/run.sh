@@ -16,6 +16,9 @@ export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 
 NGINX_CONFIG_PATH="$CLAMS_SERVER_PATH/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
+
+CLN_PYTHON_IMAGE_NAME="roygbiv/cln-python:$ROYGBIV_STACK_VERSION"
+export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
 CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
@@ -52,12 +55,17 @@ if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     REBUILD_CLN_IMAGE=true
 fi
 
-# Check if the image exists
+# build the base image for cln
 if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
-    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/
+    docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
 fi
 
+# build the base image for cln
+if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
+    # build the cln image with our plugins
+    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
+fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="roygbiv/clams-app:$ROYGBIV_STACK_VERSION"

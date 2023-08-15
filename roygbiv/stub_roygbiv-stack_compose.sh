@@ -3,7 +3,7 @@
 set -eu
 cd "$(dirname "$0")"
 
-RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
+RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_PYTHON_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 
 BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=18443 -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
