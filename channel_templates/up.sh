@@ -46,20 +46,20 @@ done
 if [ "$RETAIN_CACHE" = false ]; then
     echo "Caching node info..."
 
-    rm -f ./node_addrs.txt
-    rm -f ./node_pubkeys.txt
-    rm -f ./any_offers.txt
+    rm -f "$CLAMS_SERVER_PATH/node_addrs.txt"
+    rm -f "$CLAMS_SERVER_PATH/node_pubkeys.txt"
+    rm -f "$CLAMS_SERVER_PATH/any_offers.txt"
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
-        echo "$pubkey" >> node_pubkeys.txt
+        echo "$pubkey" >> "$CLAMS_SERVER_PATH/node_pubkeys.txt"
     done
 
     echo "Node pubkeys cached"
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
-        echo "$addr" >> node_addrs.txt
+        echo "$addr" >> "$CLAMS_SERVER_PATH/node_addrs.txt"
     done
     echo "Node addresses cached"
 
@@ -67,7 +67,7 @@ if [ "$RETAIN_CACHE" = false ]; then
     if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
         for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
             BOLT12_OFFER=$(lncli --id=${NODE_ID} offer any default | jq -r '.bolt12')
-            echo "$BOLT12_OFFER" >> any_offers.txt
+            echo "$BOLT12_OFFER" >> "$CLAMS_SERVER_PATH/any_offers.txt"
         done
 
         echo "BOLT12 any offers cached"
@@ -84,7 +84,7 @@ if [ "$BTC_CHAIN" = regtest ] || [ "$BTC_CHAIN" = signet ]; then
     ./cln_load_onchain.sh
 fi
 
-mapfile -t pubkeys < node_pubkeys.txt
+mapfile -t pubkeys < "$CLAMS_SERVER_PATH/node_pubkeys.txt"
 
 function connect_cln_nodes {
     # connect each node n to node [n+1]

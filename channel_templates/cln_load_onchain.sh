@@ -5,7 +5,7 @@
 
 set -eu
 
-mapfile -t node_addrs < node_addrs.txt
+mapfile -t node_addrs < "$CLAMS_SERVER_PATH/node_addrs.txt"
 
 SENDMANY_JSON="{"
 SEND_AMT=1

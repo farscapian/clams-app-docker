@@ -6,7 +6,7 @@ set -eu
 # Alice -> Bob, then Bob creates a channels to all subsequent nodes.
 # this allows creating Prisms with an arbitrary number of prism recipients.
 
-mapfile -t pubkeys < node_pubkeys.txt
+mapfile -t pubkeys < "$CLAMS_SERVER_PATH/node_pubkeys.txt"
 
 function checkOutputs {
     # let's wait for an output to exist before we start creating any channels.

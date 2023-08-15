@@ -37,6 +37,7 @@ for VOLUME in $VOLUMES; do
     fi
 done
 
-rm -f ./channel_templates/node_addrs.txt
-rm -f ./channel_templates/node_pubkeys.txt
-rm -f ./channel_templates/any_offers.txt
+rm -f "$CLAMS_SERVER_PATH/node_addrs.txt"
+rm -f "$CLAMS_SERVER_PATH/node_pubkeys.txt"
+rm -f "$CLAMS_SERVER_PATH/any_offers.txt"
+rm -f "$CLAMS_SERVER_PATH/$DOMAIN_NAME.csv"
