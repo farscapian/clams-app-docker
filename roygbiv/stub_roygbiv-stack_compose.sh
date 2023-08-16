@@ -113,7 +113,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
       resources:
         limits:
           cpus: '2'
-          memory: 120M
+          memory: 1000M
 
 EOF
 
@@ -138,7 +138,7 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
       resources:
         limits:
           cpus: '2'
-          memory: 300M
+          memory: 500M
 EOF
 
 fi
@@ -159,8 +159,8 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       mode: global
       resources:
         limits:
-          cpus: '2'
-          memory: 500M
+          cpus: '4'
+          memory: 1000M
 EOF
 
 ############ BITCOIND MANAGER SERVICE
@@ -181,8 +181,8 @@ if [ "$BTC_CHAIN" == regtest ]; then
       mode: global
       resources:
         limits:
-          cpus: '2'
-          memory: 500M
+          cpus: '1'
+          memory: 100M
       
 EOF
 fi
