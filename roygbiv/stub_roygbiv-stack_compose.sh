@@ -153,16 +153,8 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - bitcoindnet
     command: >-
       ${BITCOIND_COMMAND}
-EOF
-
-# we persist data for signet, testnet, and mainnet
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
-EOF
-
-
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     deploy:
       mode: global
       resources:
@@ -200,10 +192,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 networks:
   bitcoindnet:
     attachable: true
-EOF
-
-
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   nginxnet:
     attachable: true
 EOF
@@ -232,10 +220,6 @@ fi
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 volumes:
-EOF
-
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
   bitcoind-${BTC_CHAIN}:
 EOF
 

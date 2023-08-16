@@ -104,7 +104,7 @@ The following table shows the most common configuration settings.
 |`REGTEST_BLOCK_TIME`|`5`|Adjust the blocktime (in seconds) used in regtest environments.|
 |`CHANNEL_SETUP`|`none`|By default, no channels are created. If `prism`, a prism layout will be established.|
 |`ENABLE_CLN_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
-|`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet node 0.|
+|`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet or signet node 0.|
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
 |`CLAMS_SERVER_PATH`|`$(pwd)/roygbiv/stacks`|Specify where deployment articfacts are stored.|
 |`DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN`|`null`|If specified, overrides the `https://${DOMAIN_NAME}` to specified value: e,g., 'app.clams.tech'|
