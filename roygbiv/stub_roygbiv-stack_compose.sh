@@ -170,8 +170,8 @@ if [ "$BTC_CHAIN" == regtest ]; then
     environment: 
       - BLOCK_TIME=${REGTEST_BLOCK_TIME:-15}
       - BITCOIND_SERVICE_NAME=bitcoind
-      - BITCOIND_RPC_USERNAME=${BITCOIND_RPC_USERNAME}
-      - BITCOIND_RPC_PASSWORD=${BITCOIND_RPC_PASSWORD}
+      - BITCOIND_RPC_USERNAME=\${BITCOIND_RPC_USERNAME}
+      - BITCOIND_RPC_PASSWORD=\${BITCOIND_RPC_PASSWORD}
     deploy:
       mode: global
       
