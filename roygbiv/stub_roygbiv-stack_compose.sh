@@ -180,9 +180,9 @@ if [ "$BTC_CHAIN" == regtest ]; then
     deploy:
       mode: global
       resources:
-      limits:
-        cpus: '2'
-        memory: 500M
+        limits:
+          cpus: '2'
+          memory: 500M
       
 EOF
 fi
