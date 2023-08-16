@@ -52,21 +52,10 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     CLN_NAME=${names[$CLN_ID]}
     CLN_ALIAS="cln-${CLN_ID}"
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
-    # CLN_P2P_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
-
-    echo "$CLN_NAME ($CLN_ALIAS) connection info:"
-
-    if [ "$BTC_CHAIN" = regtest ]; then
-        CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=9735 --internal-only")
-    else
-        CLN_P2P_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=9735")
-    fi
 
     # now let's output the core lightning node URI so the user doesn't need to fetch that manually.
     CLN_WEBSOCKET_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_WEBSOCKET_PORT}")
 
-    echo "  websocket_uri: $CLN_WEBSOCKET_URI"
-    echo "  node_uri: $CLN_P2P_URI"
     PROTOCOL="ws:"
     if [ "$ENABLE_TLS" = true ]; then 
         PROTOCOL="wss:"
@@ -95,8 +84,12 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
     fi
 
-    echo "  rune: $RUNE"
-    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${DOMAIN_NAME}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
+    FRONT_END_FQDN="${DOMAIN_NAME}"
+    if [ -n "$DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN" ]; then
+        FRONT_END_FQDN="$DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN"
+    fi
+
+    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${FRONT_END_FQDN}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
 
     # if the output file is specified, write out the query string
     if [ -n "$OUTPUT_FILE" ]; then
@@ -107,7 +100,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         fi
     fi
 
-    echo "  direct_link: $WEBSOCKET_QUERY_STRING"
+    echo "$WEBSOCKET_QUERY_STRING"
     if [ "$PRODUCE_QR_CODE" = true ]; then
         qrencode -o "$(pwd)/output/qrcodes/${DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
     fi
@@ -115,6 +108,4 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     if [ "$SPAWN_BROWSER_TAB" = true ]; then
         chromium --temp-profile --disable-extensions "$WEBSOCKET_QUERY_STRING" &
     fi
-
-    echo ""
 done
