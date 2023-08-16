@@ -21,7 +21,7 @@ fi
 
 
 if [ "$BTC_CHAIN" = regtest ]; then
-    BITCOIND_COMMAND="${BITCOIND_COMMAND} -rpcthreads=256 -rpcworkqueue=256"
+    BITCOIND_COMMAND="${BITCOIND_COMMAND} -rpcthreads=128 -rpcworkqueue=64"
 fi
 
 if [ "$BTC_CHAIN" = mainnet ]; then
@@ -110,6 +110,11 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
       - PORT=5173
     deploy:
       mode: global
+      resources:
+        limits:
+          cpus: '2'
+          memory: 120M
+
 EOF
 
 fi
@@ -130,6 +135,10 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
       npm run dev -- --host
     deploy:
       mode: global
+      resources:
+        limits:
+          cpus: '2'
+          memory: 300M
 EOF
 
 fi
@@ -156,6 +165,10 @@ EOF
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     deploy:
       mode: global
+      resources:
+        limits:
+          cpus: '2'
+          memory: 500M
 EOF
 
 ############ BITCOIND MANAGER SERVICE
@@ -174,6 +187,10 @@ if [ "$BTC_CHAIN" == regtest ]; then
       - BITCOIND_RPC_PASSWORD=\${BITCOIND_RPC_PASSWORD}
     deploy:
       mode: global
+      resources:
+      limits:
+        cpus: '2'
+        memory: 500M
       
 EOF
 fi
