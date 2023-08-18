@@ -74,10 +74,10 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
         docker build -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/
         sleep 5
     fi
+    
+    export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
 
 fi
-
-export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     if ! docker image inspect node:18 &> /dev/null; then
