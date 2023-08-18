@@ -157,10 +157,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
     deploy:
       mode: global
-      resources:
-        limits:
-          cpus: '4'
-          memory: 1000M
 EOF
 
 ############ BITCOIND MANAGER SERVICE
