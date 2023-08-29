@@ -6,7 +6,7 @@
 	url = https://github.com/farscapian/ROYGBIV-frontend
 [submodule "tests/load"]
 	path = tests/load
-	url = https://github.com/farscapian/ROYGBIV-stack-load-tester
+	url = https://github.com/farscapian/lnplay-load-tester
 [submodule "lnplay/clams/app"]
 	path = lnplay/clams/app
 	url = https://github.com/clams-tech/App.git

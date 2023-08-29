@@ -3,9 +3,9 @@
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
-## About ROYGBIV-stack
+## about `lnplay``
 
-This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is ROYGBIV-stack? It's Bitcoin-only BOLT12 Prism Infrastructure. `lnplay` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
+This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is `lnplay`? It's Bitcoin-only BOLT12 Prism Infrastructure. `lnplay` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
 
 To get started, clone this repo and its submodules:
 
@@ -45,7 +45,7 @@ This is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step. Like 
 
 ### [`./run_load_tests.sh`](./run_load_tests.sh)
 
-This script allows you to perform load testing against a remote ROYGBIV-stack deployment.
+This script allows you to perform load testing against a remote `lnplay` deployment.
 ### [`./bitcoin-cli.sh`](./bitcoin-cli.sh)
 
 Allows you to interact with the current bitcoind instance.
@@ -127,6 +127,6 @@ This setup is useful for testing and developing [BOLT12 Prisms](https://www.royg
 
 When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) script will emit connection information, but also saves [direct links](https://github.com/clams-tech/App/commit/97cb83a3bd519248da3cba08dd438846cb6d212d) to `./output/cln_connection_info_${DOMAIN_NAME}.csv`. This file can be used as input for 1) the [load testing submodule](https://github.com/aaronbarnardsound/coreln-network-loadtest) or 2) the [clams-qr-generator](https://github.com/clams-tech/clams-qr-generator). These QR codes can be printed out and given to individuals so they can connect to the respective core lightning node. All connectivity between a browser and the back-end core lightning services use the [`--experimental-websocket-port`](https://docs.corelightning.org/reference/lightningd-config#experimental-options) functionality in core lightning.
 
-## Developing Plugins using ROYGBIV-stack
+## Developing Plugins using `lnplay`
 
 When deploying your application to a local docker engine, the CLN plugin path will get mounted into each CLN instance (container). If you want to make updates to the `prism-plugin.py`, for example, make the change, then run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the newly updated plugin.

@@ -17,14 +17,14 @@ export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 NGINX_CONFIG_PATH="$CLAMS_SERVER_PATH/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 
-CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$ROYGBIV_STACK_VERSION"
+CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$LNPLAY_STACK_VERSION"
 export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
-CLN_IMAGE_NAME="lnplay/cln:$ROYGBIV_STACK_VERSION"
+CLN_IMAGE_NAME="lnplay/cln:$LNPLAY_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
 BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:25.0"
-BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$ROYGBIV_STACK_VERSION"
+BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 # pull down the base image
@@ -35,14 +35,14 @@ if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/
 fi
 
-BITCOIND_MANAGER_IMAGE_NAME="lnplay-manager:$ROYGBIV_STACK_VERSION"
+BITCOIND_MANAGER_IMAGE_NAME="lnplay-manager:$LNPLAY_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
 if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
     docker build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/
 fi
 
-TOR_PROXY_IMAGE_NAME="torproxy:$ROYGBIV_STACK_VERSION"
+TOR_PROXY_IMAGE_NAME="torproxy:$LNPLAY_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
     docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
@@ -68,7 +68,7 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    CLAMS_APP_IMAGE_NAME="lnplay/clams-app:$ROYGBIV_STACK_VERSION"
+    CLAMS_APP_IMAGE_NAME="lnplay/clams-app:$LNPLAY_STACK_VERSION"
     CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
         docker build -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/
