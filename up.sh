@@ -17,7 +17,7 @@ done
 # this allows us to develop the prism-plugin.py and update it locally. Then the user
 # can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
 # cln node that's been deployed
-DEV_PLUGIN_PATH="$(pwd)/roygbiv/clightning/cln-plugins/bolt12-prism"
+DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/bolt12-prism"
 
 . ./defaults.env
 . ./load_env.sh
@@ -108,6 +108,10 @@ export CHANNEL_SETUP="$CHANNEL_SETUP"
 export ENABLE_CLN_DEBUGGING_OUTPUT="$ENABLE_CLN_DEBUGGING_OUTPUT"
 export ENABLE_BITCOIND_DEBUGGING_OUTPUT="$ENABLE_BITCOIND_DEBUGGING_OUTPUT"
 
+# plugins
+export DEPLOY_PRISM_PLUGIN="$DEPLOY_PRISM_PLUGIN"
+export DEPLOY_LNPLAY_PLUGIN="$DEPLOY_LNPLAY_PLUGIN"
+
 mkdir -p "$CLAMS_SERVER_PATH"
 
 PRISM_APP_IMAGE_NAME="prism-browser-app:$ROYGBIV_STACK_VERSION"
@@ -120,7 +124,7 @@ if (( "$CLN_COUNT" < 5 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != m
     exit 1
 fi
 
-if ! docker stack list | grep -q roygbiv-stack; then
+if ! docker stack list | grep -q lnplay; then
     RUN_CHANNELS=true
 
     # bring up the stack;

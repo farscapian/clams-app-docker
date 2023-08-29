@@ -12,10 +12,10 @@ if [ ! -f ./active_env.txt ]; then
     echo "INFO: '$(pwd)/active_env.txt' was just stubbed out. You may need to update it. Right now you're targeting your local dockerd."
 fi
 
-ACTIVE_ENV=$(cat ./active_env.txt | head -n1 | awk '{print $1;}')
+ACTIVE_ENV=$(cat "$(pwd)/active_env.txt" | head -n1 | awk '{print $1;}')
 export ACTIVE_ENV="$ACTIVE_ENV"
 
-ENV_FILE="./environments/$ACTIVE_ENV"
+ENV_FILE="$(pwd)/environments/$ACTIVE_ENV"
 
 if [ ! -f "$ENV_FILE" ]; then
     cat > "$ENV_FILE" << EOF

@@ -17,14 +17,14 @@ export CLIGHTNING_LOCAL_BIND_ADDR="$CLIGHTNING_LOCAL_BIND_ADDR"
 NGINX_CONFIG_PATH="$CLAMS_SERVER_PATH/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 
-CLN_PYTHON_IMAGE_NAME="roygbiv/cln-python:$ROYGBIV_STACK_VERSION"
+CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$ROYGBIV_STACK_VERSION"
 export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
-CLN_IMAGE_NAME="roygbiv/cln:$ROYGBIV_STACK_VERSION"
+CLN_IMAGE_NAME="lnplay/cln:$ROYGBIV_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
 BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:25.0"
-BITCOIND_DOCKER_IMAGE_NAME="roygbiv/bitcoind:$ROYGBIV_STACK_VERSION"
+BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$ROYGBIV_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 # pull down the base image
@@ -35,7 +35,7 @@ if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/
 fi
 
-BITCOIND_MANAGER_IMAGE_NAME="roygbiv-manager:$ROYGBIV_STACK_VERSION"
+BITCOIND_MANAGER_IMAGE_NAME="lnplay-manager:$ROYGBIV_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
 if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
@@ -49,7 +49,7 @@ if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
 fi
 
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
-REBUILD_CLN_IMAGE=false
+REBUILD_CLN_IMAGE=true
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
     REBUILD_CLN_IMAGE=true
@@ -64,11 +64,11 @@ fi
 # build the base image for cln
 if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
-    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
+    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" --build-arg CLN_VERSION="23.08" ./clightning/
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
-    CLAMS_APP_IMAGE_NAME="roygbiv/clams-app:$ROYGBIV_STACK_VERSION"
+    CLAMS_APP_IMAGE_NAME="lnplay/clams-app:$ROYGBIV_STACK_VERSION"
     CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
         docker build -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/
@@ -97,14 +97,14 @@ if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
 fi
 
 # for the nginx certificates.
-docker volume create roygbiv-certs
+docker volume create lnplay-certs
 
 # check to see if we have certificates
 if [ "$ENABLE_TLS" = true ]; then
     ./getrenew_cert.sh
 fi
 
-DOCKER_COMPOSE_YML_PATH="$CLAMS_SERVER_PATH/roygbiv-stack.yml"
+DOCKER_COMPOSE_YML_PATH="$CLAMS_SERVER_PATH/lnplay.yml"
 export DOCKER_COMPOSE_YML_PATH="$DOCKER_COMPOSE_YML_PATH"
 touch "$DOCKER_COMPOSE_YML_PATH"
 
@@ -116,15 +116,15 @@ export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
 export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 
 # stub out the docker-compose.yml file before we bring it up.
-./stub_roygbiv-stack_compose.sh
+./stub_lnplay_compose.sh
 ./stub_nginx_conf.sh
 
 
 # this is the main bitcoind/nginx etc., everything sans CLN nodes.
-docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" roygbiv-stack
+docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay
 
-if ! docker network list | grep -q roygbiv-p2pnet; then
-    docker network create roygbiv-p2pnet -d overlay
+if ! docker network list | grep -q lnplay-p2pnet; then
+    docker network create lnplay-p2pnet -d overlay
     sleep 1
 fi
 

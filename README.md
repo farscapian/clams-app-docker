@@ -1,15 +1,15 @@
-# roygbiv-stack
+# lnplay
 
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
 ## About ROYGBIV-stack
 
-This repo allows you to deploy the `roygbiv-stack` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is ROYGBIV-stack? It's Bitcoin-only BOLT12 Prism Infrastructure. `roygbiv-stack` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
+This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is ROYGBIV-stack? It's Bitcoin-only BOLT12 Prism Infrastructure. `lnplay` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
 
 To get started, clone this repo and its submodules:
 
-`git clone --recurse-submodules https://github.com/farscapian/roygbiv-stack`
+`git clone --recurse-submodules https://github.com/farscapian/lnplay`
 
 > Don't have docker engine installed? You can run the [./install.sh](./install.sh) file to install the latest version. After running it, you may need to restart your computer or log out and back in to refresh your group membership (or use `newgrp docker`).
 
@@ -29,11 +29,11 @@ First, update `active_env.txt` to set the active environment file, then run the 
 
 ### [`./up.sh`](./up.sh)
 
-Brings `roygbiv-stack` up according to your active environment definition.
+Brings `lnplay` up according to your active environment definition.
 
 ### [`./down.sh`](./down.sh)
 
-Brings your `roygbiv-stack` down in a non-destructive way.
+Brings your `lnplay` down in a non-destructive way.
 
 ### [`./purge.sh`](./purge.sh) 
 
@@ -56,7 +56,7 @@ Allows you to interact with the CLN instances. Just add the `--id=12` to access 
 
 ## Public Deployments
 
-If you want to deploy public instances of `roygbiv-stack`, there are a few things to consider.
+If you want to deploy public instances of `lnplay`, there are a few things to consider.
 
 ### Public DNS (ENABLE_TLS=true)
 
@@ -106,7 +106,7 @@ The following table shows the most common configuration settings.
 |`ENABLE_CLN_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
 |`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet or signet node 0.|
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
-|`CLAMS_SERVER_PATH`|`$(pwd)/roygbiv/stacks`|Specify where deployment articfacts are stored.|
+|`CLAMS_SERVER_PATH`|`$(pwd)/lnplay/stacks`|Specify where deployment articfacts are stored.|
 |`DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN`|`null`|If specified, overrides the `https://${DOMAIN_NAME}` to specified value: e,g., 'app.clams.tech'|
 
 There are [other options](./defaults.env) in there that might be worth overriding, but the above list should cover most use cases.

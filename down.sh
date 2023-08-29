@@ -39,15 +39,15 @@ done
 # so we will use the replication feature
 STACKS=$(docker stack ls --format "{{.Name}}")
 for (( CLN_ID=CLN_COUNT; CLN_ID>=0; CLN_ID-- )); do
-    STACK_NAME="roygbiv-cln-${CLN_ID}"
+    STACK_NAME="lnplay-cln-${CLN_ID}"
     if echo "$STACKS" | grep -q "$STACK_NAME"; then
         docker stack rm "$STACK_NAME"
     fi
 done
 
-# now bring down the main roygbiv stack.
-if echo "$STACKS" | grep -q roygbiv-stack; then
-    docker stack rm roygbiv-stack
+# now bring down the main lnplay.
+if echo "$STACKS" | grep -q lnplay; then
+    docker stack rm lnplay
 fi
 
 # wait until all containers are shut down.
@@ -66,7 +66,7 @@ if [ "$PRUNE" = true ]; then
     docker system prune -f
 fi
 
-# let's delete all volumes EXCEPT roygbiv-certs
+# let's delete all volumes EXCEPT lnplay-certs
 if [ "$PURGE" = true ]; then
     ./purge.sh
 fi

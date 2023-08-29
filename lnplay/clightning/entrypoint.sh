@@ -1,8 +1,11 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
-chown 1000:1000 /opt/c-lightning-rest/certs
+if [ "$SLEEP" = true ]; then
+    sleep 500
+fi
+
 
 if [ -z "$CLN_ALIAS" ]; then
     echo "ERROR: CLN_ALIAS is unset."
@@ -36,7 +39,9 @@ fi
 
 wait-for-it -t 60 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
+
+
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --log-file=debug.log --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -47,10 +52,18 @@ fi
 #  the existing prism-plugin.py into the docker image.
 # otherwise we will mount the path later down the road so
 # plugins can be reloaded quickly without restarting the whole thing.
-if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
-    CLN_COMMAND="$CLN_COMMAND --plugin=/plugins/prism-plugin.py"
+if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
+    PLUGIN_PATH=/plugins
+    if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
+        PLUGIN_PATH="/dev-plugins"
+    fi
+
+    CLN_COMMAND="$CLN_COMMAND --plugin=$PLUGIN_PATH/prism-plugin.py"
 fi
 
+if [ "$DEPLOY_LNPLAY_PLUGIN" = true ]; then
+    CLN_COMMAND="$CLN_COMMAND --plugin=$PLUGIN_PATH/lnplay-live.sh"
+fi
 
 if [ "$ENABLE_CLN_DEBUGGING_OUTPUT" = true ]; then
     CLN_COMMAND="$CLN_COMMAND --log-level=debug"
@@ -92,5 +105,8 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --fee-base=1"
     CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
 fi
+
+
+chown 1000:1000 /opt/c-lightning-rest/certs
 
 exec $CLN_COMMAND

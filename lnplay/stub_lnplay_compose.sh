@@ -5,8 +5,10 @@ cd "$(dirname "$0")"
 
 RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_PYTHON_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
+BITCOIND_RPC_THREADS=$(( CLN_COUNT*4 ))
+BITCOIND_WORKQUEUE=$(( CLN_COUNT*16 ))
 
-BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=18443 -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1"
+BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=18443 -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -rpcthreads=$BITCOIND_RPC_THREADS -rpcworkqueue=${BITCOIND_WORKQUEUE}"
 
 for CHAIN in regtest signet; do
     if [ "$CHAIN" = "$BTC_CHAIN" ]; then
@@ -20,9 +22,6 @@ if [ "$ENABLE_BITCOIND_DEBUGGING_OUTPUT" = true ]; then
 fi
 
 
-if [ "$BTC_CHAIN" = regtest ]; then
-    BITCOIND_COMMAND="${BITCOIND_COMMAND} -rpcthreads=128 -rpcworkqueue=64"
-fi
 
 if [ "$BTC_CHAIN" = mainnet ]; then
     BITCOIND_COMMAND="${BITCOIND_COMMAND} -dbcache=512 -assumevalid=000000000000000000035c5d77449f404b15de2c1662b48b241659e92d3daa14"
@@ -39,7 +38,7 @@ EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     ports:
-      - 80:80
+      - ${BROWSER_APP_EXTERNAL_PORT}:80
 EOF
 
 if [ "$ENABLE_TLS" = true ]; then
@@ -163,9 +162,9 @@ EOF
 if [ "$BTC_CHAIN" == regtest ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
-  roygbiv-manager:
+  lnplay-manager:
     image: ${BITCOIND_MANAGER_IMAGE_NAME}
-    hostname: roygbiv-manager
+    hostname: lnplay-manager
     networks:
       - bitcoindnet
     environment: 
@@ -224,7 +223,7 @@ if [ "$ENABLE_TLS" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   certs:
     external: true
-    name: roygbiv-certs
+    name: lnplay-certs
 EOF
 fi
 

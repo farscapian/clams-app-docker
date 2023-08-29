@@ -50,7 +50,6 @@ EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     environment:
-      - RPC_PATH=${RPC_PATH}
       - ENABLE_TOR=${ENABLE_TOR}
       - CLN_ALIAS=${CLN_ALIAS}
       - BITCOIND_RPC_USERNAME=\${BITCOIND_RPC_USERNAME}
@@ -62,6 +61,8 @@ EOF
       - CLN_P2P_PORT_OVERRIDE=${CLN_P2P_PORT_OVERRIDE}
       - BITCOIND_POLL_SETTING=${BITCOIND_POLL_SETTING}
       - DOMAIN_NAME=${DOMAIN_NAME}
+      - DEPLOY_PRISM_PLUGIN=${DEPLOY_PRISM_PLUGIN}
+      - DEPLOY_LNPLAY_PLUGIN=${DEPLOY_LNPLAY_PLUGIN}
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -153,20 +154,20 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 networks:
   bitcoindnet:
     external: true
-    name: roygbiv-stack_bitcoindnet
+    name: lnplay_bitcoindnet
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-p2pnet:
     external: true
-    name: roygbiv-p2pnet
+    name: lnplay-p2pnet
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
   nginxnet:
     external: true
-    name: roygbiv-stack_nginxnet
+    name: lnplay_nginxnet
 
 EOF
 
@@ -195,6 +196,6 @@ EOF
 EOF
         fi
 
-    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "roygbiv-cln-${CLN_ID}"
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}"
 
 done

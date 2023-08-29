@@ -20,11 +20,11 @@ fi
 docker volume prune -f
 
 # get a list of all the volumes
-VOLUMES=$(docker volume list -q | grep roygbiv-)
+VOLUMES=$(docker volume list -q | grep lnplay-)
 
 # Iterate over each value in the list
 for VOLUME in $VOLUMES; do
-    if echo "$VOLUME" | grep -q 'roygbiv-certs'; then
+    if echo "$VOLUME" | grep -q 'lnplay-certs'; then
         continue
     fi
 
@@ -41,3 +41,6 @@ rm -f "$CLAMS_SERVER_PATH/node_addrs.txt"
 rm -f "$CLAMS_SERVER_PATH/node_pubkeys.txt"
 rm -f "$CLAMS_SERVER_PATH/any_offers.txt"
 rm -f "$CLAMS_SERVER_PATH/$DOMAIN_NAME.csv"
+
+ docker image rm roygbiv/cln:23.08
+ 
