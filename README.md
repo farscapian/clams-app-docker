@@ -3,7 +3,7 @@
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
-## about `lnplay``
+## about `lnplay`
 
 This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is `lnplay`? It's Bitcoin-only BOLT12 Prism Infrastructure. `lnplay` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
 
