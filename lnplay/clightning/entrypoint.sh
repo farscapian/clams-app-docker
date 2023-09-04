@@ -52,17 +52,21 @@ fi
 #  the existing prism-plugin.py into the docker image.
 # otherwise we will mount the path later down the road so
 # plugins can be reloaded quickly without restarting the whole thing.
-if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
-    PLUGIN_PATH=/plugins
-    if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
-        PLUGIN_PATH="/dev-plugins"
-    fi
-
-    CLN_COMMAND="$CLN_COMMAND --plugin=$PLUGIN_PATH/prism-plugin.py"
+PLUGIN_PATH=/plugins
+if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
+    PLUGIN_PATH="/dev-plugins"
 fi
 
-if [ "$DEPLOY_LNPLAY_PLUGIN" = true ]; then
-    CLN_COMMAND="$CLN_COMMAND --plugin=$PLUGIN_PATH/lnplay-live.sh"
+if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
+    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-plugin.py"
+    chmod +x "$PRISM_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
+fi
+
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+    LNPLAYLIVE_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/lnplay-live.py"
+    chmod +x "$LNPLAYLIVE_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_PLUGIN_PATH"
 fi
 
 if [ "$ENABLE_CLN_DEBUGGING_OUTPUT" = true ]; then

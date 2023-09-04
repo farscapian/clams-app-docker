@@ -17,7 +17,7 @@ done
 # this allows us to develop the prism-plugin.py and update it locally. Then the user
 # can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
 # cln node that's been deployed
-DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/bolt12-prism"
+DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 
 . ./defaults.env
 . ./load_env.sh
