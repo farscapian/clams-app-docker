@@ -35,14 +35,14 @@ if [ "$PRODUCE_QR_CODE" = true ]; then
         exit 1
     fi
 
-    mkdir -p ./"$CLAMS_SERVER_PATH"/qrcodes
+    mkdir -p ./"$LNPLAY_SERVER_PATH"/qrcodes
 fi
 
 . ./defaults.env
 . ./load_env.sh
 
 if [ -z "$OUTPUT_FILE" ]; then
-    OUTPUT_FILE="$CLAMS_SERVER_PATH/${DOMAIN_NAME}.csv"""
+    OUTPUT_FILE="$LNPLAY_SERVER_PATH/${DOMAIN_NAME}.csv"""
 fi
 
 readarray -t names < "$NAMES_FILE_PATH"

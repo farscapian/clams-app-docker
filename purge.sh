@@ -37,10 +37,10 @@ for VOLUME in $VOLUMES; do
     fi
 done
 
-rm -f "$CLAMS_SERVER_PATH/node_addrs.txt"
-rm -f "$CLAMS_SERVER_PATH/node_pubkeys.txt"
-rm -f "$CLAMS_SERVER_PATH/any_offers.txt"
-rm -f "$CLAMS_SERVER_PATH/$DOMAIN_NAME.csv"
+rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
+rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
+rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
+rm -f "$LNPLAY_SERVER_PATH/$DOMAIN_NAME.csv"
 
  docker image rm roygbiv/cln:23.08
  
