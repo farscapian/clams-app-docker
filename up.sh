@@ -110,7 +110,7 @@ export ENABLE_BITCOIND_DEBUGGING_OUTPUT="$ENABLE_BITCOIND_DEBUGGING_OUTPUT"
 
 # plugins
 export DEPLOY_PRISM_PLUGIN="$DEPLOY_PRISM_PLUGIN"
-export DEPLOY_LNPLAY_PLUGIN="$DEPLOY_LNPLAY_PLUGIN"
+export DEPLOY_LNPLAYLIVE_PLUGIN="$DEPLOY_LNPLAYLIVE_PLUGIN"
 
 mkdir -p "$LNPLAY_SERVER_PATH"
 
@@ -128,7 +128,7 @@ if ! docker stack list | grep -q lnplay; then
     RUN_CHANNELS=true
 
     # bring up the stack;
-    ./roygbiv/run.sh
+    ./lnplay/run.sh
 
     sleep 5
 fi

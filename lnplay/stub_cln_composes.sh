@@ -62,7 +62,7 @@ EOF
       - BITCOIND_POLL_SETTING=${BITCOIND_POLL_SETTING}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DEPLOY_PRISM_PLUGIN=${DEPLOY_PRISM_PLUGIN}
-      - DEPLOY_LNPLAY_PLUGIN=${DEPLOY_LNPLAY_PLUGIN}
+      - DEPLOY_LNPLAYLIVE_PLUGIN=${DEPLOY_LNPLAYLIVE_PLUGIN}
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -77,7 +77,7 @@ EOF
 EOF
     fi
 
-    DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins/bolt12-prism"
+    DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins"
     if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - ${DEV_PLUGIN_PATH}:/dev-plugins

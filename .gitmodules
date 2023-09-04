@@ -10,3 +10,6 @@
 [submodule "lnplay/clams/app"]
 	path = lnplay/clams/app
 	url = https://github.com/clams-tech/App.git
+[submodule "lnplay/clightning/cln-plugins/lnplaylive"]
+	path = lnplay/clightning/cln-plugins/lnplaylive
+	url = https://github.com/farscapian/lnplay.live-plugin.git

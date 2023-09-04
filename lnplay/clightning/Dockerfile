@@ -220,9 +220,9 @@ FROM $BASE_IMAGE
 
 # copy the plugins directory down
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/prism-plugin.py
-ADD ./cln-plugins/lnplay/lnplay-live.sh /plugins/lnplay-live.sh
+ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplay-live.py
 
-RUN chmod 555 /plugins/*.*
+RUN chmod +x /plugins/*.py
 
 VOLUME /opt/c-lightning-rest
 
