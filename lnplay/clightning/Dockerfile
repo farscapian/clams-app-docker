@@ -219,10 +219,10 @@ ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 # copy the plugins directory down
-ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/prism-plugin.py
-ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplay-live.py
-
-RUN chmod +x /plugins/*.py
+ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
+RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
+ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
+RUN chmod +x /plugins/lnplaylive/lnplay-live.py
 
 VOLUME /opt/c-lightning-rest
 

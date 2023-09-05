@@ -176,10 +176,6 @@ fi
 
 ./show_cln_uris.sh
 
-if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$BTC_CHAIN" = regtest ]; then
-    ./reload_dev_plugins.sh
-fi
-
 if [ "$BTC_CHAIN" = regtest ]; then
     ./tests/run.sh 
 fi
