@@ -39,11 +39,9 @@ fi
 
 wait-for-it -t 60 "bitcoind:18443"
 
-
-
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --log-file=debug.log --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
-
-
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
+# TODO put this log-file back in there. Need to log to stdout AND log file
+#--log-file=debug.log
 if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi

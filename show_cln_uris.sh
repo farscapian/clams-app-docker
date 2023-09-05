@@ -56,13 +56,10 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     # now let's output the core lightning node URI so the user doesn't need to fetch that manually.
     CLN_WEBSOCKET_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_WEBSOCKET_PORT}")
 
-    PROTOCOL="ws:"
-    if [ "$ENABLE_TLS" = true ]; then 
-        PROTOCOL="wss:"
-    fi
-
+    WSS_PROTOCOL="ws:"
     HTTP_PROTOCOL="http"
     if [ "$ENABLE_TLS" = true ]; then 
+        WSS_PROTOCOL="wss:"
         HTTP_PROTOCOL="https"
     fi
 
@@ -85,11 +82,19 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     fi
 
     FRONT_END_FQDN="${DOMAIN_NAME}"
+
+    # provide a way to override the front-end URL
     if [ -n "$DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN" ]; then
         FRONT_END_FQDN="$DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN"
+        HTTP_PROTOCOL="https"
     fi
 
-    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${FRONT_END_FQDN}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${PROTOCOL}&rune=${RUNE}"
+    # only put the port if it's non-standard.
+    if [ "$BROWSER_APP_EXTERNAL_PORT" != 80 ] && [ "$BROWSER_APP_EXTERNAL_PORT" != 443 ]; then
+        FRONT_END_FQDN="${FRONT_END_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
+    fi
+
+    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${FRONT_END_FQDN}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${WSS_PROTOCOL}&rune=${RUNE}"
 
     # if the output file is specified, write out the query string
     if [ -n "$OUTPUT_FILE" ]; then
