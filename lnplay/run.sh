@@ -28,7 +28,7 @@ BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 # pull down the base image
-docker pull "$BITCOIND_BASE_IMAGE_NAME"
+#docker pull "$BITCOIND_BASE_IMAGE_NAME"
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
@@ -44,8 +44,10 @@ fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$LNPLAY_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
-if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
-    docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
+if [ "$ENABLE_TOR" = true ]; then
+    if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
+        docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
+    fi
 fi
 
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
@@ -56,16 +58,16 @@ if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
 fi
 
 # build the base image for cln
-if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
+#if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
-fi
+#fi
 
 # build the base image for cln
-if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
+#if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" --build-arg CLN_VERSION="23.08" ./clightning/
-fi
+#fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
@@ -100,15 +102,15 @@ if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
         docker pull node:18
     fi
 
-    if ! docker image inspect "$LNPLAYLIVE_IMAGE_NAME" &>/dev/null; then
+    #if ! docker image inspect "$LNPLAYLIVE_IMAGE_NAME" &>/dev/null; then
         docker build -t "$LNPLAYLIVE_IMAGE_NAME" ./lnplaylive/
-    fi
+    #fi
 
     if ! docker volume list | grep -q "lnplaylive"; then
         docker volume create lnplaylive
     fi
 
-    docker run -t -v lnplaylive:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /app/src/ /output/
+    docker run -t -v lnplaylive:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /app/build/ /output/
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"

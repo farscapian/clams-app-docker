@@ -91,8 +91,8 @@ elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
             autoindex off;
             server_tokens off;
             gzip_static on;
-            root /lnplaylive/src;
-            index app.html;
+            root /lnplaylive/build;
+            index index.html;
         }
     }
 EOF

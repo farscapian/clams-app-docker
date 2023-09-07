@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 # todo remove --admin and do least privilege
 ./get_rune.sh --id=1 --admin
