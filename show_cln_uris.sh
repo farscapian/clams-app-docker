@@ -49,6 +49,13 @@ readarray -t names < "$NAMES_FILE_PATH"
 
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+
+    # for tabconf quit at 3
+    if [ "$CLN_ID" -ge 2 ]; then
+        exit 1
+    fi
+
+
     CLN_NAME=${names[$CLN_ID]}
     CLN_ALIAS="cln-${CLN_ID}"
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))

@@ -77,9 +77,27 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
         }
     }
 EOF
-fi
 
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+    cat >> "$NGINX_CONFIG_PATH" <<EOF
+
+    # https server block for lnplaylive
+    server {
+        listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
+
+        server_name ${DOMAIN_NAME};
+
+        location / {
+            autoindex off;
+            server_tokens off;
+            gzip_static on;
+            root /lnplaylive/src;
+            index app.html;
+        }
+    }
+EOF
+
+elif [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
     # https server block for the clams app

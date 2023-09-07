@@ -88,6 +88,27 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
         docker build -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
     fi
+    
+fi
+
+
+LNPLAYLIVE_IMAGE_NAME="lnplay/lnplaylive:$LNPLAY_STACK_VERSION"
+export LNPLAYLIVE_IMAGE_NAME="$LNPLAYLIVE_IMAGE_NAME"
+if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+    if ! docker image inspect node:18 &> /dev/null; then
+        # pull bitcoind down
+        docker pull node:18
+    fi
+
+    if ! docker image inspect "$LNPLAYLIVE_IMAGE_NAME" &>/dev/null; then
+        docker build -t "$LNPLAYLIVE_IMAGE_NAME" ./lnplaylive/
+    fi
+
+    if ! docker volume list | grep -q "lnplaylive"; then
+        docker volume create lnplaylive
+    fi
+
+    docker run -t -v lnplaylive:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /app/src/ /output/
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"

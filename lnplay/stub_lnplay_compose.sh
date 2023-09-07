@@ -61,6 +61,12 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 
 
+# if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+#     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+#       - lnplaylive-appnet
+# EOF
+# fi
+
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -90,11 +96,24 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
         target: /etc/nginx/nginx.conf
 EOF
 
-if [ "$ENABLE_TLS" = true ]; then
+if [ "$ENABLE_TLS" = true ] || [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
+EOF
+    
+
+    if [ "$ENABLE_TLS" = true ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - certs:/certs
 EOF
+    fi
+
+    if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - lnplaylive:/lnplaylive
+EOF
+    fi
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
@@ -116,11 +135,20 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
 
 EOF
 
-fi
+# elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+#     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
+#   lnplaylive-app:
+#     image: ${LNPLAYLIVE_IMAGE_NAME}
+#     networks:
+#       - lnplaylive-appnet
+#     environment:
+#       - HOST=0.0.0.0
+#       - PORT=5173
 
+# EOF
 
-if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
+elif [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
   prism-browser-app:
@@ -211,12 +239,28 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 fi
 
+# if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+# cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+#   lnplaylive-appnet:
+# EOF
+# fi
+
+
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 volumes:
   bitcoind-${BTC_CHAIN}:
 EOF
+
+if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  lnplaylive:
+    external: true
+    name: lnplaylive
+EOF
+fi
 
 
 if [ "$ENABLE_TLS" = true ]; then
