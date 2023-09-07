@@ -246,7 +246,7 @@ RUN apt update
 
 # aparently we will need to compile lxd from source?
 RUN apt install -y ssh-client
-RUN curl https://github.com/canonical/lxd/releases/download/lxd-5.17/bin.linux.lxc -o /usr/sbin/lxc
-RUN chmod +x /usr/sbin/lxc
+COPY ./lxc /usr/bin/lxc
+RUN chmod +x /usr/bin/lxc
 
 ENTRYPOINT [ "/entrypoint.sh" ]
