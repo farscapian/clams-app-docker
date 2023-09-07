@@ -68,9 +68,9 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     if [ "$BTC_CHAIN" != mainnet ]; then
         if [ "$CHANNEL_SETUP" = prism ]; then
             if [ "$CLN_ID" = 0 ]; then
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
+                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay")
             elif [ "$CLN_ID" = 1 ]; then
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --create-prism --receive --pay --bkpr")
+                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --receive  --lnplaylive")
             else
                 RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
             fi

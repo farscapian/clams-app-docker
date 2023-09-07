@@ -11,6 +11,7 @@ RECEIVE_PERMISSIONS=false
 LIST_PAYS_PERMISSIONS=false
 LIST_PRISMS_PERMISSIONS=false
 CREATE_PRISM_PERMISSIONS=false
+LNPLAYLIVE_PERMISSIONS=false
 BKPR_PERMISSIONS=false
 ADMIN_RUNE=false
 RATE_LIMIT=60
@@ -38,6 +39,10 @@ for i in "$@"; do
         --receive)
             READ_PERMISSIONS=true
             RECEIVE_PERMISSIONS=true
+            shift
+        ;;
+        --lnplaylive)
+            LNPLAYLIVE_PERMISSIONS=true
             shift
         ;;
         --bkpr)
@@ -84,6 +89,7 @@ if [ "$READ_PERMISSIONS" = false ] && \
    [ "$CREATE_PRISM_PERMISSIONS" = false ] && \
    [ "$RECEIVE_PERMISSIONS" = false ] && \
    [ "$BKPR_PERMISSIONS" = false ] && \
+   [ "$LNPLAYLIVE_PERMISSIONS" = false ] && \
    [ "$ADMIN_RUNE" = false ]; then
         echo "ERROR: You MUST specify at least one permission."
         exit 1
@@ -124,6 +130,12 @@ if [ "$ADMIN_RUNE" = false ]; then
     if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
         CMD="${CMD},\"method=createprism\""
     fi
+
+    if [ "$LNPLAYLIVE_PERMISSIONS" = true ]; then
+        CMD="${CMD},\"method^lnplaylive\""
+    fi
+
+    
 
     CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
