@@ -3,29 +3,8 @@
 set -eu
 cd "$(dirname "$0")"
 
-function check_containers {
 
-    # Check if bitcoind container is running
-    if ! docker service list | grep lnplay_bitcoind | grep -q "1/1"; then
-        return 1
-    fi
-
-    # Loop through all CLN nodes and check if they are running
-    for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
-        if ! docker service list | grep "lnplay-cln-${CLN_ID}_cln-${CLN_ID}" | grep -q "1/1"; then
-            return 1
-        fi
-    done
-
-    # If all containers are running, return 0
-    return 0
-}
-
-# Wait for all containers to be up and running
-while ! check_containers; do
-    sleep 3
-    echo "INFO: Waiting for containers to come online..."
-done
+sleep 5
 
 RETAIN_CACHE=false
 
