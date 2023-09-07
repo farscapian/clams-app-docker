@@ -234,4 +234,17 @@ RUN chmod a+x /entrypoint.sh
 
 ENV SLEEP=false
 
+
+RUN mkdir /sovereign-stack
+RUN git clone --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
+#WORKDIR /sovereign-stack
+
+RUN apt update
+
+
+# aparently we will need to compile lxd from source?
+RUN apt install -y ssh-client
+RUN curl https://github.com/canonical/lxd/releases/download/lxd-5.17/bin.linux.lxc -o /usr/sbin/lxc
+RUN chmod +x /usr/sbin/lxc
+
 ENTRYPOINT [ "/entrypoint.sh" ]

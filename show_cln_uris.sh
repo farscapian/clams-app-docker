@@ -77,7 +77,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
             if [ "$CLN_ID" = 0 ]; then
                 RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay")
             elif [ "$CLN_ID" = 1 ]; then
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --receive  --lnplaylive")
+                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --lnplaylive")
             else
                 RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
             fi
