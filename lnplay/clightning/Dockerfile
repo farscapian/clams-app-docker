@@ -223,6 +223,8 @@ ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugi
 RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
 ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
 RUN chmod +x /plugins/lnplaylive/lnplay-live.py
+ADD ./cln-plugins/lnplaylive/provision_lxd.sh /plugins/lnplaylive/provision_lxd.sh
+RUN chmod +x /plugins/lnplaylive/provision_lxd.sh
 
 VOLUME /opt/c-lightning-rest
 

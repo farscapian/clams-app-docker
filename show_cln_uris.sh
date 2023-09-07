@@ -52,7 +52,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     # for tabconf quit at 3
     if [ "$CLN_ID" -ge 2 ]; then
-        exit 1
+        exit
     fi
 
 
