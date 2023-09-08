@@ -6,6 +6,11 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
+    echo "WARNING: in order to reload plugins on remote machines, the image must be updated."
+    exit 0
+fi
+
 DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/lnplaylive"
 
 # fund each cln node
