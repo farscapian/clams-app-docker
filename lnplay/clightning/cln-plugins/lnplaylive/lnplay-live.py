@@ -279,7 +279,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
         script_path = '/dev-plugins/lnplaylive/provision_lxd.sh'
 
 
-        subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
+        # subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
 
     except RpcError as e:
         printout("Payment error: {}".format(e))
