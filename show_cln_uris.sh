@@ -50,10 +50,10 @@ readarray -t names < "$NAMES_FILE_PATH"
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
-    # for tabconf quit at 3
-    if [ "$CLN_ID" -ge 2 ]; then
-        exit
-    fi
+    # # for tabconf quit at 3
+    # if [ "$CLN_ID" -ge 2 ]; then
+    #     exit
+    # fi
 
 
     CLN_NAME=${names[$CLN_ID]}
@@ -73,17 +73,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     RUNE=
     if [ "$BTC_CHAIN" != mainnet ]; then
-        if [ "$CHANNEL_SETUP" = prism ]; then
-            if [ "$CLN_ID" = 0 ]; then
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay")
-            elif [ "$CLN_ID" = 1 ]; then
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --lnplaylive")
-            else
-                RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --read --pay --receive --bkpr")
-            fi
-        elif [ "$CHANNEL_SETUP" = none ]; then
-            RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
-        fi
+        RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
     else
         RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
     fi
