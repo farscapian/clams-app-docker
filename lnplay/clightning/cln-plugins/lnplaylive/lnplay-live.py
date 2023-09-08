@@ -144,7 +144,7 @@ def lnplaylive_invoicestatus(plugin, payment_type, invoice_id):
                     matching_record = record
                     break
 
-        deployment_details_json = "not_deployed"
+        deployment_details_json = None
         if matching_record is not None:
             deployment_details = matching_record["string"]
             deployment_details_json = json.loads(str(deployment_details))
@@ -256,13 +256,16 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         expiration_date = calculate_expiration_date(hours)
 
+        connection_strings = None
+
         # order_details resonse
         order_details = {
             "node_count": node_count,
             "hours": hours,
             "lnlive_plugin_version": lnlive_plugin_version,
             "vm_expiration_date": expiration_date,
-            "status": "starting_deployment"
+            "status": "deploying",
+            "connection_strings": connection_strings
         }
 
         # add the order_details info to datastore with the invoice_label as the key
@@ -283,7 +286,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         time.sleep(10)
 
-        connection_strings = ["https://app.clams.tech/connect?address=02101f35aa22b311fea447b14655f0c9ba8c61d82b5819581ce9bb92187ccb0ec7@roygbiv.money:6001&type=direct&value=wss:&rune=jfR46b6CBKJoO3nCtZKWYXSFCldktSFRUKKq7LF9naI9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw", "https://app.clams.tech/connect?address=02fb7be9deb7cd19fa8d14db4dbcd76baa01e537b2cf2ab0b1b633da999d12a142@roygbiv.money:6002&type=direct&value=wss:&rune=7OXqDDWx6T2sG1H-jVvYO3I1avrEO13wMGEK6ee5Hoc9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwcnxtZXRob2Q9bGlzdHByaXNtc3xtZXRob2Q9Y3JlYXRlcHJpc20mcmF0ZT02MA==", "https://app.clams.tech/connect?address=0396ef45c23fac63135d0ececc080e5883b7eb5f3308693564f8694d3a4578d08f@roygbiv.money:6003&type=direct&value=wss:&rune=G2ILwqGjXIf_ItFT9IoyQzpSD6ZnRnvnjmQ6EiGlnF49MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw", "https://app.clams.tech/connect?address=037958d1a4a67729f7c40e4b4bc1302ed58559ea17aff506eb74d8ac804a455002@roygbiv.money:6004&type=direct&value=wss:&rune=d3xM9pyGlAv95m-Nz0IPvdYy_WuJP7zqbJIIo7nrcf49MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw","https://app.clams.tech/connect?address=02e761d96180126b045528b3d4d8780460eb9db8a6d403e82a3e5c406dd0e336c6@roygbiv.money:6005&type=direct&value=wss:&rune=feoCUnXV-0lP2NHzrVXJWKYaHKuyrR3NzNwv6YdxLPI9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw"]
+        connection_strings = ["https://app.clams.tech/connect?address=02d657b3506b4f011cef3da12f2468b1dc5ade93241da2f713dc60aeabcf9e010e@lnplay.dev:6001&type=direct&value=wss:&rune=ZZQA8QjGEP9xpeqFF_F9jFlxUm-EZyjD9cSMPVF0ADc9Mg==", "https://app.clams.tech/connect?address=026176428622df17bfea3cc3405fc7516ae3a03daa27a99978cdc544b3bc737990@lnplay.dev:6002&type=direct&value=wss:&rune=VB0htCDqFjZXaxSsqQ7rrMPTg71T8QGWczNWZQrYd7M9Mg==", "https://app.clams.tech/connect?address=02fed5f686dffcac71431fc8b904379f2932581e2f3b7bffc632520bee3d300547@lnplay.dev:6003&type=direct&value=wss:&rune=5Yw_s8AAA0DvALvQk524kcNEBg8HhYJw6_SmS16hnPY9MQ==", "https://app.clams.tech/connect?address=02b7bbe03a26b6c5259078fba9858bdaafe295c079301129fa175823ca0d15b6b7@lnplay.dev:6004&type=direct&value=wss:&rune=4FCdsNq73prQRz-RA7SBjzN5R9NqDDYmLQDEYHiYPys9MQ==", "https://app.clams.tech/connect?address=03a3d29eb2ee71ddbd65cc1bbeafa9dff3800a8f2fc590ac7aa0d4f4ff3c126fd7@lnplay.dev:6005&type=direct&value=wss:&rune=UbWNJbjJbWHO7CakY07EVGdQgJXS7jtSC-7a9lNHz1I9MQ==", "https://app.clams.tech/connect?address=036281353c9c6ea1b1cd28c027645dfa5a9cbe616e85aaf991df8b7155edf51a1e@lnplay.dev:6006&type=direct&value=wss:&rune=imY0Rh2pCpL8_e_JdBmYzcaohV16QUKDsjcjgy3PlS49MQ==", "https://app.clams.tech/connect?address=02adbcfed6d5931dda2d61b9de0313cb6cfd0492d0f582e00fdd91e20c1b996df6@lnplay.dev:6007&type=direct&value=wss:&rune=URf3ldN92wye5kq8WMsxGCMJEKRttiOXKC-ndtyUJBs9MQ==", "https://app.clams.tech/connect?address=0205234927872808975cdda0ba16baef5b7c733fb5e570e698c58c3f74e3ca0cb2@lnplay.dev:6008&type=direct&value=wss:&rune=l3hP7JN1sGfoEq-ISf3gSpwRXMAtxOowPxQhzpb3eIQ9MQ=="]
 
         # order_details resonse
         order_details = {
