@@ -28,7 +28,7 @@ fi
 BOLT11_INVOICE=$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice')
 
 echo "paying the invoice"
-../lightning-cli.sh --id=0 -k pay bolt11="$BOLT11_INVOICE" || true 
+../lightning-cli.sh --id=0 -k pay bolt11="$BOLT11_INVOICE" 
 
 
 
