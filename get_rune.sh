@@ -137,10 +137,10 @@ if [ "$ADMIN_RUNE" = false ]; then
 
     
 
-    CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
+    # CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
 fi
 
-CMD=$(echo "${CMD//[,/[[}")
+CMD="${CMD//[,/[[}"
 RUNE_JSON=$(eval "$CMD")
 
 if [ -n "$RUNE_JSON" ]; then
