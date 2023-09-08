@@ -205,6 +205,6 @@ fi
 ./show_cln_uris.sh
 
 if [ "$BTC_CHAIN" = regtest ]; then
-    sleep 5
+    sleep 10
     ./tests/run.sh 
 fi
