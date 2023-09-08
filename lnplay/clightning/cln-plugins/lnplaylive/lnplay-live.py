@@ -278,8 +278,28 @@ def on_payment(plugin, invoice_payment, **kwargs):
         # The path to the Bash script
         script_path = '/dev-plugins/lnplaylive/provision_lxd.sh'
 
+        #subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
 
-        # subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
+
+        time.sleep(10)
+
+        connection_strings = ["https://app.clams.tech/connect?address=02101f35aa22b311fea447b14655f0c9ba8c61d82b5819581ce9bb92187ccb0ec7@roygbiv.money:6001&type=direct&value=wss:&rune=jfR46b6CBKJoO3nCtZKWYXSFCldktSFRUKKq7LF9naI9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw", "https://app.clams.tech/connect?address=02fb7be9deb7cd19fa8d14db4dbcd76baa01e537b2cf2ab0b1b633da999d12a142@roygbiv.money:6002&type=direct&value=wss:&rune=7OXqDDWx6T2sG1H-jVvYO3I1avrEO13wMGEK6ee5Hoc9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwcnxtZXRob2Q9bGlzdHByaXNtc3xtZXRob2Q9Y3JlYXRlcHJpc20mcmF0ZT02MA==", "https://app.clams.tech/connect?address=0396ef45c23fac63135d0ececc080e5883b7eb5f3308693564f8694d3a4578d08f@roygbiv.money:6003&type=direct&value=wss:&rune=G2ILwqGjXIf_ItFT9IoyQzpSD6ZnRnvnjmQ6EiGlnF49MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw", "https://app.clams.tech/connect?address=037958d1a4a67729f7c40e4b4bc1302ed58559ea17aff506eb74d8ac804a455002@roygbiv.money:6004&type=direct&value=wss:&rune=d3xM9pyGlAv95m-Nz0IPvdYy_WuJP7zqbJIIo7nrcf49MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw","https://app.clams.tech/connect?address=02e761d96180126b045528b3d4d8780460eb9db8a6d403e82a3e5c406dd0e336c6@roygbiv.money:6005&type=direct&value=wss:&rune=feoCUnXV-0lP2NHzrVXJWKYaHKuyrR3NzNwv6YdxLPI9MCZtZXRob2QvbGlzdGRhdGFzdG9yZSZtZXRob2RebGlzdHxtZXRob2ReZ2V0fG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWxpc3RwYXlzfG1ldGhvZD13YWl0YW55aW52b2ljZXxtZXRob2Q9d2FpdGludm9pY2V8bWV0aG9kPWludm9pY2V8bWV0aG9kXm9mZmVyfG1ldGhvZD1wYXl8bWV0aG9kPWZldGNoaW52b2ljZXxtZXRob2Q9Y3JlYXRlaW52b2ljZXxtZXRob2R-YmtwciZyYXRlPTYw"]
+
+        # order_details resonse
+        order_details = {
+            "node_count": node_count,
+            "hours": hours,
+            "lnlive_plugin_version": lnlive_plugin_version,
+            "vm_expiration_date": expiration_date,
+            "status": "provisioned",
+            "connection_strings": connection_strings
+        }
+
+         # Log that we are starting the provisoining proces.s
+        plugin.log(f"lnplay-live: Order: {invoice_id} has been provisioned.")
+
+        # add the order_details info to datastore with the invoice_label as the key
+        plugin.rpc.datastore(key=invoice_id, string=json.dumps(order_details),mode="must-replace")
 
     except RpcError as e:
         printout("Payment error: {}".format(e))
