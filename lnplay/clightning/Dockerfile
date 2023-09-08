@@ -218,7 +218,23 @@ ARG BASE_IMAGE
 
 FROM $BASE_IMAGE
 
-# copy the plugins directory down
+VOLUME /opt/c-lightning-rest
+
+# we can mount into the this path when we're working locally.
+RUN mkdir /dev-plugins
+VOLUME /dev-plugins
+
+ENV SLEEP=false
+
+RUN mkdir /sovereign-stack
+RUN git clone --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
+
+# let's get our clients we need to provision remote VMs.
+RUN apt install -y ssh-client
+COPY ./lxc /usr/bin/lxc
+RUN chmod +x /usr/bin/lxc
+
+# let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
 RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
 ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
@@ -226,27 +242,8 @@ RUN chmod +x /plugins/lnplaylive/lnplay-live.py
 ADD ./cln-plugins/lnplaylive/provision_lxd.sh /plugins/lnplaylive/provision_lxd.sh
 RUN chmod +x /plugins/lnplaylive/provision_lxd.sh
 
-VOLUME /opt/c-lightning-rest
-
-RUN mkdir /dev-plugins
-VOLUME /dev-plugins
-
+# add entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
-
-ENV SLEEP=false
-
-
-RUN mkdir /sovereign-stack
-RUN git clone --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
-#WORKDIR /sovereign-stack
-
-RUN apt update
-
-
-# aparently we will need to compile lxd from source?
-RUN apt install -y ssh-client
-COPY ./lxc /usr/bin/lxc
-RUN chmod +x /usr/bin/lxc
 
 ENTRYPOINT [ "/entrypoint.sh" ]
