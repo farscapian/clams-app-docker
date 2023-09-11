@@ -111,7 +111,7 @@ EOF
 
     if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - lnplaylive:/lnplaylive
+      - lnplaylive:/lnplaylive:ro
 EOF
     fi
 fi
@@ -134,19 +134,6 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
           memory: 1000M
 
 EOF
-
-# elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-#     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
-#   lnplaylive-app:
-#     image: ${LNPLAYLIVE_IMAGE_NAME}
-#     networks:
-#       - lnplaylive-appnet
-#     environment:
-#       - HOST=0.0.0.0
-#       - PORT=5173
-
-# EOF
 
 elif [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF

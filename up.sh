@@ -109,6 +109,10 @@ export CHANNEL_SETUP="$CHANNEL_SETUP"
 export ENABLE_CLN_DEBUGGING_OUTPUT="$ENABLE_CLN_DEBUGGING_OUTPUT"
 export ENABLE_BITCOIND_DEBUGGING_OUTPUT="$ENABLE_BITCOIND_DEBUGGING_OUTPUT"
 
+
+LNPLAYLIVE_IMAGE_NAME="lnplay/lnplaylive:$LNPLAY_STACK_VERSION"
+export LNPLAYLIVE_IMAGE_NAME="$LNPLAYLIVE_IMAGE_NAME"
+
 # lxd stuff
 export LNPLAY_LXD_FQDN_PORT="$LNPLAY_LXD_FQDN_PORT"
 export LNPLAY_LXD_PASSWORD="$LNPLAY_LXD_PASSWORD"
@@ -189,6 +193,13 @@ if [ "$BTC_CHAIN" != regtest ]; then
 
         sleep 10  # Adjust the sleep duration as per your requirement
     done
+fi
+
+# if we are deploying the lnplaylive frontend, we can rebuild at this point
+# because it required build-time info from the deployed backend. The build script below
+# will stub out those envs and rebuild the output from the app.
+if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+    ./lnplay/lnplaylive/build.sh
 fi
 
 lncli() {

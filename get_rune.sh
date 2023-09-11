@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+cd "$(dirname "$0")"
 
 NODE_ID=
 SESSION_ID=
@@ -14,6 +15,7 @@ CREATE_PRISM_PERMISSIONS=false
 LNPLAYLIVE_PERMISSIONS=false
 BKPR_PERMISSIONS=false
 ADMIN_RUNE=false
+IMPOSE_RATE_LIMIT=true
 RATE_LIMIT=60
 
 # grab any modifications from the command line.
@@ -135,9 +137,9 @@ if [ "$ADMIN_RUNE" = false ]; then
         CMD="${CMD},\"method^lnplaylive\""
     fi
 
-    
-
-    # CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
+    if [ "$IMPOSE_RATE_LIMIT" = true ]; then
+        CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"
+    fi
 fi
 
 CMD="${CMD//[,/[[}"

@@ -31,22 +31,17 @@ def lnplaylive_createorder(plugin, node_count, hours):
     '''Returns a BOLT11 invoice for the given node count and time.'''
     try:
         # first let's ensure the values that they passed in are appropriate.
-        rate_to_charge = None
+        rate_to_charge = 200000
 
         # ensure node_count is an int
         if not isinstance(node_count, int):
             raise Exception("Error: node_count MUST be a positive integer.")
 
-        if node_count == 8:
-            rate_to_charge = 200000
-        elif node_count == 16:
-            rate_to_charge = 220000
-        elif node_count == 32:
-            rate_to_charge = 240000
-        elif node_count == 64:
-            rate_to_charge = 260000
-        else:
-            raise InvalidCLNCountError("Invalid product. Valid node counts are 8, 16, 32, and 64.")
+
+        # Check if the node_count is evenly divisible by 8
+        if node_count % 8 != 0:
+            print(f"{node_count} is not evenly divisible by 8.")
+            raise Exception("Error: node_count MUST be evenly divisible by 8.")
 
         # ensure hours is an int
         if not isinstance(hours, int):
@@ -54,9 +49,9 @@ def lnplaylive_createorder(plugin, node_count, hours):
 
         # ensure 'hours' is within acceptable limits
         if hours < 3:
-            raise HoursTooLowException("The minimum hours you can set is 3.")
+            raise Exception("ERROR: The minimum hours you can set is 3.")
         elif hours > 504:
-            raise HoursTooHighException("The maximum hours you can set is 504.")
+            raise Exception("ERROR: The maximum hours you can set is 504.")
 
         # calcuate the amount to charge in the invoice (msats) (msats per node hour)
         amount_to_charge = rate_to_charge * node_count * hours
@@ -70,18 +65,14 @@ def lnplaylive_createorder(plugin, node_count, hours):
         description = f"lnplay.live - {node_count} nodes for {hours} hours."
         bolt11_invoice = plugin.rpc.invoice(amount_to_charge, bolt11_guid_str, description, 300)
 
-        # create a BOLT12 offer.
-        #bolt12_label = str(uuid.uuid4())
-        #bolt12_invoice = "TODO"
-
-        # get calculate an estimated expiration datetime for the vm environment.
-        expiration_date = calculate_expiration_date(hours)
+        # get an expiration datetime estimate for the vm.
+        estimated_expiration_date = calculate_expiration_date(hours)
 
         # build an object to send back to the caller.
         createorder_response = {
             "node_count": node_count,
             "hours": hours,
-            "expires_after": expiration_date,
+            "expires_after": estimated_expiration_date,
             "bolt11_invoice_id": bolt11_guid_str,
             "bolt11_invoice": bolt11_invoice["bolt11"]
         }

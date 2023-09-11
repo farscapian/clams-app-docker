@@ -6,7 +6,7 @@ When developing plugins, you can run the ./reload_dev_plugins.sh script and it'l
 
 ## lnplaylive-createorder
 
-`lnplaylive-createorder` is called by the front end web app to get an invoice for a product. Required parameters are node count (see product definition), number of hours the environment should be active (`hours`) (minimum 3). The `description` field is any VALID JSON string that the front end wishes to include in the actual BOLT11 invoice. The front end and backend can agree on a format for this, but generally speaking, product customizations other details can be stored in this field. Note: the backend MAY embed additional details (e.g., version/git commits) in the `description` field. Invoice are created with a 300 second timeout (5 minutes).
+`lnplaylive-createorder` is called by the front end web app to get an invoice for a product. Required parameters are node count (see product definition), number of hours the environment should be active (`hours`) (minimum 3). Any future product customizations REQUIRE an update to the backend plugin to support associated business logic.
 
 ### example
 
@@ -53,8 +53,7 @@ lightning-cli -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id=2b5549a
 }
 ```
 
-The `vm_expiration_date` is the actual expiration date of the VM. Directly after that date/time (within ten minutes after) the VM will be de-provisioned and deleted.
-
+The `vm_expiration_date` is the actual expiration date of the VM. Directly after that date/time (within ten minutes after) the VM will be culled.
 
 ## TODO
 
