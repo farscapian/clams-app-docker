@@ -30,22 +30,21 @@ def init(options, configuration, plugin, **kwargs):
 def lnplaylive_createorder(plugin, node_count, hours):
     '''Returns a BOLT11 invoice for the given node count and time.'''
     try:
-        # first let's ensure the values that they passed in are appropriate.
+        # The rate is 200 sats per node-hour.
         rate_to_charge = 200000
 
         # ensure node_count is an int
         if not isinstance(node_count, int):
-            raise Exception("Error: node_count MUST be a positive integer.")
-
+            raise Exception("ERROR: node_count MUST be a positive integer.")
 
         # Check if the node_count is evenly divisible by 8
         if node_count % 8 != 0:
             print(f"{node_count} is not evenly divisible by 8.")
-            raise Exception("Error: node_count MUST be evenly divisible by 8.")
+            raise Exception("ERROR: node_count MUST be evenly divisible by 8.")
 
         # ensure hours is an int
         if not isinstance(hours, int):
-            raise Exception("Error: hours MUST be a positive integer.")
+            raise Exception("ERROR: hours MUST be a positive integer.")
 
         # ensure 'hours' is within acceptable limits
         if hours < 3:
