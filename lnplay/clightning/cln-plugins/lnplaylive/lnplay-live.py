@@ -254,8 +254,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         #subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
 
-
-        time.sleep(10)
+        time.sleep(3)
 
         connection_strings = ["https://app.clams.tech/connect?address=02d657b3506b4f011cef3da12f2468b1dc5ade93241da2f713dc60aeabcf9e010e@lnplay.dev:6001&type=direct&value=wss:&rune=ZZQA8QjGEP9xpeqFF_F9jFlxUm-EZyjD9cSMPVF0ADc9Mg==", "https://app.clams.tech/connect?address=026176428622df17bfea3cc3405fc7516ae3a03daa27a99978cdc544b3bc737990@lnplay.dev:6002&type=direct&value=wss:&rune=VB0htCDqFjZXaxSsqQ7rrMPTg71T8QGWczNWZQrYd7M9Mg==", "https://app.clams.tech/connect?address=02fed5f686dffcac71431fc8b904379f2932581e2f3b7bffc632520bee3d300547@lnplay.dev:6003&type=direct&value=wss:&rune=5Yw_s8AAA0DvALvQk524kcNEBg8HhYJw6_SmS16hnPY9MQ==", "https://app.clams.tech/connect?address=02b7bbe03a26b6c5259078fba9858bdaafe295c079301129fa175823ca0d15b6b7@lnplay.dev:6004&type=direct&value=wss:&rune=4FCdsNq73prQRz-RA7SBjzN5R9NqDDYmLQDEYHiYPys9MQ==", "https://app.clams.tech/connect?address=03a3d29eb2ee71ddbd65cc1bbeafa9dff3800a8f2fc590ac7aa0d4f4ff3c126fd7@lnplay.dev:6005&type=direct&value=wss:&rune=UbWNJbjJbWHO7CakY07EVGdQgJXS7jtSC-7a9lNHz1I9MQ==", "https://app.clams.tech/connect?address=036281353c9c6ea1b1cd28c027645dfa5a9cbe616e85aaf991df8b7155edf51a1e@lnplay.dev:6006&type=direct&value=wss:&rune=imY0Rh2pCpL8_e_JdBmYzcaohV16QUKDsjcjgy3PlS49MQ==", "https://app.clams.tech/connect?address=02adbcfed6d5931dda2d61b9de0313cb6cfd0492d0f582e00fdd91e20c1b996df6@lnplay.dev:6007&type=direct&value=wss:&rune=URf3ldN92wye5kq8WMsxGCMJEKRttiOXKC-ndtyUJBs9MQ==", "https://app.clams.tech/connect?address=0205234927872808975cdda0ba16baef5b7c733fb5e570e698c58c3f74e3ca0cb2@lnplay.dev:6008&type=direct&value=wss:&rune=l3hP7JN1sGfoEq-ISf3gSpwRXMAtxOowPxQhzpb3eIQ9MQ=="]
 
