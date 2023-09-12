@@ -28,12 +28,9 @@ BOLT11_INVOICE=$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice')
 sleep 3
 # get status
 SECOND_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=1 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
-SECOND_INVOICE_CHECK_STATUS="$(echo "$SECOND_INVOICE_CHECK_RESPONSE" | jq '.invoice_status')"
+SECOND_INVOICE_CHECK_STATUS="$(echo "$SECOND_INVOICE_CHECK_RESPONSE" | jq '.invoice_status' | xargs)"
 
-
-echo "$SECOND_INVOICE_CHECK_RESPONSE"
-
-if [ "$SECOND_INVOICE_CHECK_STATUS" == "paid" ]; then
+if [ "$SECOND_INVOICE_CHECK_STATUS" != "paid" ]; then
     echo "ERROR: The status should say 'paid'"
     exit 1
 fi
