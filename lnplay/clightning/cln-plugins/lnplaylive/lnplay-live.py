@@ -105,7 +105,7 @@ def lnplaylive_invoicestatus(plugin, payment_type, invoice_id):
         valid_payment_types = ["bolt11", "bolt12"]
 
         if payment_type not in valid_payment_types:
-            raise InvalidEnumerationError("Invalid payment type. Should be 'bolt11' or 'bolt12'.")
+            raise Exception("Invalid payment type. Should be 'bolt11' or 'bolt12'.")
 
         # get info about the invoice and return it to the caller.
         invoices = plugin.rpc.listinvoices(invoice_id)
@@ -117,7 +117,7 @@ def lnplaylive_invoicestatus(plugin, payment_type, invoice_id):
               break
 
         if matching_invoice is None:
-            raise InvoiceNotFoundError("BOLT11 invoice not found. Wrong invoice_id?")
+            raise Exception("BOLT11 invoice not found. Wrong invoice_id?")
 
         invoice_status = matching_invoice["status"]
 
@@ -175,25 +175,6 @@ def lnplaylive_invoicestatus(plugin, payment_type, invoice_id):
         plugin.log(e)
         return e
 
-class InvalidEnumerationError(Exception):
-    pass
-
-class InvoiceNotFoundError(Exception):
-    pass
-
-class InvalidCLNCountError(Exception):
-    pass
-
-class HoursTooLowException(Exception):
-    pass
-
-class HoursTooHighException(Exception):
-    pass
-
-class WhatTheHellException(Exception):
-    pass
-    
-
 @plugin.subscribe("invoice_payment")
 def on_payment(plugin, invoice_payment, **kwargs):
     try:
@@ -209,7 +190,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
               break
 
         if matching_invoice is None:
-            raise InvoiceNotFoundError("Invoice not found. Wrong invoice_id?")
+            raise Exception("ERROR: Invoice not found. Wrong invoice_id?")
 
         # let's grab the invoice description.
         invoice_description = matching_invoice["description"]
