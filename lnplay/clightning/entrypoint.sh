@@ -88,7 +88,6 @@ fi
 if [ "$BTC_CHAIN" = signet ]; then
     # signet only
     CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
-    CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
 fi
 
 if [ "$BTC_CHAIN" = regtest ]; then
