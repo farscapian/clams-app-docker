@@ -15,10 +15,10 @@ To get started, clone this repo and its submodules:
 
 ## Environments
 
-Each environment file (contained in [./environments/](./environments)) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `llarp.fun` that will deploy 5 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `40.25.56.35` in `signet` with TLS enabled.
+Each environment file (contained in [./environments/](./environments)) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `lnplay.live` that will deploy 5 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `lnplay.live` in `signet` with TLS enabled.
 
 ```config
-DOCKER_HOST=ssh://ubuntu@40.25.56.35
+DOCKER_HOST=ssh://ubuntu@lnplay.live
 DOMAIN_NAME=llarp.fun
 ENABLE_TLS=true
 BTC_CHAIN=signet
@@ -37,7 +37,7 @@ Brings your `lnplay` down in a non-destructive way.
 
 ### [`./purge.sh`](./purge.sh) 
 
-Deletes docker volumes related to your active env so you can reset your environment. This is very useful for development. Note mainnet is NEVER deleted! But if you absolutely must, you can run `docker volume rm VOLUME_NAME` .
+Deletes docker volumes related to your active env so you can reset your environment. This is very useful for development. Note mainnet is NEVER deleted! But if you absolutely must, you can run `docker volume rm VOLUME_NAME`.
 
 ### [`./reset.sh`](./reset.sh) 
 
@@ -85,11 +85,11 @@ The default environment deploys everything in `regtest` mode to you local docker
 
 If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if signet wallet is inadequately funded (TODO allow user to specify wallet descriptor). If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. It is recommended to have a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
 
-By default this runs the public signet having a 10 minute block time. Over time we may add [MutinyNet](https://blog.mutinywallet.com/mutinynet/) or other popular signets, as well as deploy private signets (which is like a private regtest, but enables scale-out for larger internet-scale llarps.
+By default this runs the public signet having a 10 minute block time.
 
 ### mainnet
 
-It is not recommend to run `mainnet`` at this time due to how new this software is. But it runs similarly to signet.
+It is not recommend to run `mainnet` at this time due to how new this software is. But it runs similarly to signet.
 
 ## Configuration Settings
 

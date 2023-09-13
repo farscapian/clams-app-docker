@@ -11,7 +11,7 @@ cd "$(dirname "$0")"
 
 if [ "$BTC_CHAIN" = mainnet ]; then
     echo "ERROR: you're on mainnet. You must delete mainnet volumes manually. For God's sake be careful."
-    echo "       ensure you have the hsm_secret at a minimum. Creating an SCB is also advised."
+    echo "       ensure you have the hsm_secret at a minimum. Creating an static channel backup is also recommended."
     exit 1
 fi
 
