@@ -245,7 +245,7 @@ if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   lnplaylive:
     external: true
-    name: lnplaylive
+    name: lnplay-live
 EOF
 fi
 

@@ -25,4 +25,4 @@ EOF
 docker build -t "$LNPLAYLIVE_IMAGE_NAME" ./
 
 # and then load them back up with our freshly build version.
-docker run -t -v lnplaylive:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /app/build/ /output/
+docker run -t -v lnplay-live:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /app/build/ /output/

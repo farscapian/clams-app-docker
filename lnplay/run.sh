@@ -99,8 +99,8 @@ if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
         docker pull node:18
     fi
 
-    if ! docker volume list | grep -q "lnplaylive"; then
-        docker volume create lnplaylive
+    if ! docker volume list | grep -q "lnplay-live"; then
+        docker volume create lnplay-live
     fi
 fi
 
