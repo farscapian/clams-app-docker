@@ -20,7 +20,7 @@ fi
 docker volume prune -f
 
 # get a list of all the volumes
-VOLUMES=$(docker volume list -q | grep lnplay-)
+VOLUMES=$(docker volume list -q | grep "lnplay")
 
 # Iterate over each value in the list
 for VOLUME in $VOLUMES; do
@@ -42,3 +42,11 @@ rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
 rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
 rm -f "$LNPLAY_SERVER_PATH/$DOMAIN_NAME.csv"
+
+# TODO remove this maybe. Simply deleting it here so the cln image gets rebuilt.
+REPOSITORY_NAME="lnplay/cln"
+if docker image list --format='{{.ID}},{{.Repository}}:{{.Tag}}' | grep -q "$REPOSITORY_NAME:$LNPLAY_STACK_VERSION"; then
+    echo "NOTE!!! removing image."
+    docker image rm "$REPOSITORY_NAME:$LNPLAY_STACK_VERSION"
+fi
+ 
