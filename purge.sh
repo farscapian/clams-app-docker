@@ -49,4 +49,3 @@ if docker image list --format='{{.ID}},{{.Repository}}:{{.Tag}}' | grep -q "$REP
     echo "NOTE!!! removing image."
     docker image rm "$REPOSITORY_NAME:$LNPLAY_STACK_VERSION"
 fi
- 

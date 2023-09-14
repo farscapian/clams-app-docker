@@ -226,11 +226,12 @@ VOLUME /dev-plugins
 
 ENV SLEEP=false
 
+# get sovereign stack from remote git repo
 RUN mkdir /sovereign-stack
 RUN git clone --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
 
 # let's get our clients we need to provision remote VMs.
-RUN apt install -y ssh-client
+RUN apt install -y ssh-client wait-for-it rsync sshfs
 COPY ./lxc /usr/bin/lxc
 RUN chmod +x /usr/bin/lxc
 
