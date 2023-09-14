@@ -107,7 +107,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
         utc_dt = pytz.utc.localize(dt)
         unix_timestamp = int(utc_dt.timestamp())
 
-        params = [f"--invoice-label={invoice_id}", f"--expiration-date={unix_timestamp}"]
+        params = [f"--invoice-id={invoice_id}", f"--expiration-date={unix_timestamp}"]
 
         subprocess.run([script_path] + params) #, capture_output=True, text=True, check=True)
 

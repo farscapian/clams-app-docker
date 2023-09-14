@@ -34,7 +34,7 @@ if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
 fi
 
 if ! lxc remote list | grep -q lnplaylive; then
-    lxc remote add lnplaylive -q "$LNPLAY_LXD_FQDN_PORT" --password "$LNPLAY_LXD_PASSWORD" --accept-certificate > /dev/null
+    lxc remote add lnplaylive -q "$LNPLAY_LXD_FQDN_PORT" --password "$LNPLAY_LXD_PASSWORD" --accept-certificate >> /dev/null
 fi
 
 if ! lxc remote get-default | grep -q lnplaylive; then
@@ -62,7 +62,8 @@ DEPLOYMENT_STRING=
 EOF
 
 # need to get the project.conf in there
-PROJECT_CONF_PATH="$REMOTE_CONF_PATH/projects/$PROJECT_NAME"
+PROJECTS_CONF_PATH="$HOME/ss/projects"
+PROJECT_CONF_PATH="$PROJECTS_CONF_PATH/$PROJECT_NAME"
 mkdir -p "$PROJECT_CONF_PATH"  > /dev/null
 
 PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
@@ -71,7 +72,7 @@ PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
 export VM_MAC_ADDRESS="00:00:AA:00:00:00"
 export PRIMARY_DOMAIN="a.lnplay.live"
 cat > "$PROJECT_CONF_FILE_PATH" <<EOF
-PRIMARY_DOMAIN="${DOMAIN_NAME}"
+PRIMARY_DOMAIN="${PRIMARY_DOMAIN}"
 LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
 # LNPLAY_SERVER_CPU_COUNT="4"
 # LNPLAY_SERVER_MEMORY_MB="4096"
