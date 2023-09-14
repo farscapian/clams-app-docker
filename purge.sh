@@ -48,4 +48,6 @@ REPOSITORY_NAME="lnplay/cln"
 if docker image list --format='{{.ID}},{{.Repository}}:{{.Tag}}' | grep -q "$REPOSITORY_NAME:$LNPLAY_STACK_VERSION"; then
     echo "NOTE!!! removing image."
     docker image rm "$REPOSITORY_NAME:$LNPLAY_STACK_VERSION"
+    sleep 1
+    docker system prune -f
 fi
