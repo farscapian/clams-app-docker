@@ -5,6 +5,7 @@ import re
 import time
 import subprocess
 import uuid
+import pytz
 from pyln.client import Plugin, RpcError
 from datetime import datetime, timedelta
 
@@ -101,7 +102,14 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         # The path to the Bash script
         script_path = '/dev-plugins/lnplaylive/provision_lxd.sh'
-        subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
+
+        dt =  datetime.strptime(expiration_date, '%Y-%m-%dT%H:%M:%SZ')
+        utc_dt = pytz.utc.localize(dt)
+        unix_timestamp = int(utc_dt.timestamp())
+
+        params = [f"--invoice-label={invoice_id}", f"--expiration-date={unix_timestamp}"]
+
+        subprocess.run([script_path] + params) #, capture_output=True, text=True, check=True)
 
         time.sleep(3)
 

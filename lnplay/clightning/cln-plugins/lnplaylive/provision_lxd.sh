@@ -2,17 +2,46 @@
 
 set -exu
 
+INVOICE_ID=
+EXPIRATION_DATE_UNIX_TIMESTAMP=
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --invoice-id=*)
+            INVOICE_ID="${i#*=}"
+            shift
+        ;;
+        --expiration-date=*)
+            EXPIRATION_DATE_UNIX_TIMESTAMP="${i#*=}"
+            shift
+        ;;
+        *)
+        echo "Unexpected option: $1"
+        exit 1
+        ;;
+    esac
+done
+
+if [ -z "$INVOICE_ID" ]; then
+    echo "ERROR: INVOICE_ID must be set."
+    exit 1
+fi
+
+if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
+    echo "ERROR: EXPIRATION_DATE_UNIX_TIMESTAMP must be set."
+    exit 1
+fi
+
 if ! lxc remote list | grep -q lnplaylive; then
     lxc remote add lnplaylive -q "$LNPLAY_LXD_FQDN_PORT" --password "$LNPLAY_LXD_PASSWORD" --accept-certificate > /dev/null
 fi
 
 if ! lxc remote get-default | grep -q lnplaylive; then
     lxc remote switch lnplaylive  > /dev/null
-else
-    echo "WARNING: The lxc remote WAS NOT set to local. This could mean a prior deployment left the system in an odd state."
 fi
 
-PROJECT_NAME="project-name-unix-expiration-date"
+PROJECT_NAME="$INVOICE_ID-$EXPIRATION_DATE_UNIX_TIMESTAMP"
 if ! lxc project list | grep -q "$PROJECT_NAME"; then
     lxc project create "$PROJECT_NAME" > /dev/null
 fi
@@ -39,7 +68,8 @@ mkdir -p "$PROJECT_CONF_PATH"  > /dev/null
 PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
 
 # todo, there needs to be some database/file of mac_addresses that can be used.
-export VM_MAC_ADDRESS="MAC_ADDRESS"
+export VM_MAC_ADDRESS="00:00:AA:00:00:00"
+export PRIMARY_DOMAIN="a.lnplay.live"
 cat > "$PROJECT_CONF_FILE_PATH" <<EOF
 PRIMARY_DOMAIN="${DOMAIN_NAME}"
 LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
@@ -50,7 +80,7 @@ EOF
 # need to get the site.conf in there
 cd /sovereign-stack
 
-sleep 60
+sleep 15
 #./deployment/up.sh
 
 # set the project to default
