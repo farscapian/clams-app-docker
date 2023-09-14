@@ -237,10 +237,17 @@ RUN chmod +x /usr/bin/lxc
 # let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
 RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
-ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
-RUN chmod +x /plugins/lnplaylive/lnplay-live.py
+
+# provisioning plugin
+ADD ./cln-plugins/lnplaylive/lnplay-live-provision.py /plugins/lnplaylive/lnplay-live-provision.py
+RUN chmod +x /plugins/lnplaylive/lnplay-live-provision.py
 ADD ./cln-plugins/lnplaylive/provision_lxd.sh /plugins/lnplaylive/provision_lxd.sh
 RUN chmod +x /plugins/lnplaylive/provision_lxd.sh
+
+# lnplay-live cln/api extensions
+ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
+RUN chmod +x /plugins/lnplaylive/lnplay-live.py
+
 
 # add entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
