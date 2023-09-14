@@ -7,22 +7,22 @@ if ! lxc remote list | grep -q lnplaylive; then
 fi
 
 if ! lxc remote get-default | grep -q lnplaylive; then
-    lxc remote switch lnplaylive
+    lxc remote switch lnplaylive  > /dev/null
 else
     echo "WARNING: The lxc remote WAS NOT set to local. This could mean a prior deployment left the system in an odd state."
 fi
 
-PROJECT_NAME="LABEL_XXX-EXPIRATION_DATE_UNIX"
+PROJECT_NAME="project-name-unix-expiration-date"
 if ! lxc project list | grep -q "$PROJECT_NAME"; then
-    lxc project create "$PROJECT_NAME"
+    lxc project create "$PROJECT_NAME" > /dev/null
 fi
 
 if ! lxc project list | grep -q "$PROJECT_NAME (current)"; then
-    lxc project switch "$PROJECT_NAME"
+    lxc project switch "$PROJECT_NAME"  > /dev/null
 fi
 
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
-mkdir -p "$REMOTE_CONF_PATH"
+mkdir -p "$REMOTE_CONF_PATH"  > /dev/null
 
 REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
 # need to get the remote.conf in there
@@ -34,7 +34,7 @@ EOF
 
 # need to get the project.conf in there
 PROJECT_CONF_PATH="$REMOTE_CONF_PATH/projects/$PROJECT_NAME"
-mkdir -p "$PROJECT_CONF_PATH"
+mkdir -p "$PROJECT_CONF_PATH"  > /dev/null
 
 PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
 
@@ -50,11 +50,11 @@ EOF
 # need to get the site.conf in there
 cd /sovereign-stack
 
-
+sleep 60
 #./deployment/up.sh
 
 # set the project to default
-lxc project switch default
+lxc project switch default  > /dev/null
 
 # set the remote to local.
-lxc remote switch local
+lxc remote switch local  > /dev/null
