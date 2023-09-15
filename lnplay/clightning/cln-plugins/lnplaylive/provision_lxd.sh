@@ -78,10 +78,26 @@ LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
 # LNPLAY_SERVER_MEMORY_MB="4096"
 EOF
 
+export PRIMARY_DOMAIN="a.lnplay.live"
+SITES_CONF_PATH="$HOME/ss/sites/$PRIMARY_DOMAIN"
+mkdir -p "$SITES_CONF_PATH"
+SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
+cat > "$SITE_CONF_PATH" <<EOF
+DOMAIN_NAME="${PRIMARY_DOMAIN}"
+SITE_LANGUAGE_CODES=en
+DUPLICITY_BACKUP_PASSPHRASE=
+DEPLOY_GHOST=false
+DEPLOY_NEXTCLOUD=false
+DEPLOY_NOSTR=false
+NOSTR_ACCOUNT_PUBKEY=
+DEPLOY_GITEA=false
+EOF
+
 # need to get the site.conf in there
 cd /sovereign-stack
 
 ./deployment/up.sh
+
 # set the project to default
 lxc project switch default  > /dev/null
 
