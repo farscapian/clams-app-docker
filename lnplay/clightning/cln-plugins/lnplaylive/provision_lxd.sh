@@ -93,6 +93,13 @@ NOSTR_ACCOUNT_PUBKEY=
 DEPLOY_GITEA=false
 EOF
 
+
+# ensure we have an SSH key to use for remote VMs.
+# TODO should this mounted into the cln container?
+if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096
+fi
+
 # need to get the site.conf in there
 cd /sovereign-stack
 
