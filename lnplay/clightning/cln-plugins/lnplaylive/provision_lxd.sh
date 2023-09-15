@@ -52,7 +52,10 @@ PROJECT_NAMES=$(lxc project list --format csv | cut -d',' -f1)
 for PROJECT in $PROJECT_NAMES; do
     # Your commands using the "$project" variable here
     echo "Processing project: $PROJECT"
-    lxc project delete "$PROJECT"
+    
+    if ! echo "$PROJECT" | grep -q default; then
+        lxc project delete "$PROJECT"
+    fi
 done
 
 
