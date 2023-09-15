@@ -87,6 +87,14 @@ elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
 
         server_name ${DOMAIN_NAME};
 
+        location ~ ^/orders/(?<order_id>.+)$ {
+            autoindex off;
+            server_tokens off;
+            gzip_static on;
+            root /lnplaylive/build;
+            index index.html;
+        }
+
         location / {
             autoindex off;
             server_tokens off;

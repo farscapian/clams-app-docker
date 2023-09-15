@@ -81,9 +81,7 @@ EOF
 # need to get the site.conf in there
 cd /sovereign-stack
 
-sleep 15
-#./deployment/up.sh
-
+./deployment/up.sh
 # set the project to default
 lxc project switch default  > /dev/null
 
