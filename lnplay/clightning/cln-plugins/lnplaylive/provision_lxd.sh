@@ -41,6 +41,23 @@ if ! lxc remote get-default | grep -q lnplaylive; then
     lxc remote switch lnplaylive  > /dev/null
 fi
 
+
+# DELETE ALL OTHER PROJECTS SO WE CAN WORK WITH FRESH
+lxc project switch default
+
+# Fetch all LXC project names
+PROJECT_NAMES=$(lxc project list --format csv | cut -d',' -f1)
+
+# Iterate over each project name
+for PROJECT in $PROJECT_NAMES; do
+    # Your commands using the "$project" variable here
+    echo "Processing project: $PROJECT"
+    lxc project delete "$PROJECT"
+done
+
+
+
+
 PROJECT_NAME="$INVOICE_ID-$EXPIRATION_DATE_UNIX_TIMESTAMP"
 if ! lxc project list | grep -q "$PROJECT_NAME"; then
     lxc project create "$PROJECT_NAME" > /dev/null
