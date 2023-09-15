@@ -125,11 +125,11 @@ def on_payment(plugin, invoice_payment, **kwargs):
             "connection_strings": connection_strings
         }
 
-         # Log that we are starting the provisoining proces.s
-        plugin.log(f"lnplay-live: Order: {invoice_id} has been provisioned.")
-
         # add the order_details info to datastore with the invoice_label as the key
         plugin.rpc.datastore(key=invoice_id, string=json.dumps(order_details),mode="must-replace")
+
+        # Log that we are starting the provisoining proces.s
+        plugin.log(f"lnplay-live: Order: {invoice_id} has been provisioned.")
 
     except RpcError as e:
         printout("Payment error: {}".format(e))
