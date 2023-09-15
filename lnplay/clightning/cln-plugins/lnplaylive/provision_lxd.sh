@@ -110,13 +110,10 @@ EOF
 # ensure we have an SSH key to use for remote VMs.
 # TODO should this mounted into the cln container?
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then
-    ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096 -N ""
+    ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096 -N ""  > /dev/null
 fi
 
-# need to get the site.conf in there
-cd /sovereign-stack
-
-./deployment/up.sh
+/sovereign-stack/deployment/up.sh
 
 # set the project to default
 lxc project switch default  > /dev/null
