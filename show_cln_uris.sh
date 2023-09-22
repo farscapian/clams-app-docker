@@ -45,8 +45,6 @@ if [ -z "$OUTPUT_FILE" ]; then
     OUTPUT_FILE="$LNPLAY_SERVER_PATH/${DOMAIN_NAME}.csv"""
 fi
 
-readarray -t names < "$NAMES_FILE_PATH"
-
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
@@ -56,8 +54,6 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     # fi
 
 
-    CLN_NAME=${names[$CLN_ID]}
-    CLN_ALIAS="cln-${CLN_ID}"
     CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
 
     # now let's output the core lightning node URI so the user doesn't need to fetch that manually.

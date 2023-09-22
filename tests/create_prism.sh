@@ -12,7 +12,6 @@ PRISM_JSON_STRING="["
 
 # do every other keysend/bolt12
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
-    NODE_PUBKEY=${pubkeys[$CLN_ID]}
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
     PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"name\" : \"${names[$CLN_ID]}\", \"destination\": \"$NODE_ANYOFFER\", \"split\": 1, \"type\":\"bolt12\"},"
 done
