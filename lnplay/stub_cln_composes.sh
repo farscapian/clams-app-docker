@@ -73,6 +73,12 @@ EOF
       - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
 EOF
 
+    if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - ${HOME}/sovereign-stack:/sovereign-stack:ro
+EOF
+    fi
+
     if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - cln-${CLN_ID}-torproxy-${BTC_CHAIN}:/var/lib/tor:ro

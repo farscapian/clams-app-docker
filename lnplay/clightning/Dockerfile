@@ -228,7 +228,8 @@ ENV SLEEP=false
 
 # get sovereign stack from remote git repo
 RUN mkdir /sovereign-stack
-RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
+VOLUME /sovereign-stack
+#RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
 
 # let's get our clients we need to provision remote VMs.
 RUN apt install -y ssh-client wait-for-it rsync sshfs
