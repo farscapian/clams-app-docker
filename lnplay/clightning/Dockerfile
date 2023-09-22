@@ -232,8 +232,6 @@ RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.
 
 # let's get our clients we need to provision remote VMs.
 RUN apt install -y ssh-client wait-for-it rsync sshfs
-COPY ./lxc /usr/bin/lxc
-RUN chmod +x /usr/bin/lxc
 
 # let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
