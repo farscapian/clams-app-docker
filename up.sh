@@ -195,8 +195,6 @@ if [ "$BTC_CHAIN" != regtest ]; then
     done
 fi
 
-cd "$(dirname "$0")"
-
 # if we are deploying the lnplaylive frontend, we can rebuild at this point
 # because it required build-time info from the deployed backend. The build script below
 # will stub out those envs and rebuild the output from the app.
