@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 INVOICE_ID=
 EXPIRATION_DATE_UNIX_TIMESTAMP=
@@ -28,6 +28,7 @@ if [ -z "$INVOICE_ID" ]; then
     exit 1
 fi
 
+
 if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
     echo "ERROR: EXPIRATION_DATE_UNIX_TIMESTAMP must be set."
     exit 1
@@ -44,30 +45,32 @@ fi
 # DELETE ALL OTHER PROJECTS SO WE CAN WORK WITH FRESH
 lxc project switch default
 
-# Fetch all LXC project names
+# Fetch all project names
 PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
 
 # Iterate over each project name
 for PROJECT in $PROJECT_NAMES; do
-    if echo "$PROJECT" | grep -q default; then
+    if ! echo "$PROJECT" | grep -q default; then
         lxc project delete "$PROJECT"
     fi
 done
 
-PROJECT_NAME="$INVOICE_ID-$EXPIRATION_DATE_UNIX_TIMESTAMP"
+INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
+LOWER_ID="${INVOICE_SHORT_ID: -6}"
+PROJECT_NAME="${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
 if ! lxc project list | grep -q "$PROJECT_NAME"; then
     lxc project create "$PROJECT_NAME" > /dev/null
-fi
-
-if ! lxc project list | grep -q "$PROJECT_NAME (current)"; then
-    lxc project switch "$PROJECT_NAME"  > /dev/null
+    lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=true
+    lxc project switch "$PROJECT_NAME" > /dev/null
 fi
 
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
-mkdir -p "$REMOTE_CONF_PATH"  > /dev/null
+mkdir -p "$REMOTE_CONF_PATH" > /dev/null
 
 REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
+
 # need to get the remote.conf in there
+# this isn't really needed since env are provided via docker.
 cat > "$REMOTE_CONF_FILE_PATH" <<EOF
 LXD_REMOTE_PASSWORD=
 DEPLOYMENT_STRING=
@@ -97,13 +100,6 @@ mkdir -p "$SITES_CONF_PATH"
 SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
 cat > "$SITE_CONF_PATH" <<EOF
 DOMAIN_NAME="${PRIMARY_DOMAIN}"
-SITE_LANGUAGE_CODES=en
-DUPLICITY_BACKUP_PASSPHRASE=
-DEPLOY_GHOST=false
-DEPLOY_NEXTCLOUD=false
-DEPLOY_NOSTR=false
-NOSTR_ACCOUNT_PUBKEY=
-DEPLOY_GITEA=false
 EOF
 
 
@@ -113,7 +109,7 @@ if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096 -N ""  > /dev/null
 fi
 
-/sovereign-stack/deployment/up.sh
+bash -c "/sovereign-stack/deployment/up.sh"
 
 # set the project to default
 lxc project switch default  > /dev/null
