@@ -232,7 +232,23 @@ VOLUME /sovereign-stack
 #RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
 
 # let's get our clients we need to provision remote VMs.
-RUN apt install -y ssh-client wait-for-it rsync sshfs
+RUN apt install -y ssh-client wait-for-it rsync sshfs wget curl
+
+RUN wget -O /usr/bin/lxc https://github.com/canonical/lxd/releases/download/lxd-5.18/bin.linux.lxc
+RUN chmod +x /usr/bin/lxc
+
+# install docker client
+# Add Docker's official GPG key:
+RUN apt-get update
+RUN apt-get install ca-certificates curl gnupg
+RUN install -m 0755 -d /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list
+RUN apt-get update
+RUN apt-get install -y docker-ce-cli
 
 # let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
