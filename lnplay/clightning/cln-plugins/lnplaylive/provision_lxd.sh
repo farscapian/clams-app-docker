@@ -43,7 +43,6 @@ if [ -z "$INVOICE_ID" ]; then
     exit 1
 fi
 
-
 if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
     echo "ERROR: EXPIRATION_DATE_UNIX_TIMESTAMP must be set."
     exit 1
@@ -73,25 +72,6 @@ FIRST_AVAILABLE_SLOT=$(echo "$AVAILABLE_SLOTS_MATCHING_PROUDCT" | grep -wv Hostn
 
 # DELETE ALL OTHER PROJECTS SO WE CAN WORK WITH FRESH
 lxc project switch default
-
-# Fetch all project names
-PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
-
-# Iterate over each project name
-for PROJECT in $PROJECT_NAMES; do
-    if ! echo "$PROJECT" | grep -q default; then
-        lxc project delete "$PROJECT"
-    fi
-done
-
-INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
-LOWER_ID="${INVOICE_SHORT_ID: -6}"
-PROJECT_NAME="${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
-if ! lxc project list | grep -q "$PROJECT_NAME"; then
-    lxc project create "$PROJECT_NAME" > /dev/null
-    lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=true
-    lxc project switch "$PROJECT_NAME" > /dev/null
-fi
 
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
 mkdir -p "$REMOTE_CONF_PATH" > /dev/null
@@ -128,17 +108,24 @@ SITES_CONF_PATH="$HOME/ss/sites/$PRIMARY_DOMAIN"
 mkdir -p "$SITES_CONF_PATH"
 SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
 cat > "$SITE_CONF_PATH" <<EOF
-DOMAIN_NAME="${PRIMARY_DOMAIN}"
-EOF
+# Now let's clean up all the projects from the cluster.
+# TODO disable this prior to production.
+PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
 
+# Iterate over each project name
+for OLD_PROJECT_NAME in $PROJECT_NAMES; do
+    if ! echo "$OLD_PROJECT_NAME" | grep -q default; then
+        if ! echo "$OLD_PROJECT_NAME" | grep -q current; then
+            lxc project switch "$OLD_PROJECT_NAME"
+            if [ -f "$PROJECT_CONF_FILE_PATH" ]; then
+                bash -c "/sovereign-stack/deployment/down.sh --purge -f" || true
+            fi
 
-# ensure we have an SSH key to use for remote VMs.
-# TODO should this mounted into the cln container?
-if [ ! -f "$HOME/.ssh/id_rsa" ]; then
-    ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096 -N ""  > /dev/null
-fi
-
-bash -c "/sovereign-stack/deployment/up.sh"
+            lxc project switch default
+            lxc project delete "$OLD_PROJECT_NAME" >> /dev/null
+        fi
+    fi
+done
 
 # set the project to default
 lxc project switch default  > /dev/null
