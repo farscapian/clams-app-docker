@@ -1,7 +1,7 @@
 FROM node:18
-RUN mkdir /app
-COPY app/ /app
-WORKDIR /app
+RUN mkdir /lnplaylive
+COPY app/ /lnplaylive
+WORKDIR /lnplaylive
 EXPOSE 5173
 ENV HOST=0.0.0.0
 ENV PORT 5173
