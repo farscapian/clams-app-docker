@@ -92,6 +92,16 @@ EOF
 EOF
     fi
 
+
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+    configs:
+      - source: host-mappings
+        target: /root/host_mappings.csv
+EOF
+fi
+
+
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
       - bitcoindnet
@@ -203,6 +213,16 @@ EOF
   cln-${CLN_ID}-torproxy-${BTC_CHAIN}:
 EOF
         fi
+
+
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ -f "$LNPALY_LXD_HOSTMAPPINGS" ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+
+configs:
+  host-mappings:
+    file: ${LNPALY_LXD_HOSTMAPPINGS}
+EOF
+fi
 
     docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}"
 
