@@ -82,32 +82,56 @@ REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
 # this isn't really needed since env are provided via docker.
 cat > "$REMOTE_CONF_FILE_PATH" <<EOF
 LXD_REMOTE_PASSWORD=
-DEPLOYMENT_STRING=
+# DEPLOYMENT_STRING=
 # REGISTRY_URL=http://registry.domain.tld:5000
 EOF
+
+
+# get the short invoice id since lxc does'nt support long project names.
+INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
+LOWER_ID="${INVOICE_SHORT_ID: -6}"
+PROJECT_NAME="${FIRST_AVAILABLE_SLOT}-${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
 
 # need to get the project.conf in there
 PROJECTS_CONF_PATH="$HOME/ss/projects"
 PROJECT_CONF_PATH="$PROJECTS_CONF_PATH/$PROJECT_NAME"
-mkdir -p "$PROJECT_CONF_PATH"  > /dev/null
+mkdir -p "$PROJECT_CONF_PATH"
 
 PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
 
-# todo, there needs to be some database/file of mac_addresses that can be used.
-export VM_MAC_ADDRESS="00:00:AA:00:00:00"
-export PRIMARY_DOMAIN="a.lnplay.live"
+# the LNPLAY_HOSTNAME should be the first availabe slot.
+LNPLAY_HOSTNAME="$FIRST_AVAILABLE_SLOT"
+
+HOST_CSV=$(< "$HOST_MAPPINGS")
+VM_MAC_ADDRESS=$(echo "$HOST_CSV" | grep "$LNPLAY_HOSTNAME" | cut -d',' -f2)
+
+# stub out the project.conf
 cat > "$PROJECT_CONF_FILE_PATH" <<EOF
-PRIMARY_DOMAIN="${PRIMARY_DOMAIN}"
+PRIMARY_DOMAIN="${DOMAIN_NAME}"
 LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
-# LNPLAY_SERVER_CPU_COUNT="4"
-# LNPLAY_SERVER_MEMORY_MB="4096"
+LNPLAY_SERVER_HOSTNAME=${LNPLAY_HOSTNAME}
 EOF
 
-export PRIMARY_DOMAIN="a.lnplay.live"
-SITES_CONF_PATH="$HOME/ss/sites/$PRIMARY_DOMAIN"
+# now let's create the project
+if ! lxc project list | grep -q "$PROJECT_NAME"; then
+    lxc project create -q "$PROJECT_NAME"
+    lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=true
+    lxc project switch -q "$PROJECT_NAME"
+fi
+
+
+# now we need to stub out the site.conf file.
+SITES_CONF_PATH="$HOME/ss/sites/$DOMAIN_NAME"
 mkdir -p "$SITES_CONF_PATH"
 SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
 cat > "$SITE_CONF_PATH" <<EOF
+DOMAIN_NAME=${DOMAIN_NAME}
+LNPLAY_SERVER_HOSTNAME=${LNPLAY_HOSTNAME}
+EOF
+
+# now call the provisioning script.
+bash -c "/sovereign-stack/deployment/up.sh"
+
 # Now let's clean up all the projects from the cluster.
 # TODO disable this prior to production.
 PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
