@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 # before I can do any of this, I need to stub out the .env file...
@@ -21,6 +21,9 @@ PUBLIC_ADDRESS="${PUBLIC_ADDRESS}"
 PUBLIC_RUNE="${PUBLIC_RUNE}"
 PUBLIC_WEBSOCKET_PROXY="${WS_PROTO}://${PUBLIC_WEBSOCKET_PROXY:1}"
 EOF
+
+rm -rf ./app/node_modules
+rm -rf ./app/.sveltekit
 
 docker build -t "$LNPLAYLIVE_IMAGE_NAME" ./
 
