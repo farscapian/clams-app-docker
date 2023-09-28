@@ -4,6 +4,7 @@ set -eu
 
 INVOICE_ID=
 EXPIRATION_DATE_UNIX_TIMESTAMP=
+NODE_COUNT=
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -16,12 +17,26 @@ for i in "$@"; do
             EXPIRATION_DATE_UNIX_TIMESTAMP="${i#*=}"
             shift
         ;;
+        --node-count=*)
+            NODE_COUNT="${i#*=}"
+            shift
+        ;;
         *)
         echo "Unexpected option: $1"
         exit 1
         ;;
     esac
 done
+
+if [ -z "$NODE_COUNT" ]; then
+    echo "ERROR: Node count must be set."
+    exit 1
+fi
+
+if [ "$NODE_COUNT" != 8 ] && [ "$NODE_COUNT" != 16 ]; then
+    echo "ERROR: Node count MUST be 8 or 16."
+    exit 1
+fi
 
 if [ -z "$INVOICE_ID" ]; then
     echo "ERROR: INVOICE_ID must be set."
@@ -34,13 +49,11 @@ if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
     exit 1
 fi
 
-if ! lxc remote list | grep -q lnplaylive; then
-    lxc remote add lnplaylive -q "$LNPLAY_LXD_FQDN_PORT" --password "$LNPLAY_LXD_PASSWORD" --accept-certificate >> /dev/null
-fi
 
-if ! lxc remote get-default | grep -q lnplaylive; then
-    lxc remote switch lnplaylive  > /dev/null
-fi
+SEARCH_PATTERN="$(printf "%03d\n" "$NODE_COUNT")slot"
+AVAILABLE_SLOTS_MATCHING_PROUDCT=$(echo "$AVAILABLE_SLOTS" | grep "$SEARCH_PATTERN")
+FIRST_AVAILABLE_SLOT=$(echo "$AVAILABLE_SLOTS_MATCHING_PROUDCT" | grep -wv Hostname | head -n 1)
+
 
 # DELETE ALL OTHER PROJECTS SO WE CAN WORK WITH FRESH
 lxc project switch default

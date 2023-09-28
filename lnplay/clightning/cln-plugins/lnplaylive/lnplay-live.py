@@ -23,6 +23,9 @@ plugin = Plugin()
 
 @plugin.init()  # Decorator to define a callback once the `init` method call has successfully completed
 def init(options, configuration, plugin, **kwargs):
+
+    script_path = '/dev-plugins/lnplaylive/lxc_client_init.sh'
+    subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
     plugin.log("lnplay.live - plugin initialized")
 
 
