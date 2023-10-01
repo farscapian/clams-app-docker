@@ -53,24 +53,26 @@ fi
 HOST_MAPPINGS="$HOME/host_mappings.csv"
 
 # Extract the first column of the csv. These represental total available slots.
-TOTAL_AVAILABLE_SLOTS=$(cut -d, -f1 < "$HOST_MAPPINGS")
+ALL_SLOTS=$(cut -d, -f1 < "$HOST_MAPPINGS")
 
 # next, we get a list of all those slots which are currently allocated.
-STARTING_PROJECT_LIST=$(lxc project list --format csv | grep -v default | cut -d, -f1 | sed 's/ (current)//g')
+USED_SLOTS_LIST=$(lxc project list --format csv | grep -v default | cut -d, -f1 | sed 's/ (current)//g' | cut -d- -f1)
 
 # Convert arrays to sorted files
-printf "%s\n" "${TOTAL_AVAILABLE_SLOTS[@]}" | sort > "$HOME"/setA.txt
-printf "%s\n" "${STARTING_PROJECT_LIST[@]}" | sort > "$HOME"/setB.txt
+printf "%s\n" "${ALL_SLOTS[@]}" | sort > "$HOME"/setA.txt
+printf "%s\n" "${USED_SLOTS_LIST[@]}" | sort > "$HOME"/setB.txt
 
-# Perform set subtraction
-AVAILABLE_SLOTS=$(comm -23 "$HOME"/setA.txt "$HOME"/setB.txt)
+FIRST_AVAILABLE_SLOT=
+AVAILABLE_SLOTS=
+if grep -vxF -f "$HOME"/setB.txt "$HOME"/setA.txt >> /dev/null; then
+    AVAILABLE_SLOTS=$(grep -vxF -f "$HOME"/setB.txt "$HOME"/setA.txt)
+    if [ -n "$AVAILABLE_SLOTS" ]; then
+        SEARCH_PATTERN="$(printf "%03d\n" "$NODE_COUNT")slot"
+        SLOTS_MATCHING_PRODUCT=$(echo "$AVAILABLE_SLOTS" | grep "$SEARCH_PATTERN")
+        FIRST_AVAILABLE_SLOT=$(echo "$SLOTS_MATCHING_PRODUCT" | grep -wv Hostname | head -n 1)
+    fi
+fi
 
-SEARCH_PATTERN="$(printf "%03d\n" "$NODE_COUNT")slot"
-AVAILABLE_SLOTS_MATCHING_PROUDCT=$(echo "$AVAILABLE_SLOTS" | grep "$SEARCH_PATTERN")
-FIRST_AVAILABLE_SLOT=$(echo "$AVAILABLE_SLOTS_MATCHING_PROUDCT" | grep -wv Hostname | head -n 1)
-
-
-# DELETE ALL OTHER PROJECTS SO WE CAN WORK WITH FRESH
 lxc project switch default
 
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
@@ -120,17 +122,20 @@ if ! lxc project list | grep -q "$PROJECT_NAME"; then
 fi
 
 
-# now we need to stub out the site.conf file.
-SITES_CONF_PATH="$HOME/ss/sites/$DOMAIN_NAME"
-mkdir -p "$SITES_CONF_PATH"
-SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
-cat > "$SITE_CONF_PATH" <<EOF
-DOMAIN_NAME=${DOMAIN_NAME}
-LNPLAY_SERVER_HOSTNAME=${LNPLAY_HOSTNAME}
+    # now we need to stub out the site.conf file.
+    SITES_CONF_PATH="$HOME/ss/sites/$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
+    mkdir -p "$SITES_CONF_PATH"
+    SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
+    cat > "$SITE_CONF_PATH" <<EOF
+DOMAIN_NAME=${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}
+DEPLOY_GHOST=false
+DEPLOY_NEXTCLOUD=false
+DEPLOY_NOSTR=false
+NOSTR_ACCOUNT_PUBKEY=
+DEPLOY_GITEA=false
 EOF
 
-# now call the provisioning script.
-bash -c "/sovereign-stack/deployment/up.sh"
+    bash -c "/sovereign-stack/deployment/up.sh"
 
 # Now let's clean up all the projects from the cluster.
 # TODO disable this prior to production.
