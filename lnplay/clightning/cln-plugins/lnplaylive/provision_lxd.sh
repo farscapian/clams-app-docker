@@ -96,38 +96,40 @@ LXD_REMOTE_PASSWORD=
 EOF
 
 
-# get the short invoice id since lxc does'nt support long project names.
-INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
-LOWER_ID="${INVOICE_SHORT_ID: -6}"
-PROJECT_NAME="${FIRST_AVAILABLE_SLOT}-${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
+    # get the short invoice id since lxc does'nt support long project names.
+    INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
+    LOWER_ID="${INVOICE_SHORT_ID: -6}"
+    PROJECT_NAME="${FIRST_AVAILABLE_SLOT}-${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
 
-# need to get the project.conf in there
-PROJECTS_CONF_PATH="$HOME/ss/projects"
-PROJECT_CONF_PATH="$PROJECTS_CONF_PATH/$PROJECT_NAME"
-mkdir -p "$PROJECT_CONF_PATH"
+    # need to get the project.conf in there
 
-PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
+    PROJECT_CONF_PATH="$PROJECTS_CONF_PATH/$PROJECT_NAME"
+    mkdir -p "$PROJECT_CONF_PATH"
+    PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
 
-# the LNPLAY_HOSTNAME should be the first availabe slot.
-LNPLAY_HOSTNAME="$FIRST_AVAILABLE_SLOT"
+    # the LNPLAY_HOSTNAME should be the first availabe slot.
+    LNPLAY_HOSTNAME="$FIRST_AVAILABLE_SLOT"
 
-HOST_CSV=$(< "$HOST_MAPPINGS")
-VM_MAC_ADDRESS=$(echo "$HOST_CSV" | grep "$LNPLAY_HOSTNAME" | cut -d',' -f2)
+    HOST_CSV=$(< "$HOST_MAPPINGS")
+    VM_MAC_ADDRESS=$(echo "$HOST_CSV" | grep "$LNPLAY_HOSTNAME" | cut -d',' -f2)
 
-# stub out the project.conf
-cat > "$PROJECT_CONF_FILE_PATH" <<EOF
-PRIMARY_DOMAIN="${DOMAIN_NAME}"
+    # stub out the project.conf
+    cat > "$PROJECT_CONF_FILE_PATH" <<EOF
+PRIMARY_DOMAIN="${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}"
 LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
 LNPLAY_SERVER_HOSTNAME=${LNPLAY_HOSTNAME}
+
+# CPU count gets scaled based on node count.
+LNPLAY_SERVER_CPU_COUNT=2
+LNPLAY_SERVER_MEMORY_MB=2048
 EOF
 
-# now let's create the project
-if ! lxc project list | grep -q "$PROJECT_NAME"; then
-    lxc project create -q "$PROJECT_NAME"
-    lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=true
-    lxc project switch -q "$PROJECT_NAME"
-fi
-
+    # now let's create the project
+    if ! lxc project list | grep -q "$PROJECT_NAME"; then
+        lxc project create -q "$PROJECT_NAME"
+        lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=true
+        lxc project switch -q "$PROJECT_NAME"
+    fi
 
     # now we need to stub out the site.conf file.
     SITES_CONF_PATH="$HOME/ss/sites/$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
