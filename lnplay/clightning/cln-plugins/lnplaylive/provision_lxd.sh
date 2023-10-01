@@ -78,13 +78,18 @@ fi
 
 lxc project switch default
 
+PROJECTS_CONF_PATH="$HOME/ss/projects"
+
+# we only provision if there's a slot available.
 if [ -n "$FIRST_AVAILABLE_SLOT" ] && [ "$PROVISION_NEW_PROJECT" = true ]; then
+    REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
+    mkdir -p "$REMOTE_CONF_PATH" > /dev/null
 
-REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
+    REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
 
-# need to get the remote.conf in there
-# this isn't really needed since env are provided via docker.
-cat > "$REMOTE_CONF_FILE_PATH" <<EOF
+    # need to get the remote.conf in there
+    # this isn't really needed since env are provided via docker.
+    cat > "$REMOTE_CONF_FILE_PATH" <<EOF
 LXD_REMOTE_PASSWORD=
 # DEPLOYMENT_STRING=
 # REGISTRY_URL=http://registry.domain.tld:5000
