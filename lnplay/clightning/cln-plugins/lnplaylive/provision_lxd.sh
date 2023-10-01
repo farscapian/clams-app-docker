@@ -2,6 +2,9 @@
 
 set -eu
 
+PROVISION_NEW_PROJECT=true
+DEPROVISION_PROJECTS=false
+
 INVOICE_ID=
 EXPIRATION_DATE_UNIX_TIMESTAMP=
 NODE_COUNT=
@@ -75,8 +78,7 @@ fi
 
 lxc project switch default
 
-REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"
-mkdir -p "$REMOTE_CONF_PATH" > /dev/null
+if [ -n "$FIRST_AVAILABLE_SLOT" ] && [ "$PROVISION_NEW_PROJECT" = true ]; then
 
 REMOTE_CONF_FILE_PATH="$REMOTE_CONF_PATH/remote.conf"
 
@@ -137,9 +139,9 @@ EOF
 
     bash -c "/sovereign-stack/deployment/up.sh"
 
-# Now let's clean up all the projects from the cluster.
-# TODO disable this prior to production.
-PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
+fi
+
+if [ "$DEPROVISION_PROJECTS" = true ]; then
 
 # Iterate over each project name
 for OLD_PROJECT_NAME in $PROJECT_NAMES; do
@@ -158,6 +160,8 @@ done
 
 # set the project to default
 lxc project switch default  > /dev/null
+
+fi
 
 # set the remote to local.
 lxc remote switch local  > /dev/null
