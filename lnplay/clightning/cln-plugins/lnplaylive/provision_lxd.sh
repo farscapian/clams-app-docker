@@ -149,26 +149,32 @@ EOF
 fi
 
 if [ "$DEPROVISION_PROJECTS" = true ]; then
+    # Now let's clean up all the projects from the cluster.
+    # TODO disable this prior to production.
+    PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
 
-# Iterate over each project name
-for OLD_PROJECT_NAME in $PROJECT_NAMES; do
-    if ! echo "$OLD_PROJECT_NAME" | grep -q default; then
-        if ! echo "$OLD_PROJECT_NAME" | grep -q current; then
-            lxc project switch "$OLD_PROJECT_NAME"
-            if [ -f "$PROJECT_CONF_FILE_PATH" ]; then
-                bash -c "/sovereign-stack/deployment/down.sh --purge -f" || true
+    # Iterate over each project name
+    for OLD_PROJECT_NAME in $PROJECT_NAMES; do
+        if ! echo "$OLD_PROJECT_NAME" | grep -q default; then
+            if ! echo "$OLD_PROJECT_NAME" | grep -q current; then
+                echo "Deprovisioning project '$OLD_PROJECT_NAME'" >> /dev/null
+                lxc project switch "$OLD_PROJECT_NAME"
+
+                PROJECT_CONF_FILE_PATH="$PROJECTS_CONF_PATH/$OLD_PROJECT_NAME/project.conf"
+                if [ -f "$PROJECT_CONF_FILE_PATH" ]; then
+                    bash -c "/sovereign-stack/deployment/down.sh --purge -f"
+                fi
+
+                lxc project switch default >> /dev/null
+                lxc project delete "$OLD_PROJECT_NAME" >> /dev/null
             fi
-
-            lxc project switch default
-            lxc project delete "$OLD_PROJECT_NAME" >> /dev/null
         fi
-    fi
-done
+    done
 
-# set the project to default
-lxc project switch default  > /dev/null
+    # set the project to default
+    lxc project switch default  > /dev/null
 
 fi
 
 # set the remote to local.
-lxc remote switch local  > /dev/null
+lxc remote switch local > /dev/null

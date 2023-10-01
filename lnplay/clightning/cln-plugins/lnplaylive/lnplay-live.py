@@ -21,7 +21,7 @@ def printout(s):
 
 plugin = Plugin()
 
-@plugin.init()  # Decorator to define a callback once the `init` method call has successfully completed
+@plugin.init()  # this runs when the plugin starts.
 def init(options, configuration, plugin, **kwargs):
 
     script_path = '/dev-plugins/lnplaylive/lxc_client_init.sh'
