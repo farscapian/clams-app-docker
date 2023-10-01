@@ -109,7 +109,19 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         params = [f"--invoice-id={invoice_id}", f"--expiration-date={unix_timestamp}", f"--node-count={node_count}"]
 
-        subprocess.run([script_path] + params) #, capture_output=True, text=True, check=True)
+        result = None
+
+        try:
+            plugin.log("Starting provisioning script.")
+            result = subprocess.run([script_path] + params, capture_output=True, text=True, check=True)
+            plugin.log("Completed provisioning script.")
+
+        except subprocess.CalledProcessError as e:
+            plugin.log(f"The bash script exited with error code: {e.returncode}")
+            plugin.log(f"Output: {e.output}")
+
+        except Exception as e:
+            plugin.log(f"An error occurred: {e}")
 
         time.sleep(3)
 
