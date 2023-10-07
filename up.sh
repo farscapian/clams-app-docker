@@ -20,6 +20,35 @@ done
 DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 
 . ./defaults.env
+
+RUN_CHANNELS=true
+RETAIN_CACHE=false
+USER_SAYS_YES=false
+LNPLAY_ENV_FILE_PATH=
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --no-channels)
+            RUN_CHANNELS=false
+        ;;
+        --retain-cache)
+            RETAIN_CACHE=true
+        ;;
+        --env-file=*)
+            LNPLAY_ENV_FILE_PATH="${i#*=}"
+            shift
+        ;;
+        -y)
+            USER_SAYS_YES=true
+        ;;
+        *)
+        echo "Unexpected option: $1"
+        exit 1
+        ;;
+    esac
+done
+
 . ./load_env.sh
 
 if [ "$DO_NOT_DEPLOY" = true ]; then
@@ -32,32 +61,10 @@ if [ "$CLN_COUNT" -gt 500 ]; then
     exit 1
 fi
 
-RUN_CHANNELS=true
-RETAIN_CACHE=false
-USER_SAYS_YES=false
-
-# grab any modifications from the command line.
-for i in "$@"; do
-    case $i in
-        --no-channels)
-            RUN_CHANNELS=false
-        ;;
-        --retain-cache)
-            RETAIN_CACHE=true
-        ;;
-        -y)
-            USER_SAYS_YES=true
-        ;;
-        *)
-        echo "Unexpected option: $1"
-        exit 1
-        ;;
-    esac
-done
-
 if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
+
 
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
@@ -117,6 +124,7 @@ export LNPLAY_LXD_FQDN_PORT="$LNPLAY_LXD_FQDN_PORT"
 export LNPLAY_LXD_PASSWORD="$LNPLAY_LXD_PASSWORD"
 export LNPLAY_LXD_HOSTMAPPINGS="$LNPLAY_LXD_HOSTMAPPINGS"
 export LNPLAY_CLUSTER_UNDERLAY_DOMAIN="$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
+export LNPLAY_EXTERNAL_DNS_NAME="$LNPLAY_EXTERNAL_DNS_NAME"
 
 # plugins
 export DEPLOY_PRISM_PLUGIN="$DEPLOY_PRISM_PLUGIN"

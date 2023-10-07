@@ -66,6 +66,7 @@ EOF
       - LNPLAY_LXD_FQDN_PORT=\${LNPLAY_LXD_FQDN_PORT}
       - LNPLAY_LXD_PASSWORD=\${LNPLAY_LXD_PASSWORD}
       - LNPLAY_CLUSTER_UNDERLAY_DOMAIN=${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}
+      - LNPLAY_EXTERNAL_DNS_NAME=${LNPLAY_EXTERNAL_DNS_NAME}
 EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -76,7 +77,7 @@ EOF
 
     if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${HOME}/sovereign-stack:/sovereign-stack:ro
+      - ${HOME}/sovereign-stack:/sovereign-stack:rw
 EOF
     fi
 

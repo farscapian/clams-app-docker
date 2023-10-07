@@ -4,31 +4,36 @@ set -eu
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 DOCKER_HOST=
+ACTIVE_ENV_PATH=
 
-# Stub out active_env.txt if doesn't exist.
-if [ ! -f ./active_env.txt ]; then
-    # stub one out
-    echo "local.env" >> ./active_env.txt
-    echo "INFO: '$(pwd)/active_env.txt' was just stubbed out. You may need to update it. Right now you're targeting your local dockerd."
+# if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
+if [ -z "$LNPLAY_ENV_FILE_PATH" ]; then
+
+    # Stub out active_env.txt if doesn't exist.
+    LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
+    if [ ! -f "$LNPLAY_ACTIVE_ENV_FILE" ]; then
+        # stub one out
+        echo "local.env" >> "$LNPLAY_ACTIVE_ENV_FILE"
+        echo "INFO: '$LNPLAY_ACTIVE_ENV_FILE' was just stubbed out. You may need to update it. Right now you're targeting your local dockerd."
+    fi
+
+    # now read in the active_env file.
+    ACTIVE_ENV_PATH="$(pwd)/environments/""$(< "$LNPLAY_ACTIVE_ENV_FILE" head -n1 | awk '{print $1;}')"
+else
+    ACTIVE_ENV_PATH="$LNPLAY_ENV_FILE_PATH"
 fi
 
-ACTIVE_ENV=$(< "$(pwd)/active_env.txt" head -n1 | awk '{print $1;}')
-export ACTIVE_ENV="$ACTIVE_ENV"
 
-ENV_FILE="$(pwd)/environments/$ACTIVE_ENV"
-
-if [ ! -f "$ENV_FILE" ]; then
-    cat > "$ENV_FILE" << EOF
+if [ ! -f "$ACTIVE_ENV_PATH" ]; then
+    cat > "$ACTIVE_ENV_PATH" << EOF
 DOCKER_HOST=ssh://ubuntu@domain.tld
 DOMAIN_NAME=domain.tld
 ENABLE_TLS=true
 EOF
 
-    echo "WARNING: The env file '$ENV_FILE' didn't exist, so we stubbed it out. Go update it!"
-    exit 1
 fi
 
-source "$ENV_FILE"
+source "$ACTIVE_ENV_PATH"
 
 if [ "$DOMAIN_NAME" = "domain.tld" ]; then
     echo "ERROR: Hey, you didn't update your env file!"
