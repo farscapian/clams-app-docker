@@ -25,7 +25,7 @@ EOF
 rm -rf ./app/node_modules
 rm -rf ./app/.sveltekit
 
-docker build -t "$LNPLAYLIVE_IMAGE_NAME" ./
+docker build -q -t "$LNPLAYLIVE_IMAGE_NAME" ./
 
 # and then load them back up with our freshly build version.
 docker run -t -v lnplay-live:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /lnplaylive/build/ /output/

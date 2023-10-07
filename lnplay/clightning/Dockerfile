@@ -225,6 +225,7 @@ RUN mkdir /dev-plugins
 VOLUME /dev-plugins
 
 ENV SLEEP=false
+ENV DEBIAN_FRONTEND=noninteractive
 
 # get sovereign stack from remote git repo
 RUN mkdir /sovereign-stack

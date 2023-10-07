@@ -1,7 +1,4 @@
 ARG BASE_IMAGE
-
 FROM $BASE_IMAGE
-
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt-get install -y curl
-
-#HEALTHCHECK --interval=1m --timeout=10s CMD curl -f http://localhost:18443 || exit 1

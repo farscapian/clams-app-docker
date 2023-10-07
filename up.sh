@@ -77,11 +77,6 @@ if [ "$ENABLE_TLS" = true ] && [ "$DOMAIN_NAME" = localhost ]; then
     exit 1
 fi
 
-if [ -n "$DOCKER_HOST" ]; then
-    echo "INFO: All commands are being applied using the following DOCKER_HOST string: $DOCKER_HOST"
-fi
-
-echo "INFO: You are targeting '$BTC_CHAIN' using domain '$DOMAIN_NAME'."
 
 if [ "$BTC_CHAIN" != regtest ] && [ "$BTC_CHAIN" != signet ] && [ "$BTC_CHAIN" != mainnet ]; then
     echo "ERROR: BTC_CHAIN must be either 'regtest', 'signet', or 'mainnet'."
