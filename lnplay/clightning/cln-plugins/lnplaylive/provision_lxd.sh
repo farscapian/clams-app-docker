@@ -1,13 +1,16 @@
 #!/bin/bash
 
 set -eu
+cd "$(dirname "$0")"
 
-PROVISION_NEW_PROJECT=true
-DEPROVISION_PROJECTS=false
+PROVISION_NEW_PROJECT=false
+DEPROVISION_PROJECTS=$(if [ "$PROVISION_NEW_PROJECT" = "false" ]; then echo "true"; fi)
 
 INVOICE_ID=
 EXPIRATION_DATE_UNIX_TIMESTAMP=
 NODE_COUNT=
+PURGE_STORAGE_VOLUMES=true
+PURGE_BASE_IMAGE=false
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -97,13 +100,9 @@ LXD_REMOTE_PASSWORD=
 EOF
 
 
-    # get the short invoice id since lxc does'nt support long project names.
-    INVOICE_SHORT_ID=$(echo -n "$INVOICE_ID" | sha256sum | cut -d' ' -f1)
-    LOWER_ID="${INVOICE_SHORT_ID: -6}"
-    PROJECT_NAME="${FIRST_AVAILABLE_SLOT}-${LOWER_ID^^}-$EXPIRATION_DATE_UNIX_TIMESTAMP"
+    PROJECT_NAME="${FIRST_AVAILABLE_SLOT}"
 
     # need to get the project.conf in there
-
     PROJECT_CONF_PATH="$PROJECTS_CONF_PATH/$PROJECT_NAME"
     mkdir -p "$PROJECT_CONF_PATH"
     PROJECT_CONF_FILE_PATH="$PROJECT_CONF_PATH/project.conf"
@@ -113,6 +112,7 @@ EOF
 
     HOST_CSV=$(< "$HOST_MAPPINGS")
     VM_MAC_ADDRESS=$(echo "$HOST_CSV" | grep "$LNPLAY_HOSTNAME" | cut -d',' -f2)
+    STARTING_EXTERNAL_PORT=$(echo "$HOST_CSV" | grep "$LNPLAY_HOSTNAME" | cut -d',' -f3)
 
     # stub out the project.conf
     cat > "$PROJECT_CONF_FILE_PATH" <<EOF
@@ -120,7 +120,7 @@ PRIMARY_DOMAIN="${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}"
 LNPLAY_SERVER_MAC_ADDRESS=${VM_MAC_ADDRESS}
 LNPLAY_SERVER_HOSTNAME=${LNPLAY_HOSTNAME}
 
-# CPU count gets scaled based on node count.
+# CPU/mem is proportional to node count.
 LNPLAY_SERVER_CPU_COUNT=2
 LNPLAY_SERVER_MEMORY_MB=2048
 EOF
@@ -132,8 +132,11 @@ EOF
         lxc project switch -q "$PROJECT_NAME"
     fi
 
+    # todo I think I need to make this optional in Sovereign Stack.
+    # no need for us to define a parameters relevant to www only.
     # now we need to stub out the site.conf file.
-    SITES_CONF_PATH="$HOME/ss/sites/$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
+    SITES_PATH="$HOME/ss/sites"
+    SITES_CONF_PATH="$SITES_PATH/$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
     mkdir -p "$SITES_CONF_PATH"
     SITE_CONF_PATH="$SITES_CONF_PATH/site.conf"
     cat > "$SITE_CONF_PATH" <<EOF
@@ -165,31 +168,7 @@ EOL
 fi
 
 if [ "$DEPROVISION_PROJECTS" = true ]; then
-    # Now let's clean up all the projects from the cluster.
-    # TODO disable this prior to production.
-    PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)
-
-    # Iterate over each project name
-    for OLD_PROJECT_NAME in $PROJECT_NAMES; do
-        if ! echo "$OLD_PROJECT_NAME" | grep -q default; then
-            if ! echo "$OLD_PROJECT_NAME" | grep -q current; then
-                echo "Deprovisioning project '$OLD_PROJECT_NAME'" >> /dev/null
-                lxc project switch "$OLD_PROJECT_NAME"
-
-                PROJECT_CONF_FILE_PATH="$PROJECTS_CONF_PATH/$OLD_PROJECT_NAME/project.conf"
-                if [ -f "$PROJECT_CONF_FILE_PATH" ]; then
-                    bash -c "/sovereign-stack/deployment/down.sh --purge -f"
-                fi
-
-                lxc project switch default >> /dev/null
-                lxc project delete "$OLD_PROJECT_NAME" >> /dev/null
-            fi
-        fi
-    done
-
-    # set the project to default
-    lxc project switch default  > /dev/null
-
+    env PROJECTS_CONF_PATH="$PROJECTS_CONF_PATH" PURGE_STORAGE_VOLUMES="$PURGE_STORAGE_VOLUMES" PURGE_BASE_IMAGE="$PURGE_BASE_IMAGE" ./deprovision_projects.sh
 fi
 
 # set the remote to local.
