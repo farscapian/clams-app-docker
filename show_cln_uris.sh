@@ -45,6 +45,8 @@ if [ -z "$OUTPUT_FILE" ]; then
     OUTPUT_FILE="$LNPLAY_SERVER_PATH/${DOMAIN_NAME}.csv"""
 fi
 
+mapfile -t names < "$NAMES_FILE_PATH"
+
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
@@ -87,7 +89,16 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         FRONT_END_FQDN="${FRONT_END_FQDN}:${BROWSER_APP_EXTERNAL_PORT}"
     fi
 
-    WEBSOCKET_QUERY_STRING="${HTTP_PROTOCOL}://${FRONT_END_FQDN}/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${WSS_PROTOCOL}&rune=${RUNE}"
+    PROTOCOL_AND_HOST="${HTTP_PROTOCOL}://${FRONT_END_FQDN}"
+    WEBSOCKET_QUERY_STRING=
+    if [ "$ENABLE_CLAMS_V2_CONNECTION_STRINGS" = false ]; then
+        WEBSOCKET_QUERY_STRING="$PROTOCOL_AND_HOST/connect?address=${CLN_WEBSOCKET_URI}&type=direct&value=${WSS_PROTOCOL}&rune=${RUNE}"
+    elif [ "$ENABLE_CLAMS_V2_CONNECTION_STRINGS" = true ]; then
+        CLAMS_CONFIG_JSON="{\"address\":\"${CLN_WEBSOCKET_URI}\",\"token\":\"${RUNE}\",\"connection\":{\"type\":\"direct\",\"value\":\"${WSS_PROTOCOL}\"}}"
+        CLAMS_CONFIG_JSON_URLENCODED=$(urlencode "$CLAMS_CONFIG_JSON")
+        WEBSOCKET_QUERY_STRING="label=${names[$CLN_ID]}&type=coreln&configuration=${CLAMS_CONFIG_JSON_URLENCODED}"
+        WEBSOCKET_QUERY_STRING="${PROTOCOL_AND_HOST}/wallets/add?$WEBSOCKET_QUERY_STRING"
+    fi
 
     # if the output file is specified, write out the query string
     if [ -n "$OUTPUT_FILE" ]; then
