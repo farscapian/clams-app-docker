@@ -3,6 +3,16 @@
 set -eu
 cd "$(dirname "$0")"
 
+# purpose of script is to execute the complete payment workflow.
+# so it uses the CLI to get a an order (including BOLT11 invoice)
+# then it checks the invoice status to ensure it's unpaid.
+# then we go ahead and pay the invoice, the check the status again to ensure it's paid.
+
+# once this script is executed, a developer can watch the STDOUT of the CLN_ID=1
+# where the lnplaylive plugin is executed. The provisioning workflow proceeds ONLY AFTER an
+# invoice is paid, but only when the said invoice is related to lnplay.live orders 
+# (the CLN node may have transactions unrelated to lnplaylive)
+
 ../reload_dev_plugins.sh
 
 CREATE_ORDER_RESPONSE=$(../lightning-cli.sh --id=1 -k lnplaylive-createorder node_count=8 hours=48)

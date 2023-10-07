@@ -7,7 +7,7 @@ sudo apt install -y jq dnsutils
 
 
 # the rest is needed for docker to work
-sudo apt-get install ca-certificates curl gnupg bc
+sudo apt-get install -y ca-certificates curl gnupg bc
 
 
 sudo install -m 0755 -d /etc/apt/keyrings

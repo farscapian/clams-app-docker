@@ -46,19 +46,20 @@ if [ -z "$INVOICE_ID" ]; then
     exit 1
 fi
 
+# TODO do some sanity checks on the expiration date.
 if [ -z "$EXPIRATION_DATE_UNIX_TIMESTAMP" ]; then
     echo "ERROR: EXPIRATION_DATE_UNIX_TIMESTAMP must be set."
     exit 1
 fi
 
-
-# function - objective is to get the next available slot.
+# function - objective is to get the next available slot. We use set subtraction.
 HOST_MAPPINGS="$HOME/host_mappings.csv"
 
-# Extract the first column of the csv. These represental total available slots.
+# Extract the first column of the csv. These represental total allowable slots.
 ALL_SLOTS=$(cut -d, -f1 < "$HOST_MAPPINGS")
 
 # next, we get a list of all those slots which are currently allocated.
+# TODO; in realtiy, the VM within a project consumes the MAC Address; so todo improve this.
 USED_SLOTS_LIST=$(lxc project list --format csv | grep -v default | cut -d, -f1 | sed 's/ (current)//g' | cut -d- -f1)
 
 # Convert arrays to sorted files
