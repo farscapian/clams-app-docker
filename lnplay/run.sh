@@ -111,33 +111,37 @@ if [ "$ENABLE_TLS" = true ]; then
     ./getrenew_cert.sh > /dev/null
 fi
 
-DOCKER_COMPOSE_YML_PATH="$LNPLAY_SERVER_PATH/lnplay.yml"
-export DOCKER_COMPOSE_YML_PATH="$DOCKER_COMPOSE_YML_PATH"
-touch "$DOCKER_COMPOSE_YML_PATH"
+# the remainer of the script is ONLY if we intend to run the services.
+# if we don't we are left with all the images ready to go.
+# this is useful when you want to package up lnplay into a VM image (lxc image)
+# and distribute it or use it in production.
+if [ "$RUN_SERVICES" = true ]; then
+    DOCKER_COMPOSE_YML_PATH="$LNPLAY_SERVER_PATH/lnplay.yml"
+    export DOCKER_COMPOSE_YML_PATH="$DOCKER_COMPOSE_YML_PATH"
+    touch "$DOCKER_COMPOSE_YML_PATH"
 
+    # let's generate a random username and password and get our -rpcauth=<token>
+    # TODO see if I can get rid of all this and use bitcoind cookie auth instead.
+    BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
+    BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
+    export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
+    export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 
-# let's generate a random username and password and get our -rpcauth=<token>
-BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
-BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
-export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
-export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
+    # stub out the docker-compose.yml file before we bring it up.
+    ./stub_lnplay_compose.sh
+    ./stub_nginx_conf.sh
 
-# stub out the docker-compose.yml file before we bring it up.
-./stub_lnplay_compose.sh
-./stub_nginx_conf.sh
+    # this is the main bitcoind/nginx etc., everything sans CLN nodes.
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay >> /dev/null
 
-# this is the main bitcoind/nginx etc., everything sans CLN nodes.
-docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay >> /dev/null
+    if ! docker network list | grep -q lnplay-p2pnet; then
+        docker network create lnplay-p2pnet -d overlay >> /dev/null
+        sleep 1
+    fi
 
-if ! docker network list | grep -q lnplay-p2pnet; then
-    docker network create lnplay-p2pnet -d overlay >> /dev/null
-    sleep 1
+    ./stub_cln_composes.sh
+
+    if [ "$BTC_CHAIN" = mainnet ]; then
+        sleep 120
+    fi
 fi
-
-./stub_cln_composes.sh
-
-if [ "$BTC_CHAIN" = mainnet ]; then
-    sleep 120
-fi
-
-# TODO poll for container existence.

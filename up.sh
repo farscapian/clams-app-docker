@@ -215,7 +215,7 @@ fi
 
 if [ "$RUN_CHANNELS" = true ]; then
     # ok, let's do the channel logic
-    ./channel_templates/up.sh --retain-cache="$RETAIN_CACHE"
+    bash -c "./channel_templates/up.sh --retain-cache=$RETAIN_CACHE"
 fi
 
 if [ -n "$CONNECTION_STRING_CSV_PATH" ]; then
