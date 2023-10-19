@@ -25,6 +25,7 @@ RUN_CHANNELS=true
 RETAIN_CACHE=false
 USER_SAYS_YES=false
 LNPLAY_ENV_FILE_PATH=
+RUN_SERVICES=true
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -34,6 +35,9 @@ for i in "$@"; do
         ;;
         --retain-cache)
             RETAIN_CACHE=true
+        ;;
+        --no-services)
+            RUN_SERVICES=false
         ;;
         --env-file=*)
             LNPLAY_ENV_FILE_PATH="${i#*=}"
@@ -64,7 +68,6 @@ fi
 if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
-
 
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
@@ -110,6 +113,7 @@ export CHANNEL_SETUP="$CHANNEL_SETUP"
 export ENABLE_CLN_DEBUGGING_OUTPUT="$ENABLE_CLN_DEBUGGING_OUTPUT"
 export ENABLE_BITCOIND_DEBUGGING_OUTPUT="$ENABLE_BITCOIND_DEBUGGING_OUTPUT"
 export BASIC_HTTP_AUTHENTICATION="$BASIC_HTTP_AUTHENTICATION"
+export RUN_SERVICES="$RUN_SERVICES"
 
 LNPLAYLIVE_IMAGE_NAME="lnplay/lnplaylive:$LNPLAY_STACK_VERSION"
 export LNPLAYLIVE_IMAGE_NAME="$LNPLAYLIVE_IMAGE_NAME"
@@ -142,6 +146,10 @@ if ! docker stack list | grep -q lnplay; then
 
     # bring up the stack;
     ./lnplay/run.sh
+fi
+
+if [ "$RUN_SERVICES" = false ]; then
+    exit 0
 fi
 
 # now let's ensure all our containers are up.
