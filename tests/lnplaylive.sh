@@ -15,7 +15,29 @@ cd "$(dirname "$0")"
 
 ../reload_dev_plugins.sh
 
-CREATE_ORDER_RESPONSE=$(../lightning-cli.sh --id=1 -k lnplaylive-createorder node_count=8 hours=48)
+NODE_COUNT=32
+HOURS=1
+
+# grab any modifications from the command line.
+for i in "$@"; do
+    case $i in
+        --nodes=*)
+            NODE_COUNT="${i#*=}"
+            shift
+        ;;
+        --hours=*)
+            HOURS="${i#*=}"
+            shift
+        ;;
+        *)
+        echo "Unexpected option: $1"
+        exit 1
+        ;;
+    esac
+done
+
+
+CREATE_ORDER_RESPONSE=$(../lightning-cli.sh --id=1 -k lnplaylive-createorder node_count="$NODE_COUNT" hours="$HOURS")
 echo "$CREATE_ORDER_RESPONSE"
 INVOICE_ID="$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice_id')"
 FIRST_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=1 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
@@ -28,12 +50,9 @@ if ! echo "$FIRST_INVOICE_CHECK_STATUS" | grep -q unpaid; then
     exit 1
 fi
 
-
 # now let's pay the invoice
 BOLT11_INVOICE=$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice')
 ../lightning-cli.sh --id=0 -k pay bolt11="$BOLT11_INVOICE" 
-
-
 
 sleep 3
 # get status
