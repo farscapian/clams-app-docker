@@ -61,13 +61,13 @@ STACKS=$(docker stack ls --format "{{.Name}}")
 for (( CLN_ID=CLN_COUNT; CLN_ID>=0; CLN_ID-- )); do
     STACK_NAME="lnplay-cln-${CLN_ID}"
     if echo "$STACKS" | grep -q "$STACK_NAME"; then
-        docker stack rm "$STACK_NAME"
+        docker stack rm "$STACK_NAME" > /dev/null
     fi
 done
 
 # now bring down the main lnplay.
 if echo "$STACKS" | grep -q lnplay; then
-    docker stack rm lnplay
+    docker stack rm lnplay > /dev/null
 fi
 
 # wait until all containers are shut down.
@@ -90,10 +90,10 @@ done
 
 if [ "$PRUNE" = true ]; then
     # remove any container runtimes.
-    docker system prune -f
+    docker system prune -f > /dev/null
 fi
 
-# let's delete all volumes EXCEPT lnplay-certs
+# let's delete all volumes EXCEPT lnplay-certs, and obviously nothing related to mainnet
 if [ "$PURGE" = true ]; then
-    ./purge.sh
+    env BTC_CHAIN="$BTC_CHAIN" ./purge.sh > /dev/null
 fi

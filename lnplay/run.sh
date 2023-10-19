@@ -29,72 +29,70 @@ export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/
+    docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
 fi
 
 BITCOIND_MANAGER_IMAGE_NAME="lnplay-manager:$LNPLAY_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
 if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
-    docker build -q -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/
+    docker build -q -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/  >>/dev/null
 fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$LNPLAY_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [ "$ENABLE_TOR" = true ]; then
     if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
-        docker build -q -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/
+        docker build -q -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/  >>/dev/null
     fi
 fi
 
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
-REBUILD_CLN_IMAGE=true
+REBUILD_CLN_IMAGE=false
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
-    docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+    docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
     REBUILD_CLN_IMAGE=true
 fi
 
 # build the base image for cln
 if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
-    docker build -q -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
+    docker build -q -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/ >>/dev/null
 fi
 
 # build the base image for cln
 if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
     # --build-arg CLN_VERSION="23.08"
-    docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
+    docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/ >>/dev/null
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
     CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
-        docker build -q -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/
+        docker build -q -t "$CLAMS_APP_IMAGE_NAME"  --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/  >>/dev/null
         sleep 5
     fi
     
     export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
-
 fi
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     if ! docker image inspect node:18 &> /dev/null; then
         # pull bitcoind down
-        docker pull -q node:18
+        docker pull -q node:18 >> /dev/null
     fi
 
     if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-        docker build -q -t "$PRISM_APP_IMAGE_NAME" ./prism-app/
+        docker build -q -t "$PRISM_APP_IMAGE_NAME" ./prism-app/  >>/dev/null
     fi
-    
 fi
 
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
     if ! docker image inspect node:18 &> /dev/null; then
         # pull bitcoind down
-        docker pull -q node:18
+        docker pull -q node:18 >> /dev/null
     fi
 
     if ! docker volume list | grep -q "lnplay-live"; then
@@ -105,15 +103,12 @@ fi
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
 export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
 if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
-    docker pull -q "$NGINX_DOCKER_IMAGE_NAME"
+    docker pull -q "$NGINX_DOCKER_IMAGE_NAME" >> /dev/null
 fi
-
-# for the nginx certificates.
-docker volume create lnplay-certs
 
 # check to see if we have certificates
 if [ "$ENABLE_TLS" = true ]; then
-    ./getrenew_cert.sh
+    ./getrenew_cert.sh > /dev/null
 fi
 
 DOCKER_COMPOSE_YML_PATH="$LNPLAY_SERVER_PATH/lnplay.yml"
