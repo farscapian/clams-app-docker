@@ -40,24 +40,17 @@ def lnplaylive_createorder(plugin, node_count, hours):
         if not isinstance(node_count, int):
             raise Exception("ERROR: node_count MUST be a positive integer.")
 
-        # Check if the node_count is evenly divisible by 8
-        if node_count % 8 != 0:
-            print(f"{node_count} is not evenly divisible by 8.")
-            raise Exception("ERROR: node_count MUST be evenly divisible by 8.")
-
-        # TODO; remove this eventually. However, right now all we support is node counts of 8.
-        # other node counts will be added over time.
-        if node_count != 8:
-            print(f"lnplay.live only supports node counts of 8.")
-            raise Exception("ERROR: lnplay.live only supports node counts of 8.")
+        # ensure the node_count is set according to the product definition.
+        if not node_count in (8, 16, 24, 32):
+            raise Exception("ERROR: lnplay.live only supports node counts of 8, 16, 24, or 32.")
 
         # ensure hours is an int
         if not isinstance(hours, int):
             raise Exception("ERROR: hours MUST be a positive integer.")
 
         # ensure 'hours' is within acceptable limits
-        if hours < 3:
-            raise Exception("ERROR: The minimum hours you can set is 3.")
+        if hours < 1:
+            raise Exception("ERROR: The minimum hours you can set is 1.")
         elif hours > 504:
             raise Exception("ERROR: The maximum hours you can set is 504.")
 
