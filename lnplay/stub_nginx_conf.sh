@@ -92,7 +92,7 @@ elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
             server_tokens off;
             gzip_static on;
             root /lnplaylive/build;
-            index index.html;
+            index 404.html;
         }
 
         location / {

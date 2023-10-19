@@ -1,6 +1,6 @@
 # lnplay.live-plugin
 
-Core Lighting plugin for lnplay.live. Developed for the tabconf2023 hackathon.
+Core Lightning plugin for lnplay.live. Developed for the tabconf2023 hackathon.
 
 When developing plugins, you can run the ./reload_dev_plugins.sh script and it'll reload the plugin you're working on.
 

@@ -5,7 +5,11 @@ WARNING: This software is new and should be used for testing and evaluation only
 ```
 ## about `lnplay`
 
-This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). What is `lnplay`? It's Bitcoin-only BOLT12 Prism Infrastructure. `lnplay` deploys the backend bitcoind and core lightning infrastructure and also exposes Clams wallet for interacting with the various nodes. You can deploy multiple CLN nodes in various modes operation (e.g., `regtest`, `signet`, `mainnet`) in various channel setups. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the rest of the application.
+This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). `lnplay` is a docker container application that deploys a bitcoin core daemon and one or more core lightning nodes to a docker engine. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the CLN nodes. Connection information can be embedded in QR codes for quick client onboarding.
+
+> Want to try this software but don't have the skill to host it yourself? Consider renting your own Private Lightning Network at [LNPlay.live](https://lnplay.live).
+
+The nodes have vairous modes of operation (e.g., `regtest`, `signet`, `mainnet`) and can be initialized in various channel setups. 
 
 To get started, clone this repo and its submodules:
 
@@ -19,7 +23,7 @@ Each environment file (contained in [./environments/](./environments)) is where 
 
 ```config
 DOCKER_HOST=ssh://ubuntu@lnplay.live
-DOMAIN_NAME=llarp.fun
+DOMAIN_NAME=lnplay.live
 ENABLE_TLS=true
 BTC_CHAIN=signet
 ```
@@ -108,6 +112,7 @@ The following table shows the most common configuration settings.
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
 |`LNPLAY_SERVER_PATH`|`$(pwd)/lnplay/stacks`|Specify where deployment articfacts are stored.|
 |`DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN`|`null`|If specified, overrides the `https://${DOMAIN_NAME}` to specified value: e,g., 'app.clams.tech'|
+|`ENABLE_CLAMS_V2_CONNECTION_STRINGS`|`false`|If true, will emit Clams v2 Connection String format.|
 
 There are [other options](./defaults.env) in there that might be worth overriding, but the above list should cover most use cases.
 

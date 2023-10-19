@@ -55,5 +55,5 @@ if [ "$NEED_TO_SEND" = true ]; then
     ../bitcoin-cli.sh -generate 3 >> /dev/null
 
     # and we wait a bit longer so each cln will poll for the udpate.
-    sleep "$BLOCK_TIME"
+    sleep "$REGTEST_BLOCK_TIME"
 fi

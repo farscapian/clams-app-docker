@@ -233,7 +233,12 @@ VOLUME /sovereign-stack
 #RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
 
 # let's get our clients we need to provision remote VMs.
-RUN apt install -y ssh-client wait-for-it rsync sshfs wget curl
+RUN apt update
+RUN apt install -y ssh-client wait-for-it rsync sshfs wget curl bc gridsite-clients cron procps
+
+# copy the deprovision script to the image.
+COPY ./lnplaylive_deprovision.sh /root/deprovision.sh
+RUN chmod +x /root/deprovision.sh
 
 RUN wget -O /usr/bin/lxc https://github.com/canonical/lxd/releases/download/lxd-5.18/bin.linux.lxc
 RUN chmod +x /usr/bin/lxc
@@ -256,15 +261,14 @@ ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugi
 RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
 
 # provisioning plugin
-ADD ./cln-plugins/lnplaylive/lnplay-live-provision.py /plugins/lnplaylive/lnplay-live-provision.py
-RUN chmod +x /plugins/lnplaylive/lnplay-live-provision.py
-ADD ./cln-plugins/lnplaylive/provision_lxd.sh /plugins/lnplaylive/provision_lxd.sh
-RUN chmod +x /plugins/lnplaylive/provision_lxd.sh
+ADD ./cln-plugins/lnplaylive/invoice_paid.py /plugins/lnplaylive/invoice_paid.py
+RUN chmod +x /plugins/lnplaylive/invoice_paid.py
+ADD ./cln-plugins/lnplaylive/provision.sh /plugins/lnplaylive/provision.sh
+RUN chmod +x /plugins/lnplaylive/provision.sh
 
 # lnplay-live cln/api extensions
 ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
 RUN chmod +x /plugins/lnplaylive/lnplay-live.py
-
 
 # add entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
