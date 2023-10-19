@@ -6,7 +6,6 @@ if [ "$SLEEP" = true ]; then
     sleep 500
 fi
 
-
 if [ -z "$CLN_ALIAS" ]; then
     echo "ERROR: CLN_ALIAS is unset."
     exit 1

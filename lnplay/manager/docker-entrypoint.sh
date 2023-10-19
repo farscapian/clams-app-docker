@@ -42,7 +42,7 @@ createWallet() {
 }
 
 # we assume the wallet doesn't exist.
-WALLET_NAME=prism
+WALLET_NAME=default
 if ! bcli listwalletdir | grep -q "$WALLET_NAME"; then
     # if the wallet doesn't exist, we create it.
     echo "INFO: listwalletdir suggests there is no wallet."

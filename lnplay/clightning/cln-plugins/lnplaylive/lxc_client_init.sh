@@ -17,3 +17,6 @@ fi
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -b 4096 -N ""  > /dev/null
 fi
+
+# ensure the known_hosts file exists.
+touch "$HOME/.ssh/known_hosts" >> /dev/null
