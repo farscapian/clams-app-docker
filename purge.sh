@@ -6,15 +6,11 @@ cd "$(dirname "$0")"
 # this script delete various docker volumes containing applcation and/or user data
 # use with care.
 
-. ./defaults.env
-. ./load_env.sh
-
 if [ "$BTC_CHAIN" = mainnet ]; then
     echo "ERROR: you're on mainnet. You must delete mainnet volumes manually. For God's sake be careful."
     echo "       ensure you have the hsm_secret at a minimum. Creating an static channel backup is also recommended."
     exit 1
 fi
-
 
 # remote dangling/unnamed volumes.
 docker volume prune -f

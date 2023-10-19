@@ -6,10 +6,10 @@ cd "$(dirname "$0")"
 # this script tears everything down that might be up. It does not destroy data.
 
 . ./defaults.env
-. ./load_env.sh
 
 PURGE=false
 PRUNE=true
+LNPLAY_ENV_FILE_PATH=
 
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
@@ -29,11 +29,21 @@ for i in "$@"; do
             PRUNE=false
             shift
         ;;
+        --env-file=*)
+            LNPLAY_ENV_FILE_PATH="${i#*=}"
+            shift
+        ;;
         *)
         echo "Unexpected option: $1"
         exit 1
     esac
 done
+
+. ./load_env.sh
+
+
+export LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH"
+export DOCKER_HOST="$DOCKER_HOST"
 
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature

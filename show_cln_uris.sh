@@ -29,6 +29,11 @@ for i in "$@"; do
     esac
 done
 
+. ./defaults.env
+. ./load_env.sh
+
+export DOCKER_HOST="$DOCKER_HOST"
+
 if [ "$PRODUCE_QR_CODE" = true ]; then
     if ! command -v qrencode >/dev/null 2>&1; then
         echo "This script requires qrencode to be installed.. Hint: apt-get install qrencode"
@@ -37,9 +42,6 @@ if [ "$PRODUCE_QR_CODE" = true ]; then
 
     mkdir -p ./"$LNPLAY_SERVER_PATH"/qrcodes
 fi
-
-. ./defaults.env
-. ./load_env.sh
 
 if [ -z "$OUTPUT_FILE" ]; then
     OUTPUT_FILE="$LNPLAY_SERVER_PATH/${DOMAIN_NAME}.csv"""

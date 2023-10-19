@@ -6,11 +6,13 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 DOCKER_HOST=
 ACTIVE_ENV_PATH=
 
-# if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
-if [ -z "$LNPLAY_ENV_FILE_PATH" ]; then
+#echo "LNPLAY_ENV_FILE_PATH: $LNPLAY_ENV_FILE_PATH"
 
-    # Stub out active_env.txt if doesn't exist.
-    LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
+# if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
+LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
+if test -z "${LNPLAY_ENV_FILE_PATH+x}"; then
+
+    # Stub out active_env.txt if doesn't exist. 
     if [ ! -f "$LNPLAY_ACTIVE_ENV_FILE" ]; then
         # stub one out
         echo "local.env" >> "$LNPLAY_ACTIVE_ENV_FILE"
@@ -23,14 +25,17 @@ else
     ACTIVE_ENV_PATH="$LNPLAY_ENV_FILE_PATH"
 fi
 
+if [ -z "$ACTIVE_ENV_PATH" ]; then
+    ACTIVE_ENV_PATH="$(pwd)/environments/""$(< "$LNPLAY_ACTIVE_ENV_FILE" head -n1 | awk '{print $1;}')"
+fi
 
 if [ ! -f "$ACTIVE_ENV_PATH" ]; then
     cat > "$ACTIVE_ENV_PATH" << EOF
 DOCKER_HOST=ssh://ubuntu@domain.tld
 DOMAIN_NAME=domain.tld
 ENABLE_TLS=true
-EOF
 
+EOF
 fi
 
 source "$ACTIVE_ENV_PATH"
