@@ -177,13 +177,11 @@ while ! check_containers; do
 done
 
 # wait for bitcoind to come oneline.
-
-
 if [ "$BTC_CHAIN" != regtest ]; then
     # we need to do some kind of readiness check here.
     # in particular, check to ensure bitcoin-cli is returning json objects and IBD is complete.
     while true; do
-        BLOCKCHAIN_INFO_JSON=$(bcli getblockchaininfo)
+        BLOCKCHAIN_INFO_JSON=$(./bitcoin-cli.sh getblockchaininfo)
 
         ibd_status=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.initialblockdownload')
         verification_progress=$(echo "$BLOCKCHAIN_INFO_JSON" | jq -r '.verificationprogress')
@@ -205,12 +203,6 @@ fi
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
     ./lnplay/lnplaylive/build.sh
 fi
-
-lncli() {
-    "$ROOT_DIR/lightning-cli.sh" "$@"
-}
-
-export -f lncli
 
 if [ "$RUN_CHANNELS" = true ]; then
     # ok, let's do the channel logic

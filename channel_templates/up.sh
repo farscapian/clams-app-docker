@@ -23,33 +23,33 @@ done
 
 # recache node addrs and pubkeys if not specified otherwise
 if [ "$RETAIN_CACHE" = false ]; then
-    echo "Caching node info..."
+    echo "Caching node info..." >> /dev/null
 
     rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
     rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
     rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-        pubkey=$(lncli --id=$NODE_ID getinfo | jq -r ".id")
+        pubkey=$(../lightning-cli.sh --id=$NODE_ID getinfo | jq -r ".id")
         echo "$pubkey" >> "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
     done
 
-    echo "Node pubkeys cached"
+    echo "Node pubkeys cached" >> /dev/null
 
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-        addr=$(lncli --id=$NODE_ID newaddr | jq -r ".bech32")
+        addr=$(../lightning-cli.sh --id=$NODE_ID newaddr | jq -r ".bech32")
         echo "$addr" >> "$LNPLAY_SERVER_PATH/node_addrs.txt"
     done
-    echo "Node addresses cached"
+    echo "Node addresses cached" >> /dev/null
 
     # if we're deploying prisms, then we also standard any offers on each node.
     if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
         for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-            BOLT12_OFFER=$(lncli --id=${NODE_ID} offer any default | jq -r '.bolt12')
+            BOLT12_OFFER=$(../lightning-cli.sh --id=${NODE_ID} offer any default | jq -r '.bolt12')
             echo "$BOLT12_OFFER" >> "$LNPLAY_SERVER_PATH/any_offers.txt"
         done
 
-        echo "BOLT12 any offers cached"
+        echo "BOLT12 any offers cached" >> /dev/null
     fi
 
 fi
@@ -66,18 +66,19 @@ fi
 mapfile -t pubkeys < "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 
 function connect_cln_nodes {
+    echo "INFO: bootstrapping the P2P network." >> /dev/null
+
     # connect each node n to node [n+1]
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         NEXT_NODE_ID=$((NODE_ID + 1))
         NODE_MOD_COUNT=$((NEXT_NODE_ID % CLN_COUNT))
         NEXT_NODE_PUBKEY=${pubkeys[$NODE_MOD_COUNT]}
-        echo "Connecting 'cln-$NODE_ID' to 'cln-$NODE_MOD_COUNT' having pubkey '$NEXT_NODE_PUBKEY'."
-        lncli --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735
+        echo "Connecting 'cln-$NODE_ID' to 'cln-$NODE_MOD_COUNT' having pubkey '$NEXT_NODE_PUBKEY'." >> /dev/null
+        ../lightning-cli.sh --id="$NODE_ID" connect "$NEXT_NODE_PUBKEY" "cln-$NODE_MOD_COUNT" 9735 >> /dev/null
     done
 }
 
 if [ "$BTC_CHAIN" = regtest ]; then
-    echo "INFO: bootstrapping the P2P network."
 
     if [ "$CLN_COUNT" -gt 1 ]; then
         connect_cln_nodes

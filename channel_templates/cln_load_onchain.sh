@@ -21,7 +21,7 @@ for ((CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++)); do
         fi
     fi
 
-    OUTPUT_EXISTS=$(lncli --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
+    OUTPUT_EXISTS=$(../lightning-cli.sh --id="$CLN_ID" listfunds | jq '.outputs | length > 0')
     
     # if at least one output exists in the CLN node, then we know
     # the node has been funded previously, and we can therefore skip
@@ -49,7 +49,11 @@ done
 if [ "$NEED_TO_SEND" = true ]; then
     SENDMANY_JSON="${SENDMANY_JSON::-1}}"
 
-    bcli sendmany "" "$SENDMANY_JSON" > /dev/null
+    ../bitcoin-cli.sh sendmany "" "$SENDMANY_JSON" >> /dev/null
 
-    sleep "$REGTEST_BLOCK_TIME"
+    # let's quickly mine that transaction.
+    ../bitcoin-cli.sh -generate 3 >> /dev/null
+
+    # and we wait a bit longer so each cln will poll for the udpate.
+    sleep "$BLOCK_TIME"
 fi

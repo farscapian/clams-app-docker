@@ -6,7 +6,7 @@
 set -eu
 cd "$(dirname "$0")"
 
-WALLET_INFO=$(bcli getwalletinfo)
+WALLET_INFO=$(../bitcoin-cli.sh getwalletinfo)
 # The above command will only work if only one wallet it loaded
 # TODO: specify which wallet to target
 WALLET_BALANCE=$(echo "$WALLET_INFO" | jq -r '.balance')
@@ -18,7 +18,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     ((MIN_WALLET_BALANCE = 1 * CLN_COUNT + 1))
 fi
 
-BTC_ADDRESS=$(bcli getnewaddress)
+BTC_ADDRESS=$(../bitcoin-cli.sh getnewaddress)
 CLEAN_BTC_ADDRESS=$(echo -n "$BTC_ADDRESS" | tr -d '\r')
 if [ "$BTC_CHAIN" = regtest ]; then
 
@@ -26,8 +26,8 @@ if [ "$BTC_CHAIN" = regtest ]; then
     if [ "$(echo "$WALLET_BALANCE < $MIN_WALLET_BALANCE" | bc -l) " -eq 1 ]; then
 
         # in regtest we can just generate some blocks; not so with signet and mainnet
-        bcli generatetoaddress 105 "$CLEAN_BTC_ADDRESS" > /dev/null
-        echo "105 blocks mined to $WALLET_NAME"
+        ../bitcoin-cli.sh generatetoaddress 105 "$CLEAN_BTC_ADDRESS" >> /dev/null
+        echo "105 blocks mined to $WALLET_NAME" >> /dev/null
     fi
 
 elif [ "$BTC_CHAIN" = signet ]; then

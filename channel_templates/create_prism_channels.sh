@@ -13,12 +13,12 @@ function checkOutputs {
     OUTPUT_EXISTS=false
     while [ "$OUTPUT_EXISTS" = false ]; do
         # pool to ensure we have enough outputs to spend with.
-        OUTPUT_EXISTS=$(lncli --id="$1" listfunds | jq '.outputs | length > 0')
+        OUTPUT_EXISTS=$(../lightning-cli.sh --id="$1" listfunds | jq '.outputs | length > 0')
 
         # if at least one output exists in the CLN node, then we know
         # the node has been funded previously, and we can therefore skip
         if [ "$OUTPUT_EXISTS" = true ]; then
-            echo "INFO: cln-$1 has sufficient funds."
+            echo "INFO: cln-$1 has sufficient funds." >> /dev/null
             break
         else
             sleep 3
@@ -27,12 +27,12 @@ function checkOutputs {
 }
 sleep 5
 
-CHANNEL_COUNT=$(lncli --id=0 listchannels | jq '.channels | length')
+CHANNEL_COUNT=$(../lightning-cli.sh --id=0 listchannels | jq '.channels | length') >> /dev/null
 if [ "$CHANNEL_COUNT" = 0 ]; then
     # ensure Alice has outputs to spend from
     checkOutputs 0
-    lncli --id=0 fundchannel "${pubkeys[1]}" 10000000 > /dev/null
-    echo "Alice opened a 10000000 sat channel to Bob"
+    ../lightning-cli.sh --id=0 fundchannel "${pubkeys[1]}" 10000000 >> /dev/null
+    echo "Alice opened a 10000000 sat channel to Bob" >> /dev/null
 fi
 
 
@@ -58,4 +58,4 @@ done
 SENDMANY_JSON="${SENDMANY_JSON::-1}]"
 
 # execute multifundchannel from bob.
-lncli --id=1 multifundchannel "$SENDMANY_JSON"
+../lightning-cli.sh --id=1 multifundchannel "$SENDMANY_JSON" >> /dev/null

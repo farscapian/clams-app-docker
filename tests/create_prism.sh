@@ -20,6 +20,6 @@ done
 PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # create a prism with (n-2) members.
-lncli --id=1 createprism label="roygbiv_demo" members="$PRISM_JSON_STRING"
+../lightning-cli.sh --id=1 createprism label="roygbiv_demo" members="$PRISM_JSON_STRING"
 
 echo "INFO: successfully created a BOLT12 Prism on Bob."
