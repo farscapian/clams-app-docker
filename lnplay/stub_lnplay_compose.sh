@@ -16,11 +16,9 @@ for CHAIN in regtest signet; do
     fi
 done
 
-
 if [ "$ENABLE_BITCOIND_DEBUGGING_OUTPUT" = true ]; then
     BITCOIND_COMMAND="$BITCOIND_COMMAND -debug=1"
 fi
-
 
 
 if [ "$BTC_CHAIN" = mainnet ]; then
@@ -84,11 +82,10 @@ fi
 
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - prism-appnet
 EOF
 fi
-
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     configs:
@@ -96,24 +93,18 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
         target: /etc/nginx/nginx.conf
 EOF
 
-if [ "$ENABLE_TLS" = true ] || [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
 EOF
-    
 
-    if [ "$ENABLE_TLS" = true ]; then
-        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - certs:/certs
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - lnplay-certs:/certs
 EOF
-    fi
 
-    if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - lnplaylive:/lnplaylive:ro
 EOF
-    fi
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
@@ -250,13 +241,11 @@ EOF
 fi
 
 
-if [ "$ENABLE_TLS" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  certs:
+cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  lnplay-certs:
     external: true
     name: lnplay-certs
 EOF
-fi
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
