@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 
 PURGE=false
 PRUNE=true
+NON_INTERACTIVE_MODE=false
 LNPLAY_ENV_FILE_PATH=
 
 if [ "$DO_NOT_DEPLOY" = true ]; then
@@ -16,13 +17,15 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-./prompt.sh
-
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
         --purge)
             PURGE=true
+            shift
+        ;;
+        --non-interactive=*)
+            NON_INTERACTIVE_MODE="${i#*=}"
             shift
         ;;
         --no-prune=*)
@@ -41,6 +44,13 @@ done
 
 . ./load_env.sh
 
+if [ "$NON_INTERACTIVE_MODE" = false ]; then
+    ./prompt.sh
+fi
+
+if [ "$PURGE_VOLUMES_ON_DOWN" = true ]; then
+    PURGE=true
+fi
 
 export LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH"
 export DOCKER_HOST="$DOCKER_HOST"

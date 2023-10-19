@@ -49,6 +49,12 @@ fi
 
 mapfile -t names < "$NAMES_FILE_PATH"
 
+# if the admin provides CLIGHTNING_WEBSOCKET_EXTERNAL_PORT, that means they're 
+# overriding the external (user-facing) tcp port
+if [ -n "$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT" ]; then
+    STARTING_WEBSOCKET_PORT="$CLIGHTNING_WEBSOCKET_EXTERNAL_PORT"
+fi
+
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 

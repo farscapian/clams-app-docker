@@ -3,9 +3,6 @@
 set -eu
 cd "$(dirname "$0")"
 
-
-sleep 5
-
 RETAIN_CACHE=false
 
 for i in "$@"; do
@@ -80,7 +77,7 @@ function connect_cln_nodes {
 
 if [ "$BTC_CHAIN" = regtest ]; then
 
-    if [ "$CLN_COUNT" -gt 1 ]; then
+    if [ "$CLN_COUNT" -gt 1 ] && [ "$CONNECT_NODES" = true ]; then
         connect_cln_nodes
     fi
 
@@ -89,7 +86,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # then we open up the canonical channel setup.
     if [ "$CHANNEL_SETUP" = prism ]; then
         # now call the script that opens the channels.
-        ./create_prism_channels.sh
+        ./create_prism_channels.sh >> /dev/null
         #echo "skipping"
     fi
 
