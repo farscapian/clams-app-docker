@@ -33,6 +33,7 @@ done
 . ./load_env.sh
 
 export DOCKER_HOST="$DOCKER_HOST"
+QRCODE_OUTPUT_PATH="$LNPLAY_SERVER_PATH/qrcodes"
 
 if [ "$PRODUCE_QR_CODE" = true ]; then
     if ! command -v qrencode >/dev/null 2>&1; then
@@ -40,7 +41,7 @@ if [ "$PRODUCE_QR_CODE" = true ]; then
         exit 1
     fi
 
-    mkdir -p ./"$LNPLAY_SERVER_PATH"/qrcodes
+    mkdir -p "$QRCODE_OUTPUT_PATH"
 fi
 
 if [ -z "$OUTPUT_FILE" ]; then
@@ -58,13 +59,7 @@ fi
 # print out the CLN node URIs for the user.
 for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
-    # # for tabconf quit at 3
-    # if [ "$CLN_ID" -ge 2 ]; then
-    #     exit
-    # fi
-
-
-    CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT+CLN_ID ))
+    CLN_WEBSOCKET_PORT=$(( STARTING_WEBSOCKET_PORT + CLN_ID ))
 
     # now let's output the core lightning node URI so the user doesn't need to fetch that manually.
     CLN_WEBSOCKET_URI=$(bash -c "./get_node_uri.sh --id=${CLN_ID} --port=${CLN_WEBSOCKET_PORT}")
@@ -119,7 +114,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     echo "$WEBSOCKET_QUERY_STRING"
     if [ "$PRODUCE_QR_CODE" = true ]; then
-        qrencode -o "$(pwd)/output/qrcodes/${DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
+        qrencode -o "$QRCODE_OUTPUT_PATH/${DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
     fi
 
     if [ "$SPAWN_BROWSER_TAB" = true ]; then
