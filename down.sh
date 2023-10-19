@@ -71,14 +71,21 @@ if echo "$STACKS" | grep -q lnplay; then
 fi
 
 # wait until all containers are shut down.
+i=0
 while true; do
-    COUNT=$(docker ps -q | wc -l)
-    if [ "$COUNT" -gt 0 ]; then
+    CONTAINER_COUNT=$(docker ps -q | wc -l)
+    if [ "$CONTAINER_COUNT" -gt 0 ]; then
         sleep 1
     else
-        sleep 3
-        break
+        if [ "$i" -gt 0 ]; then
+            sleep 3
+            break
+        else
+            break
+        fi
     fi
+
+    i=$((i + 1))
 done
 
 if [ "$PRUNE" = true ]; then
