@@ -77,7 +77,7 @@ EOF
 
     if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${HOME}/sovereign-stack:/sovereign-stack:rw
+      - ${HOME}/sovereign-stack:/sovereign-stack:ro
 EOF
     fi
 
@@ -94,7 +94,6 @@ EOF
 EOF
     fi
 
-
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     configs:
@@ -103,20 +102,17 @@ if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
 EOF
 fi
 
-
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
       - bitcoindnet
       - nginxnet
 EOF
 
-
     if [ "$ENABLE_TOR" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - torproxynet
 EOF
     fi
-
 
     if [ "$BTC_CHAIN" = regtest ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -166,8 +162,6 @@ fi
 EOF
 
     fi
-
-
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
