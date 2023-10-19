@@ -164,16 +164,17 @@ function check_containers {
 }
 
 # Wait for all containers to be up and running
+TRIES=0
 while ! check_containers; do
     sleep 3
-    echo "INFO: Waiting for containers to come online..."
+    echo "INFO: Waiting for containers to come online..." >> /dev/null
+    TRIES=$((TRIES + 1))
+
+    if [ "$TRIES" -gt 10 ]; then
+        echo "ERROR: timed out waiting for containers to stop. Manual intervention required." >> /dev/null
+        exit 1
+    fi
 done
-
-
-bcli() {
-    "$ROOT_DIR/bitcoin-cli.sh" "$@"
-}
-export -f bcli
 
 # wait for bitcoind to come oneline.
 
