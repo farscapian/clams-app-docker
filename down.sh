@@ -44,6 +44,18 @@ done
 
 . ./load_env.sh
 
+if [ "$BTC_CHAIN" = mainnet ]; then
+    echo "WARNING: You are about to take down a mainnet node!"
+    echo ""
+    
+    RESPONSE=
+    read -r -p "         Are you sure you want to continue (y/n):  " RESPONSE
+    if [ "$RESPONSE" != "y" ]; then
+        echo "STOPPING."
+        exit 1
+    fi
+fi
+
 if [ "$NON_INTERACTIVE_MODE" = false ]; then
     ./prompt.sh
 fi
