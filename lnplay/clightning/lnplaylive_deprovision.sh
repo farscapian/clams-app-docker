@@ -13,7 +13,7 @@ for OLD_PROJECT_NAME in $PROJECT_NAMES; do
             SLOT="$OLD_PROJECT_NAME"
             export SLOT="$SLOT"
 
-            source /dev-plugins/lnplaylive/lnplaylive.sh
+            source "$PLUGIN_PATH/lnplaylive/lnplaylive.sh"
 
             lxc project switch "$SLOT"
 

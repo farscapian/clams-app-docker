@@ -63,8 +63,15 @@ fi
 # build the base image for cln
 if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
-    # --build-arg CLN_VERSION="23.08"
-    docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/ >>/dev/null
+    # first we stub out the dockerfile.
+
+    CLN_BUILD_PATH="$(pwd)/clightning"
+    CLN_DOCKERFILE_PATH="$CLN_BUILD_PATH/Dockerfile"
+    export CLN_DOCKERFILE_PATH="$CLN_DOCKERFILE_PATH"
+
+    ./clightning/stub_cln_dockerfile.sh
+
+    docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/ >> /dev/null
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then

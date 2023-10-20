@@ -48,6 +48,15 @@ EOF
     CLN_POLL_INTERVAL_SECONDS=$(( (CLN_COUNT+11) / 10 ))
     BITCOIND_POLL_SETTING="$((SECONDS_PER_TEN_NODES * CLN_POLL_INTERVAL_SECONDS ))"
 
+    # if we're NOT in development mode, we go ahead and bake
+    #  the existing prism-plugin.py into the docker image.
+    # otherwise we will mount the path later down the road so
+    # plugins can be reloaded quickly without restarting the whole thing.
+    PLUGIN_PATH=/plugins
+    if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
+        PLUGIN_PATH="/cln-plugins"
+    fi
+
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     environment:
       - ENABLE_TOR=${ENABLE_TOR}
@@ -67,7 +76,11 @@ EOF
       - LNPLAY_LXD_PASSWORD=\${LNPLAY_LXD_PASSWORD}
       - LNPLAY_CLUSTER_UNDERLAY_DOMAIN=${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}
       - LNPLAY_EXTERNAL_DNS_NAME=${LNPLAY_EXTERNAL_DNS_NAME}
+      - PLUGIN_PATH=${PLUGIN_PATH}
 EOF
+
+
+
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
@@ -90,7 +103,7 @@ EOF
     DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins"
     if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${DEV_PLUGIN_PATH}:/dev-plugins
+      - ${DEV_PLUGIN_PATH}:/cln-plugins
 EOF
     fi
 

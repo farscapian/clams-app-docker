@@ -27,10 +27,10 @@ for ((CLN_ID=1; CLN_ID<2; CLN_ID++)); do
         fi
 
         if [ "$PLUGIN_LOADED" = true ]; then
-            ./lightning-cli.sh --id="$CLN_ID" plugin stop "/dev-plugins/lnplaylive/$FILE_NAME" > /dev/null
+            ./lightning-cli.sh --id="$CLN_ID" plugin stop "/cln-plugins/lnplaylive/$FILE_NAME" > /dev/null
         fi
 
-        ./lightning-cli.sh --id="$CLN_ID" plugin start "/dev-plugins/lnplaylive/$FILE_NAME" > /dev/null
+        ./lightning-cli.sh --id="$CLN_ID" plugin start "/cln-plugins/lnplaylive/$FILE_NAME" > /dev/null
         echo "INFO: Plugin '$FILE_NAME' is available on 'cln-$CLN_ID'."
     done
 done

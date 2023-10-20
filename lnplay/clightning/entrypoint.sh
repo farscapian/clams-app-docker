@@ -45,6 +45,11 @@ if [ -z "$DOMAIN_NAME" ]; then
     exit 1
 fi
 
+if [ -z "$PLUGIN_PATH" ]; then
+    echo "ERROR: the CLN PLUGIN_PATH MUST be defined."
+    exit 1
+fi
+
 wait-for-it -t 60 "bitcoind:18443"
 
 CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
@@ -54,14 +59,6 @@ if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi
 
-# if we're NOT in development mode, we go ahead and bake
-#  the existing prism-plugin.py into the docker image.
-# otherwise we will mount the path later down the road so
-# plugins can be reloaded quickly without restarting the whole thing.
-PLUGIN_PATH=/plugins
-if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
-    PLUGIN_PATH="/dev-plugins"
-fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-plugin.py"
@@ -73,6 +70,10 @@ if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     LNPLAYLIVE_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/lnplay-live.py"
     chmod +x "$LNPLAYLIVE_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_PLUGIN_PATH"
+
+    LNPLAYLIVE_INVOICE_PAID_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/invoice_paid.py"
+    chmod +x "$LNPLAYLIVE_INVOICE_PAID_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_INVOICE_PAID_PLUGIN_PATH"
 fi
 
 if [ "$ENABLE_CLN_DEBUGGING_OUTPUT" = true ]; then

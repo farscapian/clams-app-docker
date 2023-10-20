@@ -117,8 +117,10 @@ def on_payment(plugin, invoice_payment, **kwargs):
         # Log that we are starting the provisoining proces.s
         plugin.log(f"lnplay-live: invoice is associated with lnplay.live. Starting provisioning process. invoice_id: {invoice_id}")
 
+        plugin_path = os.environ.get('PLUGIN_PATH')
+
         # The path to the provisioning script.
-        provision_script_path = '/dev-plugins/lnplaylive/provision.sh'
+        provision_script_path = f"{plugin_path}/lnplaylive/provision.sh"
 
         dt =  datetime.strptime(expiration_date, '%Y-%m-%dT%H:%M:%SZ')
         utc_dt = pytz.utc.localize(dt)
