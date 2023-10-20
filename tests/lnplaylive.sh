@@ -15,7 +15,7 @@ cd "$(dirname "$0")"
 
 ../reload_dev_plugins.sh
 
-NODE_COUNT=32
+NODE_COUNT=8
 HOURS=1
 
 # grab any modifications from the command line.
