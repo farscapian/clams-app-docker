@@ -125,6 +125,7 @@ export LNPLAY_LXD_HOSTMAPPINGS="$LNPLAY_LXD_HOSTMAPPINGS"
 export LNPLAY_CLUSTER_UNDERLAY_DOMAIN="$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
 export LNPLAY_EXTERNAL_DNS_NAME="$LNPLAY_EXTERNAL_DNS_NAME"
 export LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH"
+export LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV"
 
 # plugins
 export DEPLOY_PRISM_PLUGIN="$DEPLOY_PRISM_PLUGIN"
@@ -210,14 +211,14 @@ fi
 # because it required build-time info from the deployed backend. The build script below
 # will stub out those envs and rebuild the output from the app.
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    ./lnplay/lnplaylive/build.sh
+    env LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH" ./lnplay/lnplaylive/build.sh
 fi
 
-if [ "$RUN_CHANNELS" = true ]; then
+if [ "$RUN_CHANNELS" = true ] && [[ "$CLN_COUNT" -gt 0 ]]; then
     # ok, let's do the channel logic
     bash -c "./channel_templates/up.sh --retain-cache=$RETAIN_CACHE"
 fi
 
-if [ -n "$CONNECTION_STRING_CSV_PATH" ]; then
+if [ -n "$CONNECTION_STRING_CSV_PATH" ] && [[ "$CLN_COUNT" -gt 0 ]]; then
     bash -c "./show_cln_uris.sh --output-file=$CONNECTION_STRING_CSV_PATH" >> /dev/null
 fi
