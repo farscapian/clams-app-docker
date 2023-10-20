@@ -16,7 +16,7 @@ fi
 docker volume prune -f
 
 # get a list of all the volumes
-VOLUMES=$(docker volume list -q | grep "lnplay")
+VOLUMES=$(docker volume list -q | grep lnplay)
 
 # Iterate over each value in the list
 for VOLUME in $VOLUMES; do
@@ -29,7 +29,7 @@ for VOLUME in $VOLUMES; do
         exit 1
     fi
     
-    if echo "$VOLUME" | grep -q "-${BTC_CHAIN}"; then
+    if echo "$VOLUME" | grep -q "\-${BTC_CHAIN}"; then
         docker volume rm "$VOLUME"
     fi
 done

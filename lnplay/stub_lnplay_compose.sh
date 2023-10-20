@@ -228,7 +228,9 @@ fi
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 volumes:
+
   bitcoind-${BTC_CHAIN}:
+
 EOF
 
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
@@ -237,6 +239,7 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   lnplaylive:
     external: true
     name: lnplay-live
+
 EOF
 fi
 
@@ -245,10 +248,10 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   lnplay-certs:
     external: true
     name: lnplay-certs
+
 EOF
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
 configs:
   nginx-config:
     file: ${NGINX_CONFIG_PATH}
