@@ -61,7 +61,7 @@ RUN chmod a+r /etc/apt/keyrings/docker.gpg
 # Add the repository to Apt sources:
 RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list
 RUN apt-get update
-RUN apt-get install -y docker-ce-cli cron procps bc gridsite-clients openssh-client
+RUN apt-get install -y docker-ce-cli cron procps bc gridsite-clients openssh-client rsync
 
 EOF
 

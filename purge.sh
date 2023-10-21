@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script delete various docker volumes containing applcation and/or user data

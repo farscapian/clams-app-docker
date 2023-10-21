@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # we store TLS certs in a docker volume under /var/lib/docker

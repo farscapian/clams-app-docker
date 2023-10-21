@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.

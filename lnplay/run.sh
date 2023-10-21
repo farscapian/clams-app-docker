@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script brings up the backend needed (i.e., lightningd+bitcoind) to test Clams app
@@ -48,7 +48,7 @@ if [ "$ENABLE_TOR" = true ]; then
 fi
 
 LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
-REBUILD_CLN_IMAGE=false
+REBUILD_CLN_IMAGE=true
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
     REBUILD_CLN_IMAGE=true
@@ -148,6 +148,6 @@ if [ "$RUN_SERVICES" = true ]; then
     ./stub_cln_composes.sh
 
     if [ "$BTC_CHAIN" = mainnet ]; then
-        sleep 120
+        sleep 15
     fi
 fi

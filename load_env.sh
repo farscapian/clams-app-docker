@@ -36,6 +36,7 @@ DOMAIN_NAME=domain.tld
 ENABLE_TLS=true
 
 EOF
+    exit 1
 fi
 
 source "$ACTIVE_ENV_PATH"

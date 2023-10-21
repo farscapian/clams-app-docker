@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 
 # add the deprovision script to the crontab to be executed every 10 minutes.
 echo "*/10 * * * * root $HOME/deprovision.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/deprovision
@@ -115,7 +115,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --fee-base=1"
     CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
 fi
-
 
 chown 1000:1000 /opt/c-lightning-rest/certs
 

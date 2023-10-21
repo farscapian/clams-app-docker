@@ -147,7 +147,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         try:
             plugin.log("Starting provisioning script.")
-            result = subprocess.run([provision_script_path] + params, capture_output=True, text=True, check=True)
+            result = subprocess.run([provision_script_path] + params) #, capture_output=True, text=True, check=True)
             plugin.log("Completed provisioning script.")
             # todo persis the output to a log file for troubleshooting if needed.
 
