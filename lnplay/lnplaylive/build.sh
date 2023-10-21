@@ -3,11 +3,17 @@
 set -eu
 cd "$(dirname "$0")"
 
-if [[ "$CLN_COUNT" -gt 0 ]] && [ -z "$LNPLAYLIVE_FRONTEND_ENV" ]; then
+if [ "$CLN_COUNT" = 0 ] && [ -n "$LNPLAYLIVE_FRONTEND_ENV" ]; then
+    echo "ERROR: You MUST have a CLN_COUNT greater than 0 when LNPLAYLIVE_FRONTEND_ENV is defined."
+    exit 1
+fi
+
+# this is the default case when a .env doesn't exist. We stub it out.
+if [ "$CLN_COUNT" -gt 0 ] && [ -z "$LNPLAYLIVE_FRONTEND_ENV" ]; then
     # before I can do any of this, I need to stub out the .env file...
     # in order to do that, the lightning nodes need to be up first.
-    LNPLAYLIVE_FRONTEND_ENV="$(pwd)/app/.env"
-    PUBLIC_ADDRESS="$(bash -c "../../get_node_uri.sh --id=0 --port=6002")"
+    LNPLAYLIVE_FRONTEND_ENV="$(pwd)/.env"
+    PUBLIC_ADDRESS="$(bash -c "../../get_node_uri.sh --id=0 --port=6001")"
     PUBLIC_WEBSOCKET_PROXY="$(echo "$PUBLIC_ADDRESS" | grep -o '@.*')"
 
     WS_PROTO=ws
@@ -26,13 +32,13 @@ EOF
 fi
 
 if [ -f "$LNPLAYLIVE_FRONTEND_ENV" ]; then
-    cp "$LNPLAYLIVE_FRONTEND_ENV" ./
+    cp "$LNPLAYLIVE_FRONTEND_ENV" "$(pwd)/app/.env"
 
     docker build -q -t "$LNPLAYLIVE_IMAGE_NAME" ./ >> /dev/null
 
-
     rm -rf ./app/node_modules
     rm -rf ./app/.sveltekit
+    rm ./app/.env
 
     # and then load them back up with our freshly build version.
     docker run -t -v lnplay-live:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /lnplaylive/build/ /output/

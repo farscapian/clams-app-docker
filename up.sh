@@ -211,7 +211,7 @@ fi
 # because it required build-time info from the deployed backend. The build script below
 # will stub out those envs and rebuild the output from the app.
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    env LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH" ./lnplay/lnplaylive/build.sh
+    env LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV" ./lnplay/lnplaylive/build.sh
 fi
 
 if [ "$RUN_CHANNELS" = true ] && [[ "$CLN_COUNT" -gt 0 ]]; then
