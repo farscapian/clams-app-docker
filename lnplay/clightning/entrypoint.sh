@@ -67,7 +67,7 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
 fi
 
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
-    LNPLAYLIVE_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/lnplay-live.py"
+    LNPLAYLIVE_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/lnplay-live-api.py"
     chmod +x "$LNPLAYLIVE_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_PLUGIN_PATH"
 

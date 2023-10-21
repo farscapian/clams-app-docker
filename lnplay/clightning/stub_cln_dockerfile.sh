@@ -71,14 +71,22 @@ EOF
 # provisioning plugin
 ADD ./cln-plugins/lnplaylive/invoice_paid.py /plugins/lnplaylive/invoice_paid.py
 RUN chmod +x /plugins/lnplaylive/invoice_paid.py
-ADD ./cln-plugins/lnplaylive/provision.sh /plugins/lnplaylive/provision.sh
-RUN chmod +x /plugins/lnplaylive/provision.sh
+
+ADD ./cln-plugins/lnplaylive/lnplay-live-api.py /plugins/lnplaylive/lnplay-live-api.py
+RUN chmod +x /plugins/lnplaylive/lnplay-live-api.py
+
+ADD ./cln-plugins/lnplaylive/lnplaylive.sh /plugins/lnplaylive/lnplaylive.sh
+RUN chmod +x /plugins/lnplaylive/lnplaylive.sh
+
 ADD ./cln-plugins/lnplaylive/lxc_client_init.sh /plugins/lnplaylive/lxc_client_init.sh
 RUN chmod +x /plugins/lnplaylive/lxc_client_init.sh
 
-# lnplay-live cln/api extensions
-ADD ./cln-plugins/lnplaylive/lnplay-live.py /plugins/lnplaylive/lnplay-live.py
-RUN chmod +x /plugins/lnplaylive/lnplay-live.py
+ADD ./cln-plugins/lnplaylive/provision.sh /plugins/lnplaylive/provision.sh
+RUN chmod +x /plugins/lnplaylive/provision.sh
+
+ADD ./cln-plugins/lnplaylive/stub_confs.sh /plugins/lnplaylive/stub_confs.sh
+RUN chmod +x /plugins/lnplaylive/stub_confs.sh
+
 EOF
     fi
 fi
