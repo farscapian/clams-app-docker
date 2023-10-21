@@ -27,11 +27,12 @@ for VOLUME in $VOLUMES; do
     if echo "$VOLUME" | grep -q 'mainnet'; then
         echo "WARNING: there are mainnet volumes on this host. You should AVOID co-mingling mainnet with other environments."
         exit 1
+    else
+        if echo "$VOLUME" | grep -q "\-${BTC_CHAIN}"; then
+            docker volume rm "$VOLUME"
+        fi
     fi
-    
-    if echo "$VOLUME" | grep -q "\-${BTC_CHAIN}"; then
-        docker volume rm "$VOLUME"
-    fi
+
 done
 
 rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
