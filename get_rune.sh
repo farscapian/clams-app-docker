@@ -75,6 +75,15 @@ if [ -z "$NODE_ID" ]; then
     exit 1
 fi
 
+if [ "$BTC_CHAIN" = mainnet ]; then
+    RESPONSE=
+    read -r -p "WARNING: You are on mainnet. Are you sure you want to issue a new rune? " RESPONSE
+    if [ "$RESPONSE" != "y" ]; then
+        echo "STOPPING."
+        exit 1
+    fi
+fi
+
 RUNE_JSON=
 
 # TODO fix this logic here.
