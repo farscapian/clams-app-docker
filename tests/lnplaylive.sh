@@ -37,10 +37,10 @@ for i in "$@"; do
 done
 
 
-CREATE_ORDER_RESPONSE=$(../lightning-cli.sh --id=1 -k lnplaylive-createorder node_count="$NODE_COUNT" hours="$HOURS")
+CREATE_ORDER_RESPONSE=$(../lightning-cli.sh --id=0 -k lnplaylive-createorder node_count="$NODE_COUNT" hours="$HOURS")
 echo "$CREATE_ORDER_RESPONSE"
 INVOICE_ID="$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice_id')"
-FIRST_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=1 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
+FIRST_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=0 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
 echo "$FIRST_INVOICE_CHECK_RESPONSE"
 # get status
 FIRST_INVOICE_CHECK_STATUS="$(echo "$FIRST_INVOICE_CHECK_RESPONSE" | jq '.invoice_status')"
@@ -52,11 +52,11 @@ fi
 
 # now let's pay the invoice
 BOLT11_INVOICE=$(echo "$CREATE_ORDER_RESPONSE" | jq '.bolt11_invoice')
-../lightning-cli.sh --id=0 -k pay bolt11="$BOLT11_INVOICE" 
+../lightning-cli.sh --id=1 -k pay bolt11="$BOLT11_INVOICE" 
 
 sleep 3
 # get status
-SECOND_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=1 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
+SECOND_INVOICE_CHECK_RESPONSE="$(../lightning-cli.sh --id=0 -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id="$INVOICE_ID")"
 SECOND_INVOICE_CHECK_STATUS="$(echo "$SECOND_INVOICE_CHECK_RESPONSE" | jq '.invoice_status' | xargs)"
 
 if [ "$SECOND_INVOICE_CHECK_STATUS" != "paid" ]; then

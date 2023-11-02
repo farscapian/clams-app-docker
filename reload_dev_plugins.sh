@@ -13,8 +13,15 @@ fi
 
 DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/lnplaylive"
 
+
+# default is to reload all plugins on all nodes.
+MAX_NODE_COUNT="$CLN_COUNT"
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+    MAX_NODE_COUNT=1
+fi
+
 # fund each cln node
-for ((CLN_ID=1; CLN_ID<2; CLN_ID++)); do
+for ((CLN_ID=0; CLN_ID<"$MAX_NODE_COUNT"; CLN_ID++)); do
     # iterate over py scripts.
     for PLUGIN_FILENAME in "$DEV_PLUGIN_PATH"/*.py; do
         chmod +x "$PLUGIN_FILENAME"
