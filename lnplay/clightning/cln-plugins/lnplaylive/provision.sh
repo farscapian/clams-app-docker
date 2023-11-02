@@ -13,6 +13,7 @@ NODE_COUNT=
 SLOT=
 VM_MAC_ADDRESS=
 STARTING_EXTERNAL_PORT=
+CONNECTION_STRINGS_PATH=
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -41,12 +42,23 @@ for i in "$@"; do
             STARTING_EXTERNAL_PORT="${i#*=}"
             shift
         ;;
+        --connection-strings-path=*)
+            CONNECTION_STRINGS_PATH="${i#*=}"
+            shift
+        ;;
         *)
         echo "Unexpected option: $1"
         exit 1
         ;;
     esac
 done
+
+if [ -z "$CONNECTION_STRINGS_PATH" ]; then
+    echo "ERROR: CONNECTION_STRINGS_PATH was not set."
+    exit 1
+fi
+
+export CONNECTION_STRINGS_PATH="$CONNECTION_STRINGS_PATH"
 
 if [ -z "$SLOT" ]; then
     echo "ERROR: The SLOT MUST be defined when calling this script."

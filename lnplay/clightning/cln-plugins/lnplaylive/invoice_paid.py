@@ -137,11 +137,18 @@ def on_payment(plugin, invoice_payment, **kwargs):
         if next_slot is None:
             raise Exception("ERROR: the next_slot could not be determined.")
 
-        #raise Exception(f"{next_slot.slot_name},{next_slot.mac_address},{next_slot.starting_external_port}")
-
-        params = [f"--invoice-id={invoice_id}", f"--expiration-date={unix_timestamp}", f"--node-count={node_count}", f"--slot={next_slot.slot_name}", f"--mac-addr={next_slot.mac_address}", f"--starting-ext-port={next_slot.starting_external_port}" ]
+        # these are passed into the provisioning bash script.
+        # read the connection details in from output file
+        home_directory = os.environ.get('HOME')
+        connection_info_dir = f"{home_directory}/connection_strings"
         
-        #raise Exception(f"stopping before provisioning script.")
+        # Create the directory
+        if not os.path.exists(connection_info_dir):
+            os.makedirs(connection_info_dir)
+
+        connection_info_path= f"{connection_info_dir}/{invoice_id}.csv"
+
+        params = [f"--invoice-id={invoice_id}", f"--expiration-date={unix_timestamp}", f"--node-count={node_count}", f"--slot={next_slot.slot_name}", f"--mac-addr={next_slot.mac_address}", f"--starting-ext-port={next_slot.starting_external_port}", f"--connection-strings-path={connection_info_path}" ]
 
         result = None
 
