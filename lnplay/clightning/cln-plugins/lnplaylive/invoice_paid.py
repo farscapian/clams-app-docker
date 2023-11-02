@@ -10,7 +10,7 @@ import pytz
 from pyln.client import Plugin, RpcError
 from datetime import datetime, timedelta
 
-lnlive_plugin_version = "v0.0.1"
+lnlive_provisioning_plugin_version = "v0.0.1"
 
 plugin_out = "/tmp/plugin_out"
 if os.path.isfile(plugin_out):
@@ -99,15 +99,14 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         expiration_date = calculate_expiration_date(hours)
 
-        connection_strings = None
+        connection_strings = []
 
-        # order_details response
+        # Let's update the order detail for this, stating that we are current in the 
+        # provisioning stage. We also provide 
         order_details = {
             "node_count": node_count,
             "hours": hours,
-            "lnlive_plugin_version": lnlive_plugin_version,
             "vm_expiration_date": expiration_date,
-            "status": "deploying",
             "connection_strings": connection_strings
         }
 
@@ -117,6 +116,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
         # Log that we are starting the provisoining proces.s
         plugin.log(f"lnplay-live: invoice is associated with lnplay.live. Starting provisioning process. invoice_id: {invoice_id}")
 
+        # we get the plugin path from the ENV /plugins for docker containers, /dev-plugins for local development
         plugin_path = os.environ.get('PLUGIN_PATH')
 
         # The path to the provisioning script.
@@ -126,12 +126,11 @@ def on_payment(plugin, invoice_payment, **kwargs):
         utc_dt = pytz.utc.localize(dt)
         unix_timestamp = int(utc_dt.timestamp())
 
-        
         # so, what I need do here is determine what the next available slot is.
         # we will invoke lxc project list from python to determine what slots taken,
         # then we will subtract that set from the list of total available slots.
         next_slot = None
-        
+
         next_slot = get_next_available_slot(node_count)
 
         if next_slot is None:
@@ -153,10 +152,11 @@ def on_payment(plugin, invoice_payment, **kwargs):
         result = None
 
         try:
-            plugin.log("Starting provisioning script.")
+            plugin.log(f"Starting lnplay provisioning script for Order {invoice_id}")
             result = subprocess.run([provision_script_path] + params) #, capture_output=True, text=True, check=True)
-            plugin.log("Completed provisioning script.")
-            # todo persis the output to a log file for troubleshooting if needed.
+            plugin.log(result.stdout)
+            plugin.log(result.stderr)
+            plugin.log(f"Completed provisioning script for order {invoice_id}")
 
         except subprocess.CalledProcessError as e:
             plugin.log(f"The bash script exited with error code: {e.returncode}")
@@ -165,13 +165,10 @@ def on_payment(plugin, invoice_payment, **kwargs):
         except Exception as e:
             plugin.log(f"An error occurred: {e}")
 
-        connection_strings = None
-
-        # read the connection detail in from file (this file is the output of the lnplay up.sh script.)
-        home_directory = os.environ.get('HOME')
-        connection_info_path = f"{home_directory}/connection_strings/{invoice_id}.csv"
 
         if os.path.isfile(connection_info_path):
+            actual_expiration_date = calculate_expiration_date(hours)
+
             with open(connection_info_path, 'r') as file:
                 connection_strings = [line.strip() for line in file]
 
@@ -179,8 +176,8 @@ def on_payment(plugin, invoice_payment, **kwargs):
             order_details = {
                 "node_count": node_count,
                 "hours": hours,
-                "lnlive_plugin_version": lnlive_plugin_version,
-                "vm_expiration_date": expiration_date,
+                "lnlive_plugin_version": lnlive_provisioning_plugin_version,
+                "vm_expiration_date": actual_expiration_date,
                 "status": "provisioned",
                 "connection_strings": connection_strings
             }
@@ -189,7 +186,6 @@ def on_payment(plugin, invoice_payment, **kwargs):
             plugin.rpc.datastore(key=invoice_id, string=json.dumps(order_details),mode="must-replace")
 
             # Log that we are starting the provisoining proces.
-            plugin.log(f"lnplay-live: ----")
             plugin.log(f"lnplay-live: Order: {invoice_id} has been provisioned.")
 
         else:
@@ -220,11 +216,11 @@ def get_next_available_slot(node_count):
     lxc_output = subprocess.check_output(['lxc', 'project', 'list', '--format', 'csv', '-q'], text=True).replace(' (current)', '').split('\n')
     filtered_strings = [s for s in lxc_output if not s.startswith('default')]
     used_slots = [HostMapping(slot_name=line.split(',')[0], mac_address="", starting_external_port="") for line in filtered_strings if line != ""]
-    #raise Exception (f"used_slots: {used_slots}")
 
     # Select elements starting with the product number, then "slot"
     product_search_string = f"{node_count:03}slot"
     slots_matching_product = [slot for slot in all_slots if slot.slot_name.startswith(product_search_string)]
+    slots_matching_product.sort(key=lambda x: x.slot_name)
 
     # subtract used_slots from slots_matching_product (set subtraction)
     current_available_slots_for_product = set(slots_matching_product) - set(used_slots)
@@ -235,12 +231,10 @@ def get_next_available_slot(node_count):
     first_available_slot = None
     first_available_slot = list(current_available_slots_for_product)[0]
 
-    #raise Exception (f"output: {first_available_slot}")
-    if first_available_slot is not None:
-        return first_available_slot
-
-    else:
+    if first_available_slot is None:
         raise Exception("Something went wrong.")
+
+    return first_available_slot
 
 def getAllSlots():
 

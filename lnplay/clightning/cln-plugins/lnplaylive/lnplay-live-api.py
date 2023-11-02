@@ -8,7 +8,7 @@ import uuid
 from pyln.client import Plugin, RpcError
 from datetime import datetime, timedelta
 
-lnlive_plugin_version = "v0.0.1"
+lnlive_plugin_api_version = "v0.0.1"
 
 plugin_out = "/tmp/plugin_out"
 if os.path.isfile(plugin_out):
@@ -37,7 +37,10 @@ def lnplaylive_createorder(plugin, node_count, hours):
     '''Returns a BOLT11 invoice for the given node count and time.'''
     try:
         # The rate is 200 sats per node-hour.
-        rate_to_charge = 200000
+        #rate_to_charge = 200000
+
+        # 1 sats per node-hour
+        rate_to_charge = 1000
 
         # ensure node_count is an int
         if not isinstance(node_count, int):
@@ -76,15 +79,18 @@ def lnplaylive_createorder(plugin, node_count, hours):
         createorder_response = {
             "node_count": node_count,
             "hours": hours,
-            "expires_after": estimated_expiration_date,
+            "lnlive_plugin_api_version": lnlive_plugin_api_version,
+            "expiration_date": estimated_expiration_date,
             "bolt11_invoice_id": bolt11_guid_str,
-            "bolt11_invoice": bolt11_invoice["bolt11"]
+            "bolt11_invoice": bolt11_invoice["bolt11"],
         }
 
         # everything in this object gets stored in the database and gets built upon by later scripts.
         createorder_dbdetails = {
             "node_count": node_count,
-            "hours": hours
+            "hours": hours,
+            "expiration_date": estimated_expiration_date,
+            "lnlive_plugin_api_version": lnlive_plugin_api_version,
         }
 
         # let's store the order details in the datastore under the bolt11_guid_str
@@ -139,7 +145,7 @@ def lnplaylive_invoicestatus(plugin, payment_type, invoice_id):
                     matching_record = record
                     break
 
-        deployment_details_json = None
+        deployment_details_json = ""
         if matching_record is not None:
             deployment_details = matching_record["string"]
             deployment_details_json = json.loads(str(deployment_details))
