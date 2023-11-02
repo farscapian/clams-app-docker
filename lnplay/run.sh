@@ -113,8 +113,8 @@ if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
 fi
 
 # check to see if we have certificates
-if [ "$ENABLE_TLS" = true ]; then
-    ./getrenew_cert.sh > /dev/null
+if { [[ "$ENABLE_TLS" = true ]] && [[ "$RENEW_CERTS" = true ]]; } || { ! docker volume list | grep -q lnplay-certs; }; then
+    ./getrenew_cert.sh
 fi
 
 # the remainer of the script is ONLY if we intend to run the services.

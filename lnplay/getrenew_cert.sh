@@ -4,7 +4,7 @@ set -exu
 cd "$(dirname "$0")"
 
 # we store TLS certs in a docker volume under /var/lib/docker
-docker volume create lnplay-certs
+docker volume create lnplay-certs >> /dev/null
 
 # let's do a refresh of the certificates. Let's Encrypt will not run if it's not time.
 CERTBOT_IMAGE_NAME="certbot/certbot:latest"
