@@ -6,8 +6,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 DOCKER_HOST=
 ACTIVE_ENV_PATH=
 
-#echo "LNPLAY_ENV_FILE_PATH: $LNPLAY_ENV_FILE_PATH"
-
 # if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
 LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
 if test -z "${LNPLAY_ENV_FILE_PATH+x}"; then

@@ -65,7 +65,8 @@ RUN apt-get install -y docker-ce-cli cron procps bc gridsite-clients openssh-cli
 
 EOF
 
-    # add the lnplay live plugins.
+    # add the lnplay live plugins/scripts
+    # TODO this can be simplified probably; no need to specify every py sh
     if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then 
         cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # provisioning plugin

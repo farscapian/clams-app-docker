@@ -79,9 +79,6 @@ EOF
       - PLUGIN_PATH=${PLUGIN_PATH}
 EOF
 
-
-
-
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
@@ -90,7 +87,7 @@ EOF
 
     if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${HOME}/sovereign-stack:/sovereign-stack:ro
+      - ${HOME}/sovereign-stack:/sovereign-stack:rw
 EOF
     fi
 

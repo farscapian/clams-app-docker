@@ -87,7 +87,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
     if [ "$CHANNEL_SETUP" = prism ]; then
         # now call the script that opens the channels.
         ./create_prism_channels.sh >> /dev/null
-        #echo "skipping"
     fi
 
 fi

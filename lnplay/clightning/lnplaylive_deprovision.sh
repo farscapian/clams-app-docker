@@ -28,7 +28,7 @@ for OLD_PROJECT_NAME in $PROJECT_NAMES; do
             fi
 
             lxc project switch default >> /dev/null
-            ssh-keygen -R "${INSTANCE//-/.}" "$HOME/.ssh/known_hosts"
+            ssh-keygen -R "${INSTANCE//-/.}"
             lxc project delete "$SLOT" >> /dev/null
         fi
     fi
