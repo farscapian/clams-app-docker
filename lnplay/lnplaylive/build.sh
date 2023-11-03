@@ -3,10 +3,6 @@
 set -eu
 cd "$(dirname "$0")"
 
-if [ "$CLN_COUNT" = 0 ] && [ -n "$LNPLAYLIVE_FRONTEND_ENV" ]; then
-    echo "ERROR: You MUST have a CLN_COUNT greater than 0 when LNPLAYLIVE_FRONTEND_ENV is defined."
-    exit 1
-fi
 
 # this is the default case when a .env doesn't exist. We stub it out.
 if [ "$CLN_COUNT" -gt 0 ] && [ -z "$LNPLAYLIVE_FRONTEND_ENV" ]; then
