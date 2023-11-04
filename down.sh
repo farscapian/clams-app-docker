@@ -44,6 +44,11 @@ done
 
 . ./load_env.sh
 
+if [ "$DO_NOT_DEPLOY" = true ]; then
+    echo "ERROR: the DO_NOT_DEPLOY flag is specified in your environment file. Can't do anything till that's gone yo."
+    exit 1
+fi
+
 if [ "$BTC_CHAIN" = mainnet ]; then
     echo "WARNING: You are about to take down a mainnet node!"
     echo ""
