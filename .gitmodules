@@ -16,3 +16,6 @@
 [submodule "lnplay/clightning/cln-plugins/lnplaylive/app"]
 	path = lnplay/clightning/cln-plugins/lnplaylive/app
 	url = https://github.com/farscapian/lnplay.live-plugin.git
+[submodule "lnplay/clightning/cln-plugins/clboss/app"]
+	path = lnplay/clightning/cln-plugins/clboss/app
+	url = https://github.com/ZmnSCPxj/clboss
