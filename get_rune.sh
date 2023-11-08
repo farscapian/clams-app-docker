@@ -128,11 +128,11 @@ if [ "$ADMIN_RUNE" = false ]; then
     fi
 
     if [ "$LIST_PRISMS_PERMISSIONS" = true ]; then
-        CMD="${CMD},\"method=listprisms\""
+        CMD="${CMD},\"method=prism-listall\""
     fi
 
     if [ "$CREATE_PRISM_PERMISSIONS" = true ]; then
-        CMD="${CMD},\"method=createprism\""
+        CMD="${CMD},\"method=prism-create\""
     fi
 
     CMD="${CMD}],[\"rate=$RATE_LIMIT\"]]'"

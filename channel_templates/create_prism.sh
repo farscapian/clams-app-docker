@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -eu
-cd "$(dirname "$0")" || exit 1
 
 mapfile -t pubkeys < "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 mapfile -t anyoffers < "$LNPLAY_SERVER_PATH/any_offers.txt"
@@ -20,6 +19,6 @@ done
 PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # create a prism with (n-2) members.
-../lightning-cli.sh --id=1 createprism label="roygbiv_demo" members="$PRISM_JSON_STRING"
+../lightning-cli.sh --id=1 prism-create -k members="$PRISM_JSON_STRING"
 
 echo "INFO: successfully created a BOLT12 Prism on Bob."

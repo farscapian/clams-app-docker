@@ -90,3 +90,8 @@ if [ "$BTC_CHAIN" = regtest ]; then
     fi
 
 fi
+
+# create a prism 
+if [ "$CHANNEL_SETUP" = prism ] && [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
+    ./create_prism.sh
+fi

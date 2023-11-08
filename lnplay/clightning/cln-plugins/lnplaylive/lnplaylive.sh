@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 PROJECTS_CONF_PATH="$HOME/ss/projects"
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(lxc remote get-default)"

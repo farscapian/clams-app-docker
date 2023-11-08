@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 . ./defaults.env
@@ -11,7 +11,7 @@ if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
     exit 0
 fi
 
-DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/lnplaylive"
+DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/bolt12-prism"
 
 
 # default is to reload all plugins on all nodes.
@@ -34,10 +34,10 @@ for ((CLN_ID=0; CLN_ID<"$MAX_NODE_COUNT"; CLN_ID++)); do
         fi
 
         if [ "$PLUGIN_LOADED" = true ]; then
-            ./lightning-cli.sh --id="$CLN_ID" plugin stop "/cln-plugins/lnplaylive/$FILE_NAME" > /dev/null
+            ./lightning-cli.sh --id="$CLN_ID" plugin stop "/cln-plugins/bolt12-prism/$FILE_NAME" > /dev/null
         fi
 
-        ./lightning-cli.sh --id="$CLN_ID" plugin start "/cln-plugins/lnplaylive/$FILE_NAME" > /dev/null
+        ./lightning-cli.sh --id="$CLN_ID" plugin start "/cln-plugins/bolt12-prism/$FILE_NAME" > /dev/null
         echo "INFO: Plugin '$FILE_NAME' is available on 'cln-$CLN_ID'."
     done
 done

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 cat > "$CLN_DOCKERFILE_PATH" <<EOF
@@ -37,7 +37,7 @@ fi
 cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # install basic software.
 RUN apt update
-RUN apt install -y wait-for-it sshfs wget
+RUN apt install -y wait-for-it sshfs wget dnsutils
 EOF
 
 # if we're deploying lnplaylive, install the dependencies.
@@ -97,6 +97,15 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
 # let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
 RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
+EOF
+fi
+
+if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
+    cat >> "$CLN_DOCKERFILE_PATH" <<EOF
+# copy the CLBOSS binary to the plugin path.
+ADD ./cln-plugins/clboss/clboss /plugins/clboss/clboss
+RUN chmod +x /plugins/clboss/clboss
+RUN apt install -y libev-dev
 EOF
 fi
 

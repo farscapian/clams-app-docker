@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 # Now let's clean up all the projects from the cluster.
 PROJECT_NAMES=$(lxc project list --format csv -q | grep -vw default | cut -d',' -f1)

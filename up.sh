@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 # This script runs the whole Clams stack as determined by the various ./.env files
@@ -130,6 +130,7 @@ export LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV"
 # plugins
 export DEPLOY_PRISM_PLUGIN="$DEPLOY_PRISM_PLUGIN"
 export DEPLOY_LNPLAYLIVE_PLUGIN="$DEPLOY_LNPLAYLIVE_PLUGIN"
+export DEPLOY_CLBOSS_PLUGIN="$DEPLOY_CLBOSS_PLUGIN"
 export RENEW_CERTS="$RENEW_CERTS"
 
 mkdir -p "$LNPLAY_SERVER_PATH"

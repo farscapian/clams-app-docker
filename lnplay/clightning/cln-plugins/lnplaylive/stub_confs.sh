@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 # need to get the remote.conf in there
 # this isn't really needed since env are provided via docker.

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 # add the deprovision script to the crontab to be executed every 10 minutes.
 echo "*/10 * * * * root $HOME/deprovision.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/deprovision
@@ -59,6 +59,11 @@ if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi
 
+if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
+    CLBOSS_PLUGIN_PATH="$PLUGIN_PATH/clboss/clboss"
+    chmod +x "$CLBOSS_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$CLBOSS_PLUGIN_PATH"
+fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-plugin.py"
