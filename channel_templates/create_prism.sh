@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 
 mapfile -t pubkeys < "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 mapfile -t anyoffers < "$LNPLAY_SERVER_PATH/any_offers.txt"

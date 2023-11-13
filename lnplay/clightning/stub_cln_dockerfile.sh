@@ -95,8 +95,8 @@ fi
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # let's embed the plugins into the image.
-ADD ./cln-plugins/bolt12-prism/prism-plugin.py /plugins/bolt12-prism/prism-plugin.py
-RUN chmod +x /plugins/bolt12-prism/prism-plugin.py
+ADD ./cln-plugins/bolt12-prism/prism.py /plugins/bolt12-prism/prism.py
+RUN chmod +x /plugins/bolt12-prism/prism.py
 EOF
 fi
 

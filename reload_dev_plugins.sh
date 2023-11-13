@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 . ./defaults.env
@@ -22,6 +22,11 @@ fi
 
 # fund each cln node
 for ((CLN_ID=0; CLN_ID<"$MAX_NODE_COUNT"; CLN_ID++)); do
+
+    if [ "$CLN_ID" -gt 1 ]; then
+        exit 1
+    fi
+
     # iterate over py scripts.
     for PLUGIN_FILENAME in "$DEV_PLUGIN_PATH"/*.py; do
         chmod +x "$PLUGIN_FILENAME"

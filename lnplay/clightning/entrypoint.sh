@@ -52,7 +52,7 @@ fi
 
 wait-for-it -t 60 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=000001 --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
 # TODO put this log-file back in there. Need to log to stdout AND log file
 #--log-file=debug.log
 if [ "$ENABLE_TOR" = true ]; then
@@ -66,7 +66,7 @@ if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
-    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-plugin.py"
+    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism.py"
     chmod +x "$PRISM_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi
@@ -117,6 +117,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
     # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
     # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
+    # TODO research invoices-onchain-fallback
     CLN_COMMAND="$CLN_COMMAND --fee-base=1"
     CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
 fi
