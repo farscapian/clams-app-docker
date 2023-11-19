@@ -66,7 +66,7 @@ def lnplaylive_createorder(plugin, node_count, hours):
         # we just need a guid to for cross referencing invoices. Order details for paid invoices are also stored in the
         # database under the label/guid bolt11_guid_str.
         bolt11_guid = uuid.uuid4()
-        bolt11_guid_str = str(bolt11_guid)
+        bolt11_guid_str = f"lnplaylive-{str(bolt11_guid)}"
         
         # generate the invoice
         description = f"lnplay.live - {node_count} nodes for {hours} hours."

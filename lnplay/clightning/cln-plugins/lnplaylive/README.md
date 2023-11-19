@@ -28,7 +28,7 @@ The `lnplaylive-invoicestatus` rpc method returns the status of a BOLT11 invoice
 Before the invoice is paid, you'll see this:
 
 ```bash
-lightning-cli -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id=8d33e17d-0385-46c0-82f2-16c989f7b112
+lightning-cli -k lnplaylive-invoicestatus payment_type=bolt11 invoice_id=lnplaylive-8d33e17d-0385-46c0-82f2-16c989f7b112
 {
    "invoice_id": "8d33e17d-0385-46c0-82f2-16c989f7b112",
    "payment_type": "bolt11",
