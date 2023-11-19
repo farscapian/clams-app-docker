@@ -69,6 +69,14 @@ if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
 
+UNIQUE_NAMES=$(wc -l < "$NAMES_FILE_PATH")
+UNIQUE_NAMES=$((UNIQUE_NAMES+1))
+# Check if line count is greater than the threshold
+if [ "$UNIQUE_NAMES" -lt "$CLN_COUNT" ]; then
+    echo "ERROR: Your names '$NAMES_FILE_PATH' MUST have at least $CLN_COUNT unique entries."
+    exit 1
+fi
+
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
     docker swarm init --default-addr-pool 10.10.0.0/16 --default-addr-pool-mask-length 22 >> /dev/null
