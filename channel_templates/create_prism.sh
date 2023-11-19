@@ -12,13 +12,23 @@ PRISM_JSON_STRING="["
 # do every other keysend/bolt12
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
-    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"name\" : \"${names[$CLN_ID]}\", \"destination\": \"$NODE_ANYOFFER\", \"split\": 1, \"type\":\"bolt12\"},"
+    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"name\" : \"${names[$CLN_ID]}\", \"destination\": \"$NODE_ANYOFFER\", \"split\": $CLN_ID, \"type\":\"bolt12\"},"
 done
 
 # close off the json
 PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # create a prism with (n-2) members.
-../lightning-cli.sh --id=1 prism-create -k members="$PRISM_JSON_STRING"
+PRISM_ID="prism-$DOMAIN_NAME-prism_demo"
+../lightning-cli.sh --id=1 prism-create -k members="$PRISM_JSON_STRING" prism_id="${PRISM_ID}"
 
 echo "INFO: successfully created a BOLT12 Prism on Bob."
+
+# now let's create a BOLT12 entrypoint, then bind it to our prism.
+OFFER_DESCRIPTION="Prism Demo"
+
+# now create a new BOLT12 any offer and grab the offer_id
+OFFER_ID=$(../lightning-cli.sh --id=1 offer -k amount=any description="$OFFER_DESCRIPTION" | jq -r '.offer_id')
+
+# now lets bind that prism to the offer
+../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="$PRISM_ID" invoice_type=bolt12 invoice_label="$OFFER_ID"
