@@ -63,8 +63,8 @@ fi
 # if the clboss binary doesn't exist, build it.
 if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
-    docker build -q -t "$CLBOSS_IMAGE_NAME" ./clightning/cln-plugins/clboss
-    docker run -t -v $(pwd):/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
+    docker build -q -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss
+    docker run -t -v "$(pwd)":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
 
 # build the base image for cln
