@@ -136,8 +136,9 @@ When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) sc
 
 When deploying your application to a local docker engine, the CLN plugin path will get mounted into each CLN instance (container). If you want to make updates to the ``, for example, make the change, then run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the prism.py the newly updated plugin.
 
+# Presenter Tools
 
+Global Network Graph Visualizers:
 
-# Global Network Graph Visualizer
-
-[This repo](https://github.com/evansmj/cln-node-visualization) can be used to view a global network graph of the LARP.
+* [This repo](https://github.com/evansmj/cln-node-visualization) can be used to view a global network graph of the LARP.
+* other tools
