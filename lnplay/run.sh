@@ -126,7 +126,7 @@ fi
 
 # the remainer of the script is ONLY if we intend to run the services.
 # if we don't we are left with all the images ready to go.
-# this is useful when you want to package up lnplay into a VM image (lxc image)
+# this is useful when you want to package up lnplay into a VM image (incus image)
 # and distribute it or use it in production.
 if [ "$RUN_SERVICES" = true ]; then
     DOCKER_COMPOSE_YML_PATH="$LNPLAY_SERVER_PATH/lnplay.yml"

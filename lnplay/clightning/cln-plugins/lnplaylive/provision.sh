@@ -114,10 +114,10 @@ export SLOT="$SLOT"
 ./stub_confs.sh
 
 # now let's create the project
-if ! lxc project list | grep -q "$PROJECT_NAME"; then
-    lxc project create -q "$PROJECT_NAME"
-    lxc project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=false
-    lxc project switch -q "$PROJECT_NAME"
+if ! incus project list | grep -q "$PROJECT_NAME"; then
+    incus project create -q "$PROJECT_NAME"
+    incus project set "$PROJECT_NAME" features.networks=true features.images=false features.storage.volumes=false
+    incus project switch -q "$PROJECT_NAME"
 fi
 
 # ok, now that our sovereign stack .conf files are in place, we can run the up script.

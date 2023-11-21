@@ -3,12 +3,12 @@
 set -eu
 
 # let's make sure our remotes are in place prior to any provisioning.
-if ! lxc remote list | grep -q lnplaylive; then
-    lxc remote add lnplaylive -q "$LNPLAY_LXD_FQDN_PORT" --password "$LNPLAY_LXD_PASSWORD" --accept-certificate >> /dev/null
+if ! incus remote list | grep -q lnplaylive; then
+    incus remote add lnplaylive -q "$LNPLAY_INCUS_FQDN_PORT" --password "$LNPLAY_INCUS_PASSWORD" --accept-certificate >> /dev/null
 fi
 
-if ! lxc remote get-default | grep -q lnplaylive; then
-    lxc remote switch lnplaylive  > /dev/null
+if ! incus remote get-default | grep -q lnplaylive; then
+    incus remote switch lnplaylive  > /dev/null
 fi
 
 # ensure we have an SSH key to use for remote VMs.

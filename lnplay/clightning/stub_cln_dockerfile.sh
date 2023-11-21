@@ -43,12 +43,15 @@ EOF
 # if we're deploying lnplaylive, install the dependencies.
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
-# copy the deprovisioning script to the image.
+# copy the deprovisionin script to the image.
 COPY ./lnplaylive_deprovision.sh /root/deprovision.sh
 RUN chmod +x /root/deprovision.sh
 
-RUN wget -O /usr/bin/lxc https://github.com/canonical/lxd/releases/download/lxd-5.18/bin.linux.lxc
-RUN chmod +x /usr/bin/lxc
+COPY ./zably_key.asc /etc/apt/keyrings/zabbly.asc
+COPY ./add_incus_repo.sh /root/add_incus_repo.sh
+
+#RUN wget -O /usr/bin/lxc https://github.com/canonical/lxd/releases/download/lxd-5.18/bin.linux.lxc
+#RUN chmod +x /usr/bin/lxc
 
 # # install docker client
 # Add Docker's official GPG key:

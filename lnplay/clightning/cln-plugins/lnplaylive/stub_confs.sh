@@ -5,8 +5,6 @@ set -e
 # need to get the remote.conf in there
 # this isn't really needed since env are provided via docker.
 cat > "$REMOTE_CONF_FILE_PATH" <<EOF
-LXD_REMOTE_PASSWORD=
-# DEPLOYMENT_STRING=
 # REGISTRY_URL=http://registry.domain.tld:5000
 EOF
 

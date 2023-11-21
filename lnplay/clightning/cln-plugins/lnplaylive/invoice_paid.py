@@ -127,7 +127,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
         unix_timestamp = int(utc_dt.timestamp())
 
         # so, what I need do here is determine what the next available slot is.
-        # we will invoke lxc project list from python to determine what slots taken,
+        # we will invoke incus project list from python to determine what slots taken,
         # then we will subtract that set from the list of total available slots.
         next_slot = None
 

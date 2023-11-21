@@ -1,4 +1,5 @@
 # https://github.com/Start9Labs/cln-startos/blob/master/Dockerfile
+# Special thanks to Chris Guida for developing the dockerfile for CLBOSS.
 # clboss builder
 FROM debian:bullseye-slim
 
