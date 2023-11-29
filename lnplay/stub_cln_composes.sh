@@ -5,6 +5,7 @@ set -eu
 cd "$(dirname "$0")"
 
 readarray -t names < "$NAMES_FILE_PATH"
+readarray -t colors < "$COLORS_FILE_PATH"
 
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature
@@ -25,6 +26,8 @@ EOF
     if [[ "$CLN_ID" -lt 200 ]]; then
         CLN_ALIAS=${names[$CLN_ID]}
     fi
+
+    CLN_COLOR="${colors[$CLN_ID]}"
 
     if [ "$BTC_CHAIN" = mainnet ]; then
         CLN_ALIAS="$DOMAIN_NAME"
@@ -61,6 +64,7 @@ EOF
     environment:
       - ENABLE_TOR=${ENABLE_TOR}
       - CLN_ALIAS=${CLN_ALIAS}
+      - CLN_COLOR=${CLN_COLOR}
       - BITCOIND_RPC_USERNAME=\${BITCOIND_RPC_USERNAME}
       - BITCOIND_RPC_PASSWORD=\${BITCOIND_RPC_PASSWORD}
       - CLN_NAME=${CLN_NAME}
