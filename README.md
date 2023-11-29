@@ -106,10 +106,11 @@ The following table shows the most common configuration settings.
 |`ENABLE_TOR`|`false`|Deploy a TOR proxy for each CLN node so you can create lightning channels with onion-only endpoints.|
 |`ENABLE_TLS`|`false`|If true, letsencrypt certificates will be generated. This requires DNS and firewall settings to be properly configured.|
 |`REGTEST_BLOCK_TIME`|`5`|Adjust the blocktime (in seconds) used in regtest environments.|
-|`CHANNEL_SETUP`|`none`|By default, no channels are created. If `prism`, a prism layout will be established.|
+|`CHANNEL_SETUP`|`none`, `dynamic-mesh`, `circular`|By default, no channels are created. If `prism`, a layout useful for developing prisms will be established. If `dynamic-mesh`, CLBOSS gets deployed and channels get created eventually (~2 hours).|
 |`ENABLE_CLN_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
 |`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet or signet node 0.|
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
+|`COLORS_FILE_PATH`|[./colors.txt](./colors.txt)|Provide a custm list of node color.|
 |`LNPLAY_SERVER_PATH`|`$(pwd)/lnplay/stacks`|Specify where deployment articfacts are stored.|
 |`DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN`|`null`|If specified, overrides the `https://${DOMAIN_NAME}` to specified value: e,g., 'app.clams.tech'|
 |`ENABLE_CLAMS_V2_CONNECTION_STRINGS`|`false`|If true, will emit Clams v2 Connection String format.|
@@ -118,15 +119,10 @@ There are [other options](./defaults.env) in there that might be worth overridin
 
 ### CHANNEL_SETUP=prism
 
-The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing `n-member prisms`, where `n` is the number of split recipients in the prism. Here's the basic setup: Alice (`cln-0`) opens a channel to Bob (`cln-1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob. This allows Alice to pay Bob's BOLT12 Prism Offer, and Bob can split the payment to the remaining `n` nodes (to do a 50-member split, set `CLN_COUNT=52`).
+The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing [`BOLT12 Prisms`](). In set to `prrism` Alice (`node0`) opens a channel to Bob (`node1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob.  Then on Bob, a BOLT12 Prism is created. When Alioce pays Bob's BOLT12 Prism Offer, Bob splits the regtest coins payment to the remaining `n` nodes.
 
-1.  Alice\*[0]->Bob[1]
-2.  Bob\*[1]->Carol[2]
-3.  Bob\*[1]->Dave[3]
-4.  Bob\*[1]->...
-5.  Bob\*[1]->Finney[n+2]
 
-This setup is useful for testing and developing [BOLT12 Prisms](https://www.roygbiv.guide). After the channels are created you can control any deployed cln node using [clams-wallet](https://clams.tech). With Clams, you can pay to `BOLT12 Prism Offers` from Alice to Bob. From Bob you can create and manage prisms and view incoming payments and outgoing payment splits. Finally on Carol, Dave, and Erin, you can see incoming payments as a result of prism payouts on Bob. For more information, [take a look at the ROYGBIV demo environment](https://www.roygbiv.guide/demo)
+This setup is useful for testing and developing [BOLT12 Prisms](https://www.roygbiv.guide/about). After the channels are created you can control any deployed cln node using [Clams](https://clams.tech). With Clams, you can pay to `BOLT12 Prism Offers` from Alice to Bob. From Bob you can create and manage prisms and view incoming payments and outgoing payment splits. Finally on Carol, Dave, and Erin, you can see incoming payments as a result of prism payouts on Bob. For more information, [take a look at the ROYGBIV demo environment](https://www.roygbiv.guide/demo)
 
 ## Connection Information
 
