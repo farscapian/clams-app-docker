@@ -70,6 +70,10 @@ for i in "$@"; do
     esac
 done
 
+
+. ./defaults.env
+. ./load_env.sh
+
 if [ -z "$NODE_ID" ]; then
     echo "ERROR: You MUST specify a --node-id="
     exit 1
