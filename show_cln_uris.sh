@@ -99,7 +99,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     elif [ "$ENABLE_CLAMS_V2_CONNECTION_STRINGS" = true ]; then
         CLAMS_CONFIG_JSON="{\"address\":\"${CLN_WEBSOCKET_URI}\",\"token\":\"${RUNE}\",\"connection\":{\"type\":\"direct\",\"value\":\"${WSS_PROTOCOL}\"}}"
         CLAMS_CONFIG_JSON_URLENCODED=$(urlencode "$CLAMS_CONFIG_JSON")
-        WEBSOCKET_QUERY_STRING="label=${names[$CLN_ID]}&type=coreln&configuration=${CLAMS_CONFIG_JSON_URLENCODED}"
+        WEBSOCKET_QUERY_STRING="label=${names[$CLN_ID]}&larp=true&type=coreln&configuration=${CLAMS_CONFIG_JSON_URLENCODED}"
         WEBSOCKET_QUERY_STRING="${PROTOCOL_AND_HOST}/wallets/add?$WEBSOCKET_QUERY_STRING"
     fi
 
