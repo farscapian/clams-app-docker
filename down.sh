@@ -72,6 +72,13 @@ fi
 export LNPLAY_ENV_FILE_PATH="$LNPLAY_ENV_FILE_PATH"
 export DOCKER_HOST="$DOCKER_HOST"
 
+# we can check here to ensure the docker engine is in Swarm mode as expected, otherwise we 
+# can just return
+if docker info | grep -q "Swarm: inactive"; then
+    echo "ERROR: ths docker engine is not in swarm mode!"
+    exit 1
+fi
+
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature
 STACKS=$(docker stack ls --format "{{.Name}}")

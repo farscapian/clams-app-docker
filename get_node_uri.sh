@@ -21,10 +21,6 @@ for i in "$@"; do
             PORT="${i#*=}"
             shift
         ;;
-        --internal-only)
-            SHOW_INTERNAL=true
-            shift
-        ;;
         *)
         ;;
     esac

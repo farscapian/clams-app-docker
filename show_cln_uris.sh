@@ -119,5 +119,6 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     if [ "$SPAWN_BROWSER_TAB" = true ]; then
         chromium --temp-profile --disable-extensions "$WEBSOCKET_QUERY_STRING" > /dev/null 2>&1 &
+        sleep 1
     fi
 done
