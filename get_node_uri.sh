@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 
 SHOW_INTERNAL=false
 NODE_ID=0
-PORT=9735
+PORT="$STARTING_WEBSOCKET_PORT"
 
 # grab any modifications from the command line.
 for i in "$@"; do

@@ -9,7 +9,7 @@ if [ "$CLN_COUNT" -gt 0 ] && [ -z "$LNPLAYLIVE_FRONTEND_ENV" ]; then
     # before I can do any of this, I need to stub out the .env file...
     # in order to do that, the lightning nodes need to be up first.
     LNPLAYLIVE_FRONTEND_ENV="$(pwd)/.env"
-    PUBLIC_ADDRESS="$(bash -c "../../get_node_uri.sh --id=0 --port=6001")"
+    PUBLIC_ADDRESS="$(bash -c "../../get_node_uri.sh --id=0 --port=$STARTING_WEBSOCKET_PORT")"
     PUBLIC_WEBSOCKET_PROXY="$(echo "$PUBLIC_ADDRESS" | grep -o '@.*')"
 
     WS_PROTO=ws
