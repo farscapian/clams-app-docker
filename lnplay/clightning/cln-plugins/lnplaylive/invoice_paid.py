@@ -212,8 +212,8 @@ def get_next_available_slot(node_count):
         raise Exception ("ERROR: all_slots could not be determined. Check host_mappings.csv.")
 
     # Extract the slots currently in use
-    lxc_output = subprocess.check_output(['lxc', 'project', 'list', '--format', 'csv', '-q'], text=True).replace(' (current)', '').split('\n')
-    filtered_strings = [s for s in lxc_output if not s.startswith('default')]
+    incus_output = subprocess.check_output(['incus', 'project', 'list', '--format', 'csv', '-q'], text=True).replace(' (current)', '').split('\n')
+    filtered_strings = [s for s in incus_output if not s.startswith('default')]
     used_slots = [HostMapping(slot_name=line.split(',')[0], mac_address="", starting_external_port="") for line in filtered_strings if line != ""]
 
     # Select elements starting with the product number, then "slot"

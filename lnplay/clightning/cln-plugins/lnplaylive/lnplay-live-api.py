@@ -27,7 +27,7 @@ def init(options, configuration, plugin, **kwargs):
     # get the plugin path from the os env
     plugin_path = os.environ.get('PLUGIN_PATH')
 
-    script_path = f"{plugin_path}/lnplaylive/lxc_client_init.sh"
+    script_path = f"{plugin_path}/lnplaylive/incus_client_init.sh"
     subprocess.run([script_path]) #, capture_output=True, text=True, check=True)
     plugin.log("lnplay.live - rpc plugin initialized")
 
