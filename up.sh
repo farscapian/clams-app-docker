@@ -24,7 +24,6 @@ DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 RUN_CHANNELS=true
 RETAIN_CACHE=false
 USER_SAYS_YES=false
-LNPLAY_ENV_FILE_PATH=
 RUN_SERVICES=true
 
 # grab any modifications from the command line.
@@ -38,10 +37,6 @@ for i in "$@"; do
         ;;
         --no-services)
             RUN_SERVICES=false
-        ;;
-        --env-file=*)
-            LNPLAY_ENV_FILE_PATH="${i#*=}"
-            shift
         ;;
         -y)
             USER_SAYS_YES=true

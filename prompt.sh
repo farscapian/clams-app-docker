@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 
 if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
     read -r -p "WARNING: You are targeting something OTHER than a dev/local instance: $DOMAIN_NAME Are you sure you want to continue? (yes/no): " ANSWSER

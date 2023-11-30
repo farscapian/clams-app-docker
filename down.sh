@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 # this script tears everything down that might be up. It does not destroy data.
@@ -10,7 +10,6 @@ cd "$(dirname "$0")"
 PURGE=false
 PRUNE=true
 NON_INTERACTIVE_MODE=false
-LNPLAY_ENV_FILE_PATH=
 
 if [ "$DO_NOT_DEPLOY" = true ]; then
     echo "INFO: The DO_NOT_DEPLOY was set to true in your environment file. You need to remove this before this script will execute."
@@ -32,15 +31,15 @@ for i in "$@"; do
             PRUNE=false
             shift
         ;;
-        --env-file=*)
-            LNPLAY_ENV_FILE_PATH="${i#*=}"
-            shift
-        ;;
+
         *)
         echo "Unexpected option: $1"
         exit 1
     esac
 done
+
+LNPLAY_ACTIVE_ENV_FILE="$HOME/ss/projects/$(incus project list --format csv -q | grep "current" | cut -d' ' -f1)/lnplay.conf"
+export LNPLAY_ACTIVE_ENV_FILE="$LNPLAY_ACTIVE_ENV_FILE"
 
 . ./load_env.sh
 
