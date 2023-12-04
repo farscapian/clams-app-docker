@@ -22,10 +22,7 @@ EOF
     CLN_NAME="cln-${CLN_ID}"
 
     # non-mainnet nodes get aliases from the names array, else domain name.
-    CLN_ALIAS=""
-    if [[ "$CLN_ID" -lt 200 ]]; then
-        CLN_ALIAS=${names[$CLN_ID]}
-    fi
+    CLN_ALIAS="${names[$CLN_ID]}"
 
     CLN_COLOR="${colors[$CLN_ID]}"
 
