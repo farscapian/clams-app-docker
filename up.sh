@@ -74,7 +74,7 @@ fi
 
 # ensure we're using swarm mode.
 if docker info | grep -q "Swarm: inactive"; then
-    docker swarm init --default-addr-pool 10.10.0.0/16 --default-addr-pool-mask-length 22 >> /dev/null
+    docker swarm init --default-addr-pool 10.10.0.0/16 --default-addr-pool-mask-length 21 >> /dev/null
 fi
 
 
