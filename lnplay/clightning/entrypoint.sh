@@ -55,7 +55,7 @@ if [ -z "$PLUGIN_PATH" ]; then
     exit 1
 fi
 
-wait-for-it -t 60 "bitcoind:18443"
+wait-for-it -t 600 "bitcoind:18443"
 
 CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
 # TODO put this log-file back in there. Need to log to stdout AND log file
