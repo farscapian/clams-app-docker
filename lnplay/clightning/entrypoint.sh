@@ -58,8 +58,8 @@ fi
 wait-for-it -t 600 "bitcoind:18443"
 
 CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
-# TODO put this log-file back in there. Need to log to stdout AND log file
-#--log-file=debug.log
+
+
 if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi
@@ -129,4 +129,9 @@ fi
 
 chown 1000:1000 /opt/c-lightning-rest/certs
 
-exec $CLN_COMMAND
+
+# Specify the log file path
+LOG_FILE="/root/.lightning/debug.log"
+
+# we'll log all STDOUT/STDERR to debug.log
+exec $CLN_COMMAND > >(tee -a "$LOG_FILE") 2>&1
