@@ -55,8 +55,11 @@ if [ "$DO_NOT_DEPLOY" = true ]; then
     exit 1
 fi
 
-if [ "$CLN_COUNT" -gt 450 ]; then
-    echo "ERROR: This software only supports up to 500 CLN nodes."
+if [ "$CLN_COUNT" -gt "$MAX_SUPPORTED_NODES" ]; then
+    # TODO. Only 150 nodes are supported, but this software has deployed over 600 nodes before. Just no support for it.
+    # TODO. The way to scale this is out--that is, add more VMs and replicate bitcoind blocks. Each VM gets up to 150 nodes.
+    # Having said all this, we can deploy many more, but the EBT will be longer.
+    echo "ERROR: This software only supports up to '$MAX_SUPPORTED_NODES' (Dunbar's Number) of CLN nodes."
     exit 1
 fi
 
