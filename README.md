@@ -106,7 +106,7 @@ There are [other options](./defaults.env) in there that might be worth overridin
 
 ### CHANNEL_SETUP=prism
 
-The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing [`BOLT12 Prisms`](). In set to `prrism` Alice (`node0`) opens a channel to Bob (`node1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob. Then on Bob, a BOLT12 Prism is created. When Alice pays Bob's BOLT12 Prism Offer, Bob splits the regtest coins payment to the remaining `n` nodes.
+The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing [`BOLT12 Prisms`](https://github.com/gudnuf/bolt12-prism). In set to `prism` Alice (`node0`) opens a channel to Bob (`node1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob. Then on Bob, a BOLT12 Prism is created. When Alice pays Bob's BOLT12 Prism Offer, Bob splits the regtest coins payment to the remaining `n` nodes.
 
 ## Connection Information
 
