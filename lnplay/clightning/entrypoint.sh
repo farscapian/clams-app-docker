@@ -123,6 +123,14 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
     # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
     # TODO research invoices-onchain-fallback
+
+    # fee settings here are cln defaults
+    #CLN_COMMAND="$CLN_COMMAND --fee-base=1000"
+    #CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=10"
+    
+    # TODO min-capacity-sat=SATOSHI
+    # TODO disable-ip-discovery
+
     # cln accepts only 1 block before the channel can be used.
     CLN_COMMAND="$CLN_COMMAND --funding-confirms=1"
 fi

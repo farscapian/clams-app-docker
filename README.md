@@ -1,43 +1,45 @@
-# lnplay
+# LNPlay - Deploy a Private Lightning Network
 
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
-## about `lnplay`
+## about `LNPlay`
 
-This repo allows you to deploy the `lnplay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). `lnplay` is a docker container application that deploys a bitcoin core daemon and one or more core lightning nodes to a docker engine. [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with the CLN nodes. Connection information can be embedded in QR codes for quick client onboarding.
+This repo allows you to deploy `LNPlay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). `LNPlay` is a docker container application that deploys a bitcoin core daemon and one or more core lightning nodes to a docker engine (local or remote).  [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with each of the CLN nodes over the websocket interface. Connection information can be embedded in QR codes for quick client onboarding. Each node is funded with `1.0000000` (regtest) bitcoin, so they can go around and open channels, learn about channel liquidity, test BOLT12 offers, etc. 
 
 > Want to try this software but don't have the skill to host it yourself? Consider renting your own Private Lightning Network at [LNPlay.live](https://lnplay.live).
 
-The nodes have vairous modes of operation (e.g., `regtest`, `signet`, `mainnet`) and can be initialized in various channel setups. 
+`LNPlay` run in `regtest`, `signet`, or `mainnet` modes. When running in `regtest`, various channel setups can be created. All lightning nodes are able to communicate with each other using a [docker overlay network](https://docs.docker.com/network/drivers/overlay/).
 
 To get started, clone this repo and its submodules:
 
 `git clone --recurse-submodules https://github.com/farscapian/lnplay`
 
-> Don't have docker engine installed? You can run the [./install.sh](./install.sh) file to install the latest version. After running it, you may need to restart your computer or log out and back in to refresh your group membership (or use `newgrp docker`).
+> As mentioned, you can run LNPlay in any docker engine, either local or remote. Don't have docker engine installed in one of those locations? You can run the [./install.sh](./install.sh) file to get it installed. After running it, you may need to restart your computer or log out and back in to refresh your group membership.
 
 ## Environments
 
-Each environment file (contained in [./environments/](./environments)) is where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `lnplay.live` that will deploy 5 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `lnplay.live` in `signet` with TLS enabled.
+Environment files (contained in [./environments/](./environments)) are where you specify the parameters of your deployment. Anything you specify in your env file overrides anything in [`./defaults.env`](./defaults.env). Here's an example env file called `domain.tld` that will deploy 10 CLN nodes to a [dockerd](https://docs.docker.com/engine/reference/commandline/dockerd/) running on `domain.tld` in `signet` with TLS enabled. Check out our [AWS hosting guide](./docs/aws-hosting-guide.md) for more details on hosting your own LNPlay instance on AWS.
 
 ```config
-DOCKER_HOST=ssh://ubuntu@lnplay.live
-DOMAIN_NAME=lnplay.live
+DOCKER_HOST=ssh://ubuntu@domain.tld
+DOMAIN_NAME=domain.tld
 ENABLE_TLS=true
 BTC_CHAIN=signet
+CLN_COUNT=10
 ```
+
 ## Running the scripts
 
 First, update `active_env.txt` to set the active environment file, then run the following scripts:
 
 ### [`./up.sh`](./up.sh)
 
-Brings `lnplay` up according to your active environment definition.
+Brings `LNPlay` up according to your active environment definition.
 
 ### [`./down.sh`](./down.sh)
 
-Brings your `lnplay` down in a non-destructive way.
+Brings your `LNPlay` down in a non-destructive way.
 
 ### [`./purge.sh`](./purge.sh) 
 
@@ -45,11 +47,12 @@ Deletes docker volumes related to your active env so you can reset your environm
 
 ### [`./reset.sh`](./reset.sh) 
 
-This is just a non-destructuve `down.sh`, then `up.sh`. Just saves a step. Like `down.sh`, you can pass the `--purge` option to invoke `purge.sh`.
+This is just a non-destructive `down.sh`, then `up.sh`. Just saves a step. Like `down.sh`, you can pass the `--purge` option to invoke `purge.sh`.
 
 ### [`./run_load_tests.sh`](./run_load_tests.sh)
 
-This script allows you to perform load testing against a remote `lnplay` deployment.
+This script allows you to perform load testing against a remote `LNPlay` deployment.
+
 ### [`./bitcoin-cli.sh`](./bitcoin-cli.sh)
 
 Allows you to interact with the current bitcoind instance.
@@ -58,38 +61,17 @@ Allows you to interact with the current bitcoind instance.
 
 Allows you to interact with the CLN instances. Just add the `--id=12` to access a specific core lightning node. For example: `./lightning-cli.sh --id=12 getinfo`
 
-## Public Deployments
-
-If you want to deploy public instances of `lnplay`, there are a few things to consider.
-
-### Public DNS (ENABLE_TLS=true)
-
-Configure an `A` record that points to the public IP address of your server. If self-hosting, set the internal DNS server resolve to the internal IP address of the host.
-
-### Firewall
-
-Your perimeter firewall should forward ports 80 and 443 to the host running dockerd.
-
-### SSH
-
-On your management machine, You will also want to ensure that your `~/.ssh/config` file has a host defined for the remote host. An example is show below. `llarp.fun.pem` is the SSH private key that enables you to SSH into the remote VM that resolves to you domain, e.g., `llarp.fun`.
-
-```
-Host llarp.fun
-    HostName 40.25.56.35
-    User ubuntu
-    IdentityFile /home/ubuntu/.ssh/llarp.fun.pem
-```
 ## BTC_CHAIN=[regtest|signet|mainnet]
+
 ### regtest
 
-The default environment deploys everything in `regtest` mode to you local docker daemon. By default there are 5 CLN nodes all backed by a single bitcoind node having a block time of 5 seconds. Each CLN node is connected to each other so they're gossiping on the same P2P network. No channels are created, but each CLN node is funded with `100,000,000 sats`.
+The default environment deploys everything in `regtest` mode to your local docker daemon. By default there are 5 CLN nodes all backed by a single bitcoind node having a block time of 5 seconds (override with `REGTEST_BLOCK_TIME`) (see EBT below). Each CLN node is connected to [docker overlay network](https://docs.docker.com/network/drivers/overlay/) so they're gossiping on the same P2P network. Each CLN node is funded with `100,000,000 sats`, aka `1 BTC`.
+
+> `Effective Block Time`: In the case of LNPlay, the more CLN nodes you deploy, the longer the Effective Block Time (EBT) -- or the time which each respective CLN node "notices" a change in the block height. Each CLN node polls `bitcoind` to check the blockheight, and because `LNPLay` deploys a lot of CLN nodes, there is a need to "spread out" the polling activity evenly among the nodes so as to not overburden `bitcoind`. The Effective Block Time is UX time -- what the user experiences for the block time. It can be found in the CLN yaml output as `CLN_BITCOIND_POLL_SETTING`. By default, LNPlay targets a EBT of 5 seconds for a 200 CLN node count environment.
 
 ### signet
 
-If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if signet wallet is inadequately funded (TODO allow user to specify wallet descriptor). If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. It is recommended to have a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
-
-By default this runs the public signet having a 10 minute block time.
+If you want to run signet, set `BTC_CHAIN=signet` in your env file. The scripts will stop if the bitcoind signet wallet is inadequately funded. If the balance is insufficient, an on-chain address will be shown so you can send signet coins to it. It is recommended to have a bitcoin Core/QT client on your dev machine with a signet wallet with spendable funds to aid with testing/evaluation.
 
 ### mainnet
 
@@ -102,33 +84,37 @@ The following table shows the most common configuration settings.
 |Environment Variable|default value|Description|
 |---|---|---|
 |`BTC_CHAIN`|`regtest`|Set the chain you want to deploy: regtest, signet, mainnet.|
-|`CLN_COUNT`|`5`|The total number of CLN nodes to deploy.|
+|`CLN_COUNT`|`5`|The total number of CLN nodes to deploy. Max is `MAX_SUPPORTED_NODES=200`|
+|`DEV_PLUGIN_PATH`|`null`|Override the local (i.e., 127.0.0.0) CLN plugin path which gets mounted into the CLN containers.|
 |`ENABLE_TOR`|`false`|Deploy a TOR proxy for each CLN node so you can create lightning channels with onion-only endpoints.|
 |`ENABLE_TLS`|`false`|If true, letsencrypt certificates will be generated. This requires DNS and firewall settings to be properly configured.|
 |`REGTEST_BLOCK_TIME`|`5`|Adjust the blocktime (in seconds) used in regtest environments.|
-|`CHANNEL_SETUP`|`none`, `dynamic-mesh`, `circular`|By default, no channels are created. If `prism`, a layout useful for developing prisms will be established. If `dynamic-mesh`, CLBOSS gets deployed and channels get created eventually (~2 hours).|
-|`ENABLE_CLN_DEBUGGING_OUTPUT`|`false`|If true, bitcoind and lightningd will emit debugging information.|
+|`CHANNEL_SETUP`|`none`,`prism`|By default, no channels are created. If `prism`, a layout useful for developing prisms will be established.|
+|`ENABLE_BITCOIND_DEBUGGING_OUTPUT`|`false`|If true, bitcoind will emit debugging information.|
 |`CLN_P2P_PORT_OVERRIDE`|`null`|If specified, this port will be used in the `--announce-addr=` on your mainnet or signet node 0.|
 |`NAMES_FILE_PATH`|[./names.txt](./names.txt)|Provide a custom list of aliases for the CLN nodes. Should be a fully qualified path.|
-|`COLORS_FILE_PATH`|[./colors.txt](./colors.txt)|Provide a custm list of node color.|
+|`COLORS_FILE_PATH`|[./colors.txt](./colors.txt)|Provide a custom list of node colors.|
 |`LNPLAY_SERVER_PATH`|`$(pwd)/lnplay/stacks`|Specify where deployment articfacts are stored.|
 |`DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN`|`null`|If specified, overrides the `https://${DOMAIN_NAME}` to specified value: e,g., 'app.clams.tech'|
-|`ENABLE_CLAMS_V2_CONNECTION_STRINGS`|`false`|If true, will emit Clams v2 Connection String format.|
+|`ENABLE_CLAMS_V2_CONNECTION_STRINGS`|`true`|If true, will emit Clams v2 Connection String format with "LARP mode".|
+|`DO_NOT_DEPLOY`|`false`|Set to true to use as a safeguard against inadvertant state changes to an environment.|
+|`CONNECT_NODES`|`true`|By default, all regtest nodes are connected to each other to bootstrap the p2p network.|
+|`RENEW_CERTS`|`true`|Certificate renewal will be attempted.|
+|`DEPLOY_CLAMS_BROWSER_APP`|`true`|By default, Clams gets deployed to port 80/443.|
 
 There are [other options](./defaults.env) in there that might be worth overriding, but the above list should cover most use cases.
 
 ### CHANNEL_SETUP=prism
 
-The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing [`BOLT12 Prisms`](). In set to `prrism` Alice (`node0`) opens a channel to Bob (`node1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob.  Then on Bob, a BOLT12 Prism is created. When Alioce pays Bob's BOLT12 Prism Offer, Bob splits the regtest coins payment to the remaining `n` nodes.
-
-
-This setup is useful for testing and developing [BOLT12 Prisms](https://www.roygbiv.guide/about). After the channels are created you can control any deployed cln node using [Clams](https://clams.tech). With Clams, you can pay to `BOLT12 Prism Offers` from Alice to Bob. From Bob you can create and manage prisms and view incoming payments and outgoing payment splits. Finally on Carol, Dave, and Erin, you can see incoming payments as a result of prism payouts on Bob. For more information, [take a look at the ROYGBIV demo environment](https://www.roygbiv.guide/demo)
+The [`prism` channel setup](./channel_templates/create_prism_channels.sh) is useful for testing [`BOLT12 Prisms`](). In set to `prrism` Alice (`node0`) opens a channel to Bob (`node1`), then [Bob opens multiple channels](https://docs.corelightning.org/reference/lightning-multifundchannel) with every subsequent node after Bob. Then on Bob, a BOLT12 Prism is created. When Alice pays Bob's BOLT12 Prism Offer, Bob splits the regtest coins payment to the remaining `n` nodes.
 
 ## Connection Information
 
-When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) script will emit connection information, but also saves [direct links](https://github.com/clams-tech/App/commit/97cb83a3bd519248da3cba08dd438846cb6d212d) to `./output/cln_connection_info_${DOMAIN_NAME}.csv`. This file can be used as input for 1) the [load testing submodule](https://github.com/aaronbarnardsound/coreln-network-loadtest) or 2) the [clams-qr-generator](https://github.com/clams-tech/clams-qr-generator). These QR codes can be printed out and given to individuals so they can connect to the respective core lightning node. All connectivity between a browser and the back-end core lightning services use the [`--experimental-websocket-port`](https://docs.corelightning.org/reference/lightningd-config#experimental-options) functionality in core lightning.
+When you bring your services up, the [./show_cln_uris.sh](./show_cln_uris.sh) script will emit connection information, but also saves [direct links](https://github.com/clams-tech/App/commit/97cb83a3bd519248da3cba08dd438846cb6d212d) to `./output/cln_connection_info_${DOMAIN_NAME}.csv`. This file can be used as input for 1) the [load testing submodule](https://github.com/aaronbarnardsound/coreln-network-loadtest).
 
-## Developing Plugins using `lnplay`
+These QR codes can be generated by adding the `--qrcode` option to `./show_cln_uris.sh`. It is recommended to print out cards before hand, then use a label maker to print out the individual QR codes with sticker backing. Maintain the order of the connection information, if possible.
+
+## Developing Plugins using `LNPlay`
 
 When deploying your application to a local docker engine, the CLN plugin path will get mounted into each CLN instance (container). If you want to make updates to the ``, for example, make the change, then run `reload_dev_plugins.sh` which iterates over each CLN node and instructs it reload the prism.py the newly updated plugin.
 
@@ -136,5 +122,4 @@ When deploying your application to a local docker engine, the CLN plugin path wi
 
 Global Network Graph Visualizers:
 
-* [This repo](https://github.com/evansmj/cln-node-visualization) can be used to view a global network graph of the LARP.
-* other tools
+* [This repo](https://github.com/evansmj/cln-node-visualization) can be used to view a global channel graph.
