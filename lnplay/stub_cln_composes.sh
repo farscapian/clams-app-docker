@@ -36,17 +36,23 @@ EOF
     hostname: cln-${CLN_ID}
 EOF
 
-
-
     CLN_PTP_PORT=$(( STARTING_CLN_PTP_PORT+CLN_ID ))
 
-    # the CLN poll interval should grow linearly with CLN_COUNT.
-    # Right now we reserve 1 second for every 10 CLN nodes there are.
-    # so if you're running 160 nodes, it'll take 16 seconds for all the
-    # CLN nodes to come into consensus.
-    SECONDS_PER_TEN_NODES=1
-    CLN_POLL_INTERVAL_SECONDS=$(( (CLN_COUNT+11) / 10 ))
-    BITCOIND_POLL_SETTING="$((SECONDS_PER_TEN_NODES * CLN_POLL_INTERVAL_SECONDS ))"
+    # the CLN poll interval should grow with CLN_COUNT.
+    # This setting changes Effective Block Time (EBT). 
+    # Altering this value may require updates to bitcoind's rpcworkqueue and rpcworkthreads.
+    # a value of 40 here lets us target a 5 second EBT when we deploy 200 nodes (assuming REGTEST_BLOCK_TIME=5).
+    # any deployments above CLN_COUNT=200 will have a longer EBT than REGTEST_BLOCK_TIME.
+    CLN_POLL_RATE_NODESPERSEC=41
+
+    # makes all calculations non-zero
+    CLN_COUNT_PLUS_CLN_POLL_RATE=$((CLN_COUNT+CLN_POLL_RATE_NODESPERSEC))
+
+    # this setting tells lightningd how often (in seconds) to check bitcoind for new blocks.
+    CLN_BITCOIND_POLL_SETTING=$(( CLN_COUNT_PLUS_CLN_POLL_RATE / CLN_POLL_RATE_NODESPERSEC ))
+    if [ "$CLN_BITCOIND_POLL_SETTING" = 0 ]; then
+        CLN_BITCOIND_POLL_SETTING=1
+    fi
 
     # if we're NOT in development mode, we go ahead and bake
     #  the existing prism.py into the docker image.
@@ -67,9 +73,8 @@ EOF
       - CLN_NAME=${CLN_NAME}
       - BTC_CHAIN=${BTC_CHAIN}
       - CLN_PTP_PORT=${CLN_PTP_PORT}
-      - ENABLE_CLN_DEBUGGING_OUTPUT=${ENABLE_CLN_DEBUGGING_OUTPUT}
       - CLN_P2P_PORT_OVERRIDE=${CLN_P2P_PORT_OVERRIDE}
-      - BITCOIND_POLL_SETTING=${BITCOIND_POLL_SETTING}
+      - CLN_BITCOIND_POLL_SETTING=${CLN_BITCOIND_POLL_SETTING}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DEPLOY_PRISM_PLUGIN=${DEPLOY_PRISM_PLUGIN}
       - DEPLOY_LNPLAYLIVE_PLUGIN=${DEPLOY_LNPLAYLIVE_PLUGIN}

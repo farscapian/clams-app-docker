@@ -86,12 +86,12 @@ if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_INVOICE_PAID_PLUGIN_PATH"
 fi
 
-if [ "$ENABLE_CLN_DEBUGGING_OUTPUT" = true ]; then
-    CLN_COMMAND="$CLN_COMMAND --log-level=debug"
-fi
+if [ -n "$CLN_BITCOIND_POLL_SETTING" ]; then
+    if [ "$CLN_BITCOIND_POLL_SETTING" = 0 ]; then
+        CLN_BITCOIND_POLL_SETTING=1
+    fi
 
-if [ -n "$BITCOIND_POLL_SETTING" ]; then
-    CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=$BITCOIND_POLL_SETTING"
+    CLN_COMMAND="$CLN_COMMAND --dev-bitcoind-poll=$CLN_BITCOIND_POLL_SETTING"
 fi
 
 # an admin can override the external port if necessary.
@@ -123,8 +123,8 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
     # CLN_COMMAND="$CLN_COMMAND --allow-deprecated-apis=false"
     # TODO research invoices-onchain-fallback
-    CLN_COMMAND="$CLN_COMMAND --fee-base=1"
-    CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=1"
+    # cln accepts only 1 block before the channel can be used.
+    CLN_COMMAND="$CLN_COMMAND --funding-confirms=1"
 fi
 
 chown 1000:1000 /opt/c-lightning-rest/certs
