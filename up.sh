@@ -21,7 +21,6 @@ DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 
 . ./defaults.env
 
-RUN_CHANNELS=true
 RETAIN_CACHE=false
 USER_SAYS_YES=false
 RUN_SERVICES=true
@@ -29,9 +28,6 @@ RUN_SERVICES=true
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --no-channels)
-            RUN_CHANNELS=false
-        ;;
         --retain-cache)
             RETAIN_CACHE=true
         ;;
@@ -151,8 +147,6 @@ if (( "$CLN_COUNT" < 5 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != m
 fi
 
 if ! docker stack list | grep -q lnplay; then
-    RUN_CHANNELS=true
-
     # bring up the stack;
     ./lnplay/run.sh
 fi
@@ -221,7 +215,7 @@ if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
     env LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV" ./lnplay/lnplaylive/build.sh
 fi
 
-if [ "$RUN_CHANNELS" = true ] && [[ "$CLN_COUNT" -gt 0 ]]; then
+if [[ "$CLN_COUNT" -gt 0 ]]; then
     # ok, let's do the channel logic
     bash -c "./channel_templates/up.sh --retain-cache=$RETAIN_CACHE"
 fi
