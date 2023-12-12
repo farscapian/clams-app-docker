@@ -1,13 +1,12 @@
 # AWS Self Hosting Guide
 
-Want to run your own LNPlay on an AWS instance, this is what you will want to do.
+Want to run your own LNPlay on an AWS instance? This is what you will want to do.
 
 # Prerequisites
 
-You need to have an AWS account. All you will be doing is deploying an EC2 instance to an AWS data center. Try to choose a region that is geographically closest to the attendees. You will also need a domain name and the ability to create DNS records.
+You need to have an AWS account. All you will be doing is deploying an EC2 instance to an AWS data center. Try to choose a region that is geographically closest to the attendees. You will also need a domain name and the ability to create DNS A records.
 
-You development machine MUST be able to SSH into remote VMs you create in the cloud.
-
+You development machine MUST be able to SSH into remote VMs you create in the cloud. This works best on Ubuntu, but anyone with SSH knowledge should be able to do it on Windows as well. *Note there may be a need to use SCP as well.
 
 ## Public Deployments
 
