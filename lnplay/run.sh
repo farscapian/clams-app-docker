@@ -83,7 +83,8 @@ fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
-    CLAMS_APP_BASE_IMAGE_NAME="node:19.7"
+    CLAMS_APP_BASE_IMAGE_NAME="node:21.4.0"
+    docker pull "$CLAMS_APP_BASE_IMAGE_NAME"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
         docker build -q -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/ >> /dev/null
     fi
