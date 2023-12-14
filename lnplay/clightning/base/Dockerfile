@@ -1,15 +1,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-# TODO update this installation script for node.
-# install nodejs
-RUN apt-get update -y \
-  && apt-get install -y curl gosu git \
-  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-  && apt-get install -y nodejs \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # install lightning-cli bash completion
 RUN curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash_completion \
   && mv bash_completion /usr/share/bash-completion/
