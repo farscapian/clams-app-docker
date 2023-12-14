@@ -47,7 +47,7 @@ if [ "$ENABLE_TOR" = true ]; then
     fi
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.05.2"
+LIGHTNINGD_DOCKER_IMAGE_NAME="polarlightning/clightning:23.08"
 REBUILD_CLN_IMAGE=true
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
