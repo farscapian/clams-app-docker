@@ -89,7 +89,6 @@ EOF
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
-      - cln-${CLN_ID}-certs-${BTC_CHAIN}:/opt/c-lightning-rest/certs
 EOF
 
     if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then

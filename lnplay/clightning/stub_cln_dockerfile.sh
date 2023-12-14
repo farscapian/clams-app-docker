@@ -6,7 +6,6 @@ cd "$(dirname "$0")"
 cat > "$CLN_DOCKERFILE_PATH" <<EOF
 ARG BASE_IMAGE
 FROM \$BASE_IMAGE
-VOLUME /opt/c-lightning-rest
 ENV DEBIAN_FRONTEND=noninteractive
 EOF
 

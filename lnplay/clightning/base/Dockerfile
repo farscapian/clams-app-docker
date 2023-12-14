@@ -176,13 +176,6 @@ RUN apt-get update -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# install c-lightning-REST API plugin
-RUN git clone https://github.com/Ride-The-Lightning/c-lightning-REST.git /opt/c-lightning-rest/ \
-  && cd /opt/c-lightning-rest \
-  && npm install \
-  && chmod -R a+rw /opt/c-lightning-rest \
-  && mv /opt/c-lightning-rest/clrest.js /opt/c-lightning-rest/plugin.js
-
 # install lightning-cli bash completion
 RUN curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash_completion \
   && mv bash_completion /usr/share/bash-completion/
@@ -193,7 +186,6 @@ COPY bashrc /home/clightning/.bashrc
 RUN chmod a+x /entrypoint.sh
 
 VOLUME ["/home/clightning"]
-VOLUME ["/opt/c-lightning-rest/certs"]
 
 EXPOSE 9735 9835 8080 10000
 

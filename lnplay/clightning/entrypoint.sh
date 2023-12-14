@@ -57,7 +57,7 @@ fi
 
 wait-for-it -t 600 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --plugin=/opt/c-lightning-rest/plugin.js --experimental-offers --experimental-onion-messages --experimental-peer-storage"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --experimental-offers --experimental-onion-messages"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -102,6 +102,7 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
     fi
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
+    CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
 fi
 
 if [ "$BTC_CHAIN" = signet ]; then
@@ -134,9 +135,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # cln accepts only 1 block before the channel can be used.
     CLN_COMMAND="$CLN_COMMAND --funding-confirms=1"
 fi
-
-chown 1000:1000 /opt/c-lightning-rest/certs
-
 
 # Specify the log file path
 LOG_FILE="/root/.lightning/debug.log"
