@@ -32,7 +32,7 @@ if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
 fi
 
-BITCOIND_MANAGER_IMAGE_NAME="lnplay-manager:$LNPLAY_STACK_VERSION"
+BITCOIND_MANAGER_IMAGE_NAME="lnplay/manager:$LNPLAY_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
 if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
