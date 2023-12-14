@@ -23,7 +23,7 @@ CLN_IMAGE_NAME="lnplay/cln:$LNPLAY_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
-BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:25.0"
+BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:26.0"
 BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
