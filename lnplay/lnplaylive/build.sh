@@ -30,7 +30,7 @@ fi
 if [ -f "$LNPLAYLIVE_FRONTEND_ENV" ]; then
     cp "$LNPLAYLIVE_FRONTEND_ENV" "$(pwd)/app/.env"
 
-    docker build -q -t "$LNPLAYLIVE_IMAGE_NAME" ./ >> /dev/null
+    docker build -q -t "$LNPLAYLIVE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./ >> /dev/null
 
     rm -rf ./app/node_modules
     rm -rf ./app/.sveltekit

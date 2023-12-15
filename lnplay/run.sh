@@ -80,33 +80,33 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
 
     docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/ >> /dev/null
 fi
+export NODE_BASE_DOCKER_IMAGE_NAME="node:21.4.0"
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
-    CLAMS_APP_BASE_IMAGE_NAME="node:21.4.0"
-    docker pull "$CLAMS_APP_BASE_IMAGE_NAME"
+    docker pull "$NODE_BASE_DOCKER_IMAGE_NAME"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
-        docker build -q -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${CLAMS_APP_BASE_IMAGE_NAME}" ./clams/ >> /dev/null
+        docker build -q -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
     fi
     
     export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
 fi
 
 if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-    if ! docker image inspect node:18 &> /dev/null; then
+    if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &> /dev/null; then
         # pull bitcoind down
-        docker pull -q node:18 >> /dev/null
+        docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME" >> /dev/null
     fi
 
     if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-        docker build -q -t "$PRISM_APP_IMAGE_NAME" ./prism-app/  >>/dev/null
+        docker build -q -t "$PRISM_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./prism-app/  >>/dev/null
     fi
 fi
 
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    if ! docker image inspect node:18 &> /dev/null; then
+    if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &> /dev/null; then
         # pull bitcoind down
-        docker pull -q node:18 >> /dev/null
+        docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME" >> /dev/null
     fi
 
     if ! docker volume list | grep -q "lnplay-live"; then

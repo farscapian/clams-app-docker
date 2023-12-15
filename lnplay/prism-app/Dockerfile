@@ -1,4 +1,5 @@
-FROM node:18
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 RUN mkdir /output
 VOLUME /output
 RUN mkdir /prism-app

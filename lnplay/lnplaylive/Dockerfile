@@ -1,4 +1,5 @@
-FROM node:18
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 RUN mkdir /lnplaylive
 COPY app/ /lnplaylive
 WORKDIR /lnplaylive
