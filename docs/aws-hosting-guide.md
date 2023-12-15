@@ -20,7 +20,6 @@ Your perimeter firewall should forward ports 80 and 443 to the host running dock
 
 Configure an `A` record that points to the public IP address of your server. If self-hosting, set the internal DNS server resolve to the internal IP address of the host.
 
-
 ### SSH
 
 On your management machine, You will also want to ensure that your `~/.ssh/config` file has a host defined for the remote host. An example is show below. `domain.tld.pem` is the SSH private key that enables you to SSH into the remote VM that resolves to you domain, e.g., `domain.tld`.
