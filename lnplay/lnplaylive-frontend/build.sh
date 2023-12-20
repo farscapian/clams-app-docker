@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 
@@ -30,11 +30,14 @@ fi
 if [ -f "$LNPLAYLIVE_FRONTEND_ENV" ]; then
     cp "$LNPLAYLIVE_FRONTEND_ENV" "$(pwd)/app/.env"
 
-    docker build -q -t "$LNPLAYLIVE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./ >> /dev/null
-
-    rm -rf ./app/node_modules
-    rm -rf ./app/.sveltekit
-    rm ./app/.env
+    # build the base image for cln
+    if ! docker image inspect "$LNPLAYLIVE_IMAGE_NAME" &>/dev/null; then
+        docker build -t "$LNPLAYLIVE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./
+        
+        rm -rf ./app/node_modules
+        rm -rf ./app/.sveltekit
+        rm ./app/.env
+    fi
 
     # and then load them back up with our freshly build version.
     docker run -t -v lnplay-live:/output "$LNPLAYLIVE_IMAGE_NAME" cp -r /lnplaylive/build/ /output/
