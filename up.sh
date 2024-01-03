@@ -63,6 +63,11 @@ if [ "$USER_SAYS_YES" = false ]; then
     ./prompt.sh
 fi
 
+if [ ! -f "$NAMES_FILE_PATH" ]; then
+    echo "ERROR: the CLN alias names file of '$NAMES_FILE_PATH' does not exist."
+    exit 1
+fi
+
 UNIQUE_NAMES=$(wc -l < "$NAMES_FILE_PATH")
 UNIQUE_NAMES=$((UNIQUE_NAMES+1))
 # Check if line count is greater than the threshold
