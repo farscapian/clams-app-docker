@@ -6,19 +6,22 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 DOCKER_HOST=
 ACTIVE_ENV_PATH=
 
-# if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
-LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
+LNPLAY_ACTIVE_ENV_FILE=
+if [ -z "${LNPLAY_CONF_PATH:-}" ]; then
+    # if the admin doesn't pass in the lnplay env file explicitly, then we use the "active_env.txt" method.
+    LNPLAY_ACTIVE_ENV_FILE="$(pwd)/active_env.txt"
 
-# Stub out active_env.txt if doesn't exist. 
-if [ ! -f "$LNPLAY_ACTIVE_ENV_FILE" ]; then
-    # stub one out
-    echo "local.env" >> "$LNPLAY_ACTIVE_ENV_FILE"
-    echo "INFO: '$LNPLAY_ACTIVE_ENV_FILE' was just stubbed out."
+    # Stub out active_env.txt if doesn't exist. 
+    if [ ! -f "$LNPLAY_ACTIVE_ENV_FILE" ]; then
+        # stub one out
+        echo "local.env" >> "$LNPLAY_ACTIVE_ENV_FILE"
+        echo "INFO: '$LNPLAY_ACTIVE_ENV_FILE' was just stubbed out."
+    fi
 fi
 
-# now set the active env path to LNPLAY_ACTIVE_ENV_FILE if defined, otherwise whatever is set in the LNPLAY_ACTIVE_ENV_FILE
-if [ -n "$LNPLAY_ENV_FILE_PATH" ]; then
-    ACTIVE_ENV_PATH="$LNPLAY_ACTIVE_ENV_FILE"
+
+if [ -n "$LNPLAY_ENV_FILE_PATH" ] && [ -n "${LNPLAY_CONF_PATH:-}" ]; then
+    ACTIVE_ENV_PATH="$LNPLAY_CONF_PATH"
 else
     ACTIVE_ENV_PATH="$(pwd)/environments/""$(< "$LNPLAY_ACTIVE_ENV_FILE" head -n1 | awk '{print $1;}')"
 fi

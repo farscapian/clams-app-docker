@@ -24,6 +24,7 @@ DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 RETAIN_CACHE=false
 USER_SAYS_YES=false
 RUN_SERVICES=true
+LNPLAY_CONF_PATH=
 
 # grab any modifications from the command line.
 for i in "$@"; do
@@ -33,9 +34,15 @@ for i in "$@"; do
         ;;
         --no-services)
             RUN_SERVICES=false
+            shift
+        ;;
+        --lnplay-conf-path=*)
+            LNPLAY_CONF_PATH="${i#*=}"
+            shift
         ;;
         -y)
             USER_SAYS_YES=true
+            shift
         ;;
         *)
         echo "Unexpected option: $1"
@@ -43,6 +50,8 @@ for i in "$@"; do
         ;;
     esac
 done
+
+export LNPLAY_CONF_PATH="$LNPLAY_CONF_PATH"
 
 . ./load_env.sh
 
