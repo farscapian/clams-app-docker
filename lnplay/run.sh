@@ -33,7 +33,7 @@ export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/
+    script -q -c "docker build -t $BITCOIND_DOCKER_IMAGE_NAME --build-arg BASE_IMAGE=${BITCOIND_BASE_IMAGE_NAME} ./bitcoind/"
 fi
 
 BITCOIND_MANAGER_IMAGE_NAME="lnplay/manager:$LNPLAY_STACK_VERSION"
