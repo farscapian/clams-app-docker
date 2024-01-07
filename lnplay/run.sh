@@ -33,21 +33,21 @@ export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
+    docker build  -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
 fi
 
 BITCOIND_MANAGER_IMAGE_NAME="lnplay/manager:$LNPLAY_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
 if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
     # pull bitcoind down
-    docker build -q -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/  >>/dev/null
+    docker build  -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_DOCKER_IMAGE_NAME}" ./manager/  >>/dev/null
 fi
 
 TOR_PROXY_IMAGE_NAME="torproxy:$LNPLAY_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [ "$ENABLE_TOR" = true ]; then
     if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
-        docker build -q -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/  >>/dev/null
+        docker build  -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/  >>/dev/null
     fi
 fi
 
@@ -92,7 +92,7 @@ if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
-        docker build -q -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
+        docker build  -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
     fi
     
     export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
@@ -105,7 +105,7 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     fi
 
     if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-        docker build -q -t "$PRISM_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./prism-app/  >>/dev/null
+        docker build  -t "$PRISM_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./prism-app/  >>/dev/null
     fi
 fi
 
