@@ -3,14 +3,10 @@
 set -exu
 cd "$(dirname "$0")"
 
-RETAIN_CACHE=false
 
 for i in "$@"; do
     case $i in
-        --retain-cache=*)
-            RETAIN_CACHE="${i#*=}"
-            shift
-        ;;
+
         *)
         echo "Unexpected option: $1"
         exit 1
@@ -19,37 +15,35 @@ for i in "$@"; do
 done
 
 # recache node addrs and pubkeys if not specified otherwise
-if [ "$RETAIN_CACHE" = false ]; then
-    echo "Caching node info..." >> /dev/null
+echo "Caching node info..." >> /dev/null
 
-    rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
-    rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
-    rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
+rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
+rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
+rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
 
+for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+    pubkey=$(../lightning-cli.sh --id=$NODE_ID getinfo | jq -r ".id")
+    echo "$pubkey" >> "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
+done
+
+echo "Node pubkeys cached" >> /dev/null
+
+for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
+    addr=$(../lightning-cli.sh --id=$NODE_ID newaddr | jq -r ".bech32")
+    echo "$addr" >> "$LNPLAY_SERVER_PATH/node_addrs.txt"
+done
+echo "Node addresses cached" >> /dev/null
+
+# if we're deploying prisms, then we also standard any offers on each node.
+if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-        pubkey=$(../lightning-cli.sh --id=$NODE_ID getinfo | jq -r ".id")
-        echo "$pubkey" >> "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
+        BOLT12_OFFER=$(../lightning-cli.sh --id=${NODE_ID} offer any default | jq -r '.bolt12')
+        echo "$BOLT12_OFFER" >> "$LNPLAY_SERVER_PATH/any_offers.txt"
     done
 
-    echo "Node pubkeys cached" >> /dev/null
-
-    for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-        addr=$(../lightning-cli.sh --id=$NODE_ID newaddr | jq -r ".bech32")
-        echo "$addr" >> "$LNPLAY_SERVER_PATH/node_addrs.txt"
-    done
-    echo "Node addresses cached" >> /dev/null
-
-    # if we're deploying prisms, then we also standard any offers on each node.
-    if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
-        for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
-            BOLT12_OFFER=$(../lightning-cli.sh --id=${NODE_ID} offer any default | jq -r '.bolt12')
-            echo "$BOLT12_OFFER" >> "$LNPLAY_SERVER_PATH/any_offers.txt"
-        done
-
-        echo "BOLT12 any offers cached" >> /dev/null
-    fi
-
+    echo "BOLT12 any offers cached" >> /dev/null
 fi
+
 
 if [ "$BTC_CHAIN" != mainnet ]; then
     ./bitcoind_load_onchain.sh

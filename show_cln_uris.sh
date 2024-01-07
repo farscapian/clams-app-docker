@@ -37,7 +37,7 @@ QRCODE_OUTPUT_PATH="$LNPLAY_SERVER_PATH/qrcodes"
 
 if [ "$PRODUCE_QR_CODE" = true ]; then
     if ! command -v qrencode >/dev/null 2>&1; then
-        echo "This script requires qrencode to be installed.. Hint: apt-get install qrencode"
+        echo "This script requires qrencode to be installed.. Hint: apt install qrencode"
         exit 1
     fi
 

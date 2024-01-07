@@ -153,14 +153,14 @@ def on_payment(plugin, invoice_payment, **kwargs):
 
         try:
             plugin.log(f"Starting lnplay provisioning script for Order {invoice_id}")
-            result = subprocess.run([provision_script_path] + params, capture_output=True, text=True, check=True)
+            result = subprocess.run([provision_script_path] + params) #, capture_output=True, text=True, check=True)
             plugin.log(result.stdout)
             plugin.log(result.stderr)
             plugin.log(f"Completed provisioning script for order {invoice_id}")
 
         except subprocess.CalledProcessError as e:
             plugin.log(f"The bash script exited with error code: {e.returncode}")
-            plugin.log(f"Output: {e.output}")
+            #plugin.log(f"Output: {e.output}")
 
         except Exception as e:
             plugin.log(f"An error occurred: {e}")
@@ -188,7 +188,7 @@ def on_payment(plugin, invoice_payment, **kwargs):
             plugin.log(f"lnplay-live: Order: {invoice_id} has been provisioned.")
 
         else:
-            raise Exception("ERROR: Something went wrong with your deployment. Please contact lnplay.live us on telegram.")
+            raise Exception("ERROR: Something went wrong with your deployment.")
 
     except RpcError as e:
         printout("Payment error: {}".format(e))

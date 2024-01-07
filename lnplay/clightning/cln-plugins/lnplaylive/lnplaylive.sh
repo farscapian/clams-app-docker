@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 
 PROJECTS_CONF_PATH="$HOME/ss/projects"
 REMOTE_CONF_PATH="$HOME/ss/remotes/$(incus remote get-default)"

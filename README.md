@@ -7,7 +7,7 @@ WARNING: This software is new and should be used for testing and evaluation only
 
 This repo allows you to deploy `LNPlay` quickly in a [modern docker engine](https://docs.docker.com/engine/) using [docker swarm mode](`https://docs.docker.com/engine/swarm/`). `LNPlay` is a docker container application that deploys a bitcoin core daemon and one or more core lightning nodes to a docker engine (local or remote).  [Clams](https://clams.tech/) is deployed as the web-frontend for interacting with each of the CLN nodes over the websocket interface. Connection information can be embedded in QR codes for quick client onboarding. Each node is funded with `1.0000000` (regtest) bitcoin, so they can go around and open channels, learn about channel liquidity, test BOLT12 offers, etc. 
 
-> Want to try this software but don't have the skill to host it yourself? Consider renting your own Private Lightning Network at [LNPlay.live](https://lnplay.live).
+> Want to try this software but don't have the skill to host it yourself? Consider renting your own Private Lightning Network at [LNPlay.live](https://lnplay.live). For more information about this project, visit [lnplay.guide](https://www.lnplay.guide).
 
 `LNPlay` run in `regtest`, `signet`, or `mainnet` modes. When running in `regtest`, various channel setups can be created. All lightning nodes are able to communicate with each other using a [docker overlay network](https://docs.docker.com/network/drivers/overlay/).
 

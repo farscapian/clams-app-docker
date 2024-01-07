@@ -7,6 +7,18 @@ cat > "$CLN_DOCKERFILE_PATH" <<EOF
 ARG BASE_IMAGE
 FROM \$BASE_IMAGE
 ENV DEBIAN_FRONTEND=noninteractive
+ENV CLN_ALIAS=
+ENV CLN_COLOR=
+ENV BITCOIND_RPC_USERNAME=
+ENV BITCOIND_RPC_PASSWORD=
+ENV CLN_NAME=
+ENV ENABLE_TOR=false
+ENV DOMAIN_NAME=
+ENV PLUGIN_PATH=
+ENV DEPLOY_CLBOSS_PLUGIN=false
+ENV DEPLOY_PRISM_PLUGIN=true
+ENV DEPLOY_LNPLAYLIVE_PLUGIN=
+ENV CLN_BITCOIND_POLL_SETTING=1
 EOF
 
 
@@ -27,40 +39,42 @@ EOF
 fi
 
 # if we're deploying to a remote dockerd, we source sovereign stack from git repos.
-if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
-RUN git clone --branch tabconf --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
+RUN git clone --branch incus --recurse-submodules https://git.sovereign-stack.org/ss/sovereign-stack.git /sovereign-stack
 EOF
 fi
 
 cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # install basic software.
 RUN apt update
-RUN apt install -y wait-for-it sshfs wget dnsutils
+RUN apt install -y wait-for-it sshfs wget dnsutils 
+#RUN apt install -y systemctl 
+#RUN apt install -y systemd
 EOF
 
 # if we're deploying lnplaylive, install the dependencies.
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
-# copy the deprovision in script to the image.
-COPY ./lnplaylive_deprovision.sh /root/deprovision.sh
-RUN chmod +x /root/deprovision.sh
 
-# we're using Sovereign Stack to deploy the VMs.
-RUN /sovereign-stack/install_incus.sh
+# copy the incus client binary into the image
+COPY ./bin.linux.incus.x86_64 /usr/bin/incus
+RUN chmod +x /usr/bin/incus
 
 # # install docker client
+# TODO CONVERT THIS DOCKER INSTALL to install.sh from LNPLay.
 # Add Docker's official GPG key:
-RUN apt-get update
-RUN apt-get install -y ca-certificates curl gnupg
+RUN apt update
+
+RUN apt install -y ca-certificates curl gnupg
 RUN install -m 0755 -d /etc/apt/keyrings
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 RUN chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Add the repository to Apt sources:
 RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list
-RUN apt-get update
-RUN apt-get install -y docker-ce-cli cron procps bc gridsite-clients openssh-client rsync
+RUN apt update
+RUN apt install -y docker-ce-cli cron procps bc gridsite-clients openssh-client rsync
 
 EOF
 

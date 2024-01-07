@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 readarray -t names < "$NAMES_FILE_PATH"
@@ -77,14 +77,25 @@ EOF
       - CLN_BITCOIND_POLL_SETTING=${CLN_BITCOIND_POLL_SETTING}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DEPLOY_PRISM_PLUGIN=${DEPLOY_PRISM_PLUGIN}
-      - DEPLOY_LNPLAYLIVE_PLUGIN=${DEPLOY_LNPLAYLIVE_PLUGIN}
-      - LNPLAY_INCUS_FQDN_PORT=\${LNPLAY_INCUS_FQDN_PORT}
-      - LNPLAY_INCUS_PASSWORD=\${LNPLAY_INCUS_PASSWORD}
-      - LNPLAY_CLUSTER_UNDERLAY_DOMAIN=${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}
-      - LNPLAY_EXTERNAL_DNS_NAME=${LNPLAY_EXTERNAL_DNS_NAME}
       - PLUGIN_PATH=${PLUGIN_PATH}
       - DEPLOY_CLBOSS_PLUGIN=${DEPLOY_CLBOSS_PLUGIN}
 EOF
+
+
+    TARGET_NODE=1
+    if [ "$BTC_CHAIN" = mainnet ]; then
+        TARGET_NODE=0
+    fi
+
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]  && [ "$CLN_ID" = "$TARGET_NODE" ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - DEPLOY_LNPLAYLIVE_PLUGIN=${DEPLOY_LNPLAYLIVE_PLUGIN}
+      - INCUS_CERT_TRUST_TOKEN=\${INCUS_CERT_TRUST_TOKEN}
+      - LNPLAY_INCUS_FQDN_PORT=\${LNPLAY_INCUS_FQDN_PORT}
+      - LNPLAY_CLUSTER_UNDERLAY_DOMAIN=${LNPLAY_CLUSTER_UNDERLAY_DOMAIN}
+      - LNPLAY_EXTERNAL_DNS_NAME=${LNPLAY_EXTERNAL_DNS_NAME}
+EOF
+    fi
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
@@ -93,7 +104,7 @@ EOF
 
     if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${HOME}/sovereign-stack:/sovereign-stack:rw
+      - ${HOME}/sovereign-stack:/sovereign-stack:ro
 EOF
     fi
 
@@ -110,13 +121,29 @@ EOF
 EOF
     fi
 
-if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+    # we only make incus/ssh data available to node 0 for mainnet.
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$CLN_ID" = 0 ] && [ "$BTC_CHAIN" = mainnet ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - incus_data:/root/.config/incus
+      - ssh_data:/root/.ssh
+EOF
+    fi
+
+    # we only use node 1 for lnplaylive for non-mainnet so we can benefit from the prism channel layout.
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$CLN_ID" = 1 ] && [ "$BTC_CHAIN" != mainnet ]; then
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - incus_data:/root/.config/incus
+      - ssh_data:/root/.ssh
+EOF
+    fi
+
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$CLN_ID" = "$TARGET_NODE" ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     configs:
       - source: host-mappings
         target: /root/host_mappings.csv
 EOF
-fi
+    fi
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
@@ -227,14 +254,36 @@ EOF
         fi
 
 
-if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ -f "$LNPLAY_INCUS_HOSTMAPPINGS" ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+    # we only make incus/ssh data available to node 0 for mainnet.
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$CLN_ID" = 0 ] && [ "$BTC_CHAIN" = mainnet ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  incus_data:
+  ssh_data:
+EOF
+    fi
+
+
+    # we only make incus/ssh data available to node 1 for non-mainnet.
+    if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ] && [ "$CLN_ID" = "$TARGET_NODE" ]; then
+        cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+  incus_data:
+  ssh_data:
+EOF
+
+        if [ ! -f "$LNPLAY_INCUS_HOSTMAPPINGS" ]; then
+            echo "ERROR: The '$LNPLAY_INCUS_HOSTMAPPINGS' file does not exist."
+            exit 1
+        else
+            cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
 configs:
   host-mappings:
     file: ${LNPLAY_INCUS_HOSTMAPPINGS}
 EOF
-fi
+        fi
+    fi
+
+
 
     docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}" >> /dev/null
 

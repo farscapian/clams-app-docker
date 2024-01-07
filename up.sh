@@ -21,7 +21,6 @@ DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 
 . ./defaults.env
 
-RETAIN_CACHE=false
 USER_SAYS_YES=false
 RUN_SERVICES=true
 LNPLAY_CONF_PATH=
@@ -29,9 +28,6 @@ LNPLAY_CONF_PATH=
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
-        --retain-cache)
-            RETAIN_CACHE=true
-        ;;
         --no-services)
             RUN_SERVICES=false
             shift
@@ -64,7 +60,7 @@ if [ "$CLN_COUNT" -gt "$MAX_SUPPORTED_NODES" ]; then
     # TODO. Only 150 nodes are supported, but this software has deployed over 600 nodes before. Just no support for it.
     # TODO. The way to scale this is out--that is, add more VMs and replicate bitcoind blocks. Each VM gets up to 150 nodes.
     # Having said all this, we can deploy many more, but the EBT will be longer.
-    echo "ERROR: This software only supports up to '$MAX_SUPPORTED_NODES' (Dunbar's Number) of CLN nodes."
+    echo "ERROR: This software only supports up to '$MAX_SUPPORTED_NODES' of CLN nodes."
     exit 1
 fi
 
@@ -135,7 +131,7 @@ export LNPLAYLIVE_IMAGE_NAME="$LNPLAYLIVE_IMAGE_NAME"
 
 # incus stuff
 export LNPLAY_INCUS_FQDN_PORT="$LNPLAY_INCUS_FQDN_PORT"
-export LNPLAY_INCUS_PASSWORD="$LNPLAY_INCUS_PASSWORD"
+export INCUS_CERT_TRUST_TOKEN="$INCUS_CERT_TRUST_TOKEN"
 export LNPLAY_INCUS_HOSTMAPPINGS="$LNPLAY_INCUS_HOSTMAPPINGS"
 export LNPLAY_CLUSTER_UNDERLAY_DOMAIN="$LNPLAY_CLUSTER_UNDERLAY_DOMAIN"
 export LNPLAY_EXTERNAL_DNS_NAME="$LNPLAY_EXTERNAL_DNS_NAME"
@@ -227,12 +223,12 @@ fi
 # because it required build-time info from the deployed backend. The build script below
 # will stub out those envs and rebuild the output from the app.
 if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    env LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV" ./lnplay/lnplaylive/build.sh
+    env LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV" ./lnplay/lnplaylive-frontend/build.sh
 fi
 
 if [[ "$CLN_COUNT" -gt 0 ]]; then
     # ok, let's do the channel logic
-    bash -c "./channel_templates/up.sh --retain-cache=$RETAIN_CACHE"
+    bash -c "./channel_templates/up.sh"
 fi
 
 if [ -n "$CONNECTION_STRING_CSV_PATH" ] && [[ "$CLN_COUNT" -gt 0 ]]; then

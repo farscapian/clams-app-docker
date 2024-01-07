@@ -29,7 +29,7 @@ export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker pull "$BITCOIND_BASE_IMAGE_NAME"
+    docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
     docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
 fi
 
@@ -61,12 +61,15 @@ if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
 fi
 
+OLD_DOCKER_HOST="$DOCKER_HOST"
+DOCKER_HOST=
 # if the clboss binary doesn't exist, build it.
 if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
     docker build -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss
     docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
+DOCKER_HOST="$OLD_DOCKER_HOST"
 
 # build the base image for cln
 if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
@@ -79,12 +82,12 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
 
     ./clightning/stub_cln_dockerfile.sh
 
-    docker build -q -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/ >> /dev/null
+    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
 fi
 
 if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
     CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
-    docker pull "$NODE_BASE_DOCKER_IMAGE_NAME"
+    docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
     if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
         docker build -q -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
     fi

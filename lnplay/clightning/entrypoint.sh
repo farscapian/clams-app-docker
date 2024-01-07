@@ -2,11 +2,11 @@
 
 set -eu
 
-# add the deprovision script to the crontab to be executed every 10 minutes.
-echo "*/10 * * * * root $HOME/deprovision.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/deprovision
-echo "" >> /etc/cron.d/deprovision
-touch /var/log/cron.log
-chmod 0644 /etc/cron.d/deprovision
+# # add the deprovision script to the crontab to be executed every 10 minutes.
+# echo "*/10 * * * * root $HOME/deprovision.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/deprovision
+# echo "" >> /etc/cron.d/deprovision
+# touch /var/log/cron.log
+# chmod 0644 /etc/cron.d/deprovision
 
 # first start the cron daemon so the deprovision script will execute.
 cron
@@ -103,6 +103,7 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
     CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
+    CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
 fi
 
 if [ "$BTC_CHAIN" = signet ]; then

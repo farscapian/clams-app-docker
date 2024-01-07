@@ -6,7 +6,7 @@
 	url = https://github.com/farscapian/ROYGBIV-frontend
 [submodule "lnplay/clams/app"]
 	path = lnplay/clams/app
-	url = https://github.com/clams-tech/App.git
+	url = https://github.com/clams-tech/Remote.git
 [submodule "lnplay/clightning/cln-plugins/lnplaylive"]
 	path = lnplay/clightning/cln-plugins/lnplaylive/app
 	url = https://github.com/farscapian/lnplay.live-plugin.git

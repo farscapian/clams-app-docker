@@ -78,6 +78,8 @@ if docker info | grep -q "Swarm: inactive"; then
     exit 1
 fi
 
+sleep 0.1
+
 # write out service for CLN; style is a docker stack deploy style,
 # so we will use the replication feature
 STACKS=$(docker stack ls --format "{{.Name}}")
@@ -90,7 +92,7 @@ done
 
 # now bring down the main lnplay.
 if echo "$STACKS" | grep -q lnplay; then
-    docker stack rm lnplay > /dev/null
+    docker stack rm lnplay
 fi
 
 # wait until all containers are shut down.
