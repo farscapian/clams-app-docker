@@ -27,9 +27,12 @@ BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:26.0"
 BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
+if ! docker image inspect "$BITCOIND_BASE_IMAGE_NAME" &>/dev/null; then
+    docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
+fi
+
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
     docker build -q -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="${BITCOIND_BASE_IMAGE_NAME}" ./bitcoind/  >>/dev/null
 fi
 
