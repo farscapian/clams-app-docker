@@ -64,6 +64,11 @@ if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi
 
+if [ "$ENABLE_CLN_REST" = true ]; then
+    #REST_PLUGIN_PATH="/usr/local/libexec/c-lightning/plugins/clnrest/clnrest.py"
+    CLN_COMMAND="${CLN_COMMAND} --rest-port=3010 --rest-protocol=http --rest-host=0.0.0.0"
+fi
+
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_PLUGIN_PATH="$PLUGIN_PATH/clboss/clboss"
     chmod +x "$CLBOSS_PLUGIN_PATH"

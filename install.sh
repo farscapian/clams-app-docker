@@ -9,8 +9,8 @@ fi
 
 apt update
 
-# needed by tehse scripts
-apt install -y jq dnsutils
+# needed by scripts
+apt install -y jq dnsutils gridsite-clients qrencode
 
 
 # the rest is needed for docker to work

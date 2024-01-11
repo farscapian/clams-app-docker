@@ -13,6 +13,7 @@ ENV BITCOIND_RPC_USERNAME=
 ENV BITCOIND_RPC_PASSWORD=
 ENV CLN_NAME=
 ENV ENABLE_TOR=false
+ENV ENABLE_CLN_REST=true
 ENV DOMAIN_NAME=
 ENV PLUGIN_PATH=
 ENV DEPLOY_CLBOSS_PLUGIN=false
@@ -121,6 +122,16 @@ RUN chmod +x /plugins/clboss/clboss
 RUN apt install -y libev-dev
 EOF
 fi
+
+
+# if [ "$ENABLE_CLN_REST" = true ]; then
+#     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
+# # run scripts needed for CLNrest
+# RUN apt install -y python3-json5 python3-flask python3-gunicorn
+# RUN pip3 install flask-cors flask_restx pyln-client flask-socketio gevent gevent-websocket
+# RUN pip install -r /usr/local/libexec/c-lightning/plugins/clnrest/requirements.txt 
+# EOF
+# fi
 
 cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # add entrypoint.sh

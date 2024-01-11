@@ -53,6 +53,17 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 EOF
 done
 
+
+
+# these are the ports for the websocket connections.
+REST_PORT=
+for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
+    REST_PORT=$(( STARTING_REST_PORT+CLN_ID ))
+    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
+      - ${REST_PORT}:${REST_PORT}
+EOF
+done
+
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     networks:
       - nginxnet

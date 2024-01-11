@@ -29,7 +29,7 @@ if ! echo "$EXISTING_PRISM_IDS" | grep -q "$PRISM_ID"; then
     OFFER_DESCRIPTION="Prism Demo"
 
     # now create a new BOLT12 any offer and grab the offer_id
-    OFFER_ID=$(../lightning-cli.sh --id=1 offer -k amount=any description="$OFFER_DESCRIPTION" | jq -r '.offer_id')
+    OFFER_ID=$(../lightning-cli.sh --id=1 offer -k amount=any description="$OFFER_DESCRIPTION" label="$PRISM_ID" | jq -r '.offer_id')
 
     # now lets bind that prism to the offer
     ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="$PRISM_ID" invoice_type=bolt12 invoice_label="$OFFER_ID"
