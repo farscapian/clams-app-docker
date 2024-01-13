@@ -105,10 +105,10 @@ elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
     }
 EOF
 
-elif [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+elif [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
-    # https server block for the clams app
+    # server block for the clams app
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
 

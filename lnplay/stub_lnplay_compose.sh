@@ -77,7 +77,7 @@ EOF
 # fi
 
 
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - clams-appnet
 EOF
@@ -118,7 +118,7 @@ if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
 EOF
 fi
 
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
   clams-app:
@@ -216,7 +216,7 @@ EOF
     done
 fi
 
-if [ "$DEPLOY_CLAMS_BROWSER_APP" = true ]; then
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clams-appnet:
 EOF

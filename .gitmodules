@@ -10,9 +10,6 @@
 [submodule "lnplay/clightning/cln-plugins/lnplaylive"]
 	path = lnplay/clightning/cln-plugins/lnplaylive/app
 	url = https://github.com/farscapian/lnplay.live-plugin.git
-[submodule "lnplay/lnplaylive/app"]
-	path = lnplay/lnplaylive/app
-	url = https://github.com/johngribbin/lnplay-frontend
 [submodule "lnplay/clightning/cln-plugins/lnplaylive/app"]
 	path = lnplay/clightning/cln-plugins/lnplaylive/app
 	url = https://github.com/farscapian/lnplay.live-plugin.git
