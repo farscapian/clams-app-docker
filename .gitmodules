@@ -4,8 +4,8 @@
 [submodule "lnplay/prism-app/ROYGBIV-frontend"]
 	path = lnplay/prism-app/ROYGBIV-frontend
 	url = https://github.com/farscapian/ROYGBIV-frontend
-[submodule "lnplay/clams/app"]
-	path = lnplay/clams/app
+[submodule "lnplay/clams/remote"]
+	path = lnplay/clams/remote
 	url = https://github.com/clams-tech/Remote.git
 [submodule "lnplay/clightning/cln-plugins/lnplaylive"]
 	path = lnplay/clightning/cln-plugins/lnplaylive/app
