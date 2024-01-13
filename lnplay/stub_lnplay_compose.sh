@@ -84,13 +84,6 @@ EOF
     done
 fi
 
-
-if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - prism-appnet
-EOF
-fi
-
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     configs:
       - source: nginx-config
@@ -122,26 +115,6 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
           cpus: '2'
           memory: 1000M
 
-EOF
-
-elif [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
-  prism-browser-app:
-    image: ${PRISM_APP_IMAGE_NAME}
-    networks:
-      - prism-appnet
-    environment:
-      - HOST=0.0.0.0
-      - PORT=5173
-    command: >-
-      npm run dev -- --host
-    deploy:
-      mode: global
-      resources:
-        limits:
-          cpus: '2'
-          memory: 500M
 EOF
 
 fi
@@ -206,12 +179,6 @@ fi
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   clams-appnet:
-EOF
-fi
-
-if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  prism-appnet:
 EOF
 fi
 

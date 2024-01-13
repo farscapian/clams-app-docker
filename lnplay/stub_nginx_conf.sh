@@ -52,33 +52,7 @@ if [ "$ENABLE_TLS" = true ]; then
     SSL_TAG=" ssl"
     SERVICE_INTERNAL_PORT=443
 fi
-
-if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-    cat >> "$NGINX_CONFIG_PATH" <<EOF
-
-    # https server block for the prism app
-    server {
-        listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
-
-        server_name ${DOMAIN_NAME};
-
-        location / {
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_set_header Host \$http_host;
-            proxy_cache_bypass \$http_upgrade;
-
-            proxy_read_timeout     120;
-            proxy_connect_timeout  120;
-            proxy_redirect         off;
-
-            proxy_pass http://prism-browser-app:5173;
-        }
-    }
-EOF
-
-elif [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
     # server block for the clams app

@@ -99,17 +99,6 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
 fi
 
-if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
-    if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &> /dev/null; then
-        # pull bitcoind down
-        docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME" >> /dev/null
-    fi
-
-    if ! docker image inspect "$PRISM_APP_IMAGE_NAME" &>/dev/null; then
-        docker build  -t "$PRISM_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./prism-app/  >>/dev/null
-    fi
-fi
-
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
 export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
 if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
