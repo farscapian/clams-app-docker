@@ -109,7 +109,6 @@ export BROWSER_APP_EXTERNAL_PORT="$BROWSER_APP_EXTERNAL_PORT"
 
 export CLN_COUNT="$CLN_COUNT"
 export DEPLOY_CLAMS_REMOTE="$DEPLOY_CLAMS_REMOTE"
-export DEPLOY_LNPLAYLIVE_FRONTEND="$DEPLOY_LNPLAYLIVE_FRONTEND"
 export DEPLOY_PRISM_BROWSER_APP="$DEPLOY_PRISM_BROWSER_APP"
 export DOMAIN_NAME="$DOMAIN_NAME"
 export RPC_PATH="$RPC_PATH"
@@ -222,12 +221,6 @@ if [ "$BTC_CHAIN" != regtest ]; then
     done
 fi
 
-# if we are deploying the lnplaylive frontend, we can rebuild at this point
-# because it required build-time info from the deployed backend. The build script below
-# will stub out those envs and rebuild the output from the app.
-if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    env LNPLAYLIVE_FRONTEND_ENV="$LNPLAYLIVE_FRONTEND_ENV" ./lnplay/lnplaylive-frontend/build.sh
-fi
 
 if [[ "$CLN_COUNT" -gt 0 ]]; then
     # ok, let's do the channel logic

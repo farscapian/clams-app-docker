@@ -110,17 +110,6 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     fi
 fi
 
-if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &> /dev/null; then
-        # pull bitcoind down
-        docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME" >> /dev/null
-    fi
-
-    if ! docker volume list | grep -q "lnplay-live"; then
-        docker volume create lnplay-live
-    fi
-fi
-
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
 export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
 if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then

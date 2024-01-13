@@ -70,13 +70,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 
 
-# if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-#     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-#       - lnplaylive-appnet
-# EOF
-# fi
-
-
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - clams-appnet
@@ -111,12 +104,6 @@ EOF
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - lnplay-certs:/certs
 EOF
-
-if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - lnplaylive:/lnplaylive:ro
-EOF
-fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -228,13 +215,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 EOF
 fi
 
-# if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-# cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-#   lnplaylive-appnet:
-# EOF
-# fi
-
-
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
@@ -243,16 +223,6 @@ volumes:
   bitcoind-${BTC_CHAIN}:
 
 EOF
-
-if [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  lnplaylive:
-    external: true
-    name: lnplay-live
-
-EOF
-fi
 
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF

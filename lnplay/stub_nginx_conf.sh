@@ -78,33 +78,6 @@ if [ "$DEPLOY_PRISM_BROWSER_APP" = true ]; then
     }
 EOF
 
-elif [ "$DEPLOY_LNPLAYLIVE_FRONTEND" = true ]; then
-    cat >> "$NGINX_CONFIG_PATH" <<EOF
-
-    # https server block for lnplaylive
-    server {
-        listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
-
-        server_name ${DOMAIN_NAME};
-
-        location ~ ^/order/(?<order_id>.+)$ {
-            autoindex off;
-            server_tokens off;
-            gzip_static on;
-            root /lnplaylive/build;
-            index 404.html;
-        }
-
-        location / {
-            autoindex off;
-            server_tokens off;
-            gzip_static on;
-            root /lnplaylive/build;
-            index index.html;
-        }
-    }
-EOF
-
 elif [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
