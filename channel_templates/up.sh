@@ -14,6 +14,8 @@ for i in "$@"; do
     esac
 done
 
+sleep 2
+
 # recache node addrs and pubkeys if not specified otherwise
 echo "Caching node info..." >> /dev/null
 
