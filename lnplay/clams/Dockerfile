@@ -7,7 +7,7 @@ VOLUME /output
 RUN mkdir /app
 
 # COPY the clams-app into the container for build.
-ADD app /app
+ADD remote /app
 
 WORKDIR /app
 # build the project.
