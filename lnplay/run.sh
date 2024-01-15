@@ -131,6 +131,10 @@ if [ "$RUN_SERVICES" = true ]; then
     ./stub_nginx_conf.sh
 
     # this is the main bitcoind/nginx etc., everything sans CLN nodes.
+    # TODO AFTER we deploy this stack, we should issue a CURL command to the FRONTEND_DOMAIN_NAME
+    # so that clams remote will preemptively serve Clams files. 
+
+    # TODO to make Clams Remote faster, we should cache responses at the nginx.
     docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay >> /dev/null
 
     if ! docker network list | grep -q lnplay-p2pnet; then
