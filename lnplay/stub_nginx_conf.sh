@@ -55,7 +55,7 @@ fi
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$NGINX_CONFIG_PATH" <<EOF
 
-    # server block for the clams app
+    # server block for clams remote
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
 

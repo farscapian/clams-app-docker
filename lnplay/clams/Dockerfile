@@ -19,4 +19,4 @@ ENV PORT 5173
 # install dependencies
 RUN yarn
 
-ENTRYPOINT [ "yarn", "dev", "--host", "0.0.0.0" ]
+ENTRYPOINT [ "yarn", "dev-http", "--host", "0.0.0.0" ]
