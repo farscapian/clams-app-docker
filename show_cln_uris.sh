@@ -45,7 +45,7 @@ if [ "$PRODUCE_QR_CODE" = true ]; then
 fi
 
 if [ -z "$OUTPUT_FILE" ]; then
-    OUTPUT_FILE="$LNPLAY_SERVER_PATH/${DOMAIN_NAME}.csv"""
+    OUTPUT_FILE="$LNPLAY_SERVER_PATH/${BACKEND_DOMAIN_NAME}.csv"""
 fi
 
 mapfile -t names < "$NAMES_FILE_PATH"
@@ -79,7 +79,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         RUNE=$(bash -c "./get_rune.sh --id=${CLN_ID} --admin")
     fi
 
-    FRONT_END_FQDN="${DOMAIN_NAME}"
+    FRONT_END_FQDN="${FRONTEND_DOMAIN_NAME}"
 
     # provide a way to override the front-end URL
     if [ -n "$DIRECT_LINK_FRONTEND_URL_OVERRIDE_FQDN" ]; then
@@ -114,7 +114,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 
     echo "$WEBSOCKET_QUERY_STRING"
     if [ "$PRODUCE_QR_CODE" = true ]; then
-        qrencode -o "$QRCODE_OUTPUT_PATH/${DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
+        qrencode -o "$QRCODE_OUTPUT_PATH/${BACKEND_DOMAIN_NAME}_cln-${CLN_ID}_websocket.png" -t png "$WEBSOCKET_QUERY_STRING"
     fi
 
     if [ "$SPAWN_BROWSER_TAB" = true ]; then

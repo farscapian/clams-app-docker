@@ -2,8 +2,8 @@
 
 set -exu
 
-if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then
-    read -r -p "WARNING: You are targeting a remote LNPlay instance at '$DOMAIN_NAME'. Are you sure you want to continue? (yes/no): " ANSWSER
+if [ "$BACKEND_DOMAIN_NAME" != "127.0.0.1" ]; then
+    read -r -p "WARNING: You are targeting a remote LNPlay instance at '$BACKEND_DOMAIN_NAME'. Are you sure you want to continue? (yes/no): " ANSWSER
 
     # Convert the answer to lowercase
     ANSWER=$(echo "$ANSWSER" | tr '[:upper:]' '[:lower:]')

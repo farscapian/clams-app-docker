@@ -45,8 +45,8 @@ if [ -z "$ENABLE_TOR" ]; then
     exit 1
 fi
 
-if [ -z "$DOMAIN_NAME" ]; then
-    echo "ERROR: DOMAIN_NAME is unset."
+if [ -z "$BACKEND_DOMAIN_NAME" ]; then
+    echo "ERROR: BACKEND_DOMAIN_NAME is unset."
     exit 1
 fi
 
@@ -106,7 +106,7 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
         CLN_PTP_PORT="$CLN_P2P_PORT_OVERRIDE"
     fi
 
-    CLN_COMMAND="$CLN_COMMAND --announce-addr=${DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
+    CLN_COMMAND="$CLN_COMMAND --announce-addr=${BACKEND_DOMAIN_NAME}:${CLN_PTP_PORT} --announce-addr-dns=true"
     CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
     CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
 fi

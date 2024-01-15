@@ -38,4 +38,4 @@ done
 rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
 rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 rm -f "$LNPLAY_SERVER_PATH/any_offers.txt"
-rm -f "$LNPLAY_SERVER_PATH/$DOMAIN_NAME.csv"
+rm -f "$LNPLAY_SERVER_PATH/$BACKEND_DOMAIN_NAME.csv"

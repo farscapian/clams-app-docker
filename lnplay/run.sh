@@ -89,14 +89,14 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
 fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    CLAMS_APP_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
+    CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
-    docker build  -t "$CLAMS_APP_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
-    # if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_APP_IMAGE_NAME"; then
+    docker build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
+    # if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$CLAMS_REMOTE_IMAGE_NAME"; then
         
     # fi
     
-    export CLAMS_APP_IMAGE_NAME="$CLAMS_APP_IMAGE_NAME"
+    export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"

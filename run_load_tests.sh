@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 
 export DOCKER_HOST=
 
-OUTPUT_FILE="$(pwd)/output/cln_connection_info-${DOMAIN_NAME}.csv"
+OUTPUT_FILE="$(pwd)/output/cln_connection_info-${BACKEND_DOMAIN_NAME}.csv"
 
 if [ ! -f "$OUTPUT_FILE" ]; then
     # ensure we have the correct input file containing connenction info

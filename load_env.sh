@@ -33,23 +33,23 @@ fi
 
 if [ ! -f "$ACTIVE_ENV_PATH" ]; then
     cat > "$ACTIVE_ENV_PATH" << EOF
-DOCKER_HOST=ssh://ubuntu@domain.tld
-DOMAIN_NAME=domain.tld
+DOCKER_HOST=ssh://ubuntu@lnplay.domain.tld
+BACKEND_DOMAIN_NAME=lnplay.domain.tld
+FRONTEND_DOMAIN_NAME=remote.domain.tld
 ENABLE_TLS=true
-
 EOF
     exit 1
 fi
 
 source "$ACTIVE_ENV_PATH"
 
-if [ "$DOMAIN_NAME" = "domain.tld" ]; then
+if [ "$BACKEND_DOMAIN_NAME" = "domain.tld" ]; then
     echo "ERROR: Hey, you didn't update your env file '$ACTIVE_ENV_PATH'!"
     exit 1
 fi
 
-if [ "$DOMAIN_NAME" = "127.0.0.1" ] && [ "$ENABLE_TLS" = true ]; then
-    echo "ERROR: Hey, you can't use TLS when your DOMAIN_NAME is equal to 127.0.0.1"
+if [ "$BACKEND_DOMAIN_NAME" = "127.0.0.1" ] && [ "$ENABLE_TLS" = true ]; then
+    echo "ERROR: Hey, you can't use TLS when your BACKEND_DOMAIN_NAME is equal to 127.0.0.1"
     exit 1
 fi
 
@@ -59,7 +59,8 @@ if ! [[ $CLN_COUNT =~ ^[0-9]+$ ]]; then
 fi
 
 export DOCKER_HOST="$DOCKER_HOST"
-export DOMAIN_NAME="$DOMAIN_NAME"
+export BACKEND_DOMAIN_NAME="$BACKEND_DOMAIN_NAME"
+export FRONTEND_DOMAIN_NAME="$FRONTEND_DOMAIN_NAME"
 export ENABLE_TLS="$ENABLE_TLS"
 export BTC_CHAIN="$BTC_CHAIN"
 export NAMES_FILE_PATH="$NAMES_FILE_PATH"

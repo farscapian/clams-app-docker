@@ -27,14 +27,14 @@ if [ "$ENABLE_TLS" = true ]; then
     ssl_stapling on;
     ssl_stapling_verify on;
 
-    ssl_certificate /certs/live/${DOMAIN_NAME}/fullchain.pem;
-    ssl_certificate_key /certs/live/${DOMAIN_NAME}/privkey.pem;
-    ssl_trusted_certificate /certs/live/${DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate /certs/live/${BACKEND_DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate_key /certs/live/${BACKEND_DOMAIN_NAME}/privkey.pem;
+    ssl_trusted_certificate /certs/live/${BACKEND_DOMAIN_NAME}/fullchain.pem;
 
     # http to https redirect.
     server {
         listen 80 default_server;
-        server_name ${DOMAIN_NAME};
+        server_name ${FRONTEND_DOMAIN_NAME};
         return 301
 
         https://\$server_name\$request_uri;
@@ -59,7 +59,7 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
 
-        server_name ${DOMAIN_NAME};
+        server_name ${FRONTEND_DOMAIN_NAME};
 
         location / {
             proxy_http_version 1.1;
@@ -97,7 +97,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
     server {
         listen ${CLN_WEBSOCKET_PORT}${SSL_TAG};
 
-        server_name ${DOMAIN_NAME};
+        server_name ${BACKEND_DOMAIN_NAME};
 
         location / {
             proxy_http_version 1.1;
@@ -128,11 +128,11 @@ if [ "$ENABLE_CLN_REST" = true ]; then
         CLN_REST_PORT=$(( STARTING_REST_PORT+CLN_ID ))
         cat >> "$NGINX_CONFIG_PATH" <<EOF
 
-    # server block for ${CLN_ALIAS} websocket
+    # server block for ${CLN_ALIAS} REST service
     server {
         listen ${CLN_REST_PORT}${SSL_TAG};
 
-        server_name ${DOMAIN_NAME};
+        server_name ${BACKEND_DOMAIN_NAME};
 
         location / {
             proxy_http_version 1.1;

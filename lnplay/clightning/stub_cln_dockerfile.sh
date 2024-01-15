@@ -14,7 +14,7 @@ ENV BITCOIND_RPC_PASSWORD=
 ENV CLN_NAME=
 ENV ENABLE_TOR=false
 ENV ENABLE_CLN_REST=true
-ENV DOMAIN_NAME=
+ENV BACKEND_DOMAIN_NAME=
 ENV PLUGIN_PATH=
 ENV DEPLOY_CLBOSS_PLUGIN=false
 ENV DEPLOY_PRISM_PLUGIN=true
@@ -23,7 +23,7 @@ ENV CLN_BITCOIND_POLL_SETTING=1
 EOF
 
 
-if [ "$DOMAIN_NAME" = "127.0.0.1" ]; then
+if [ "$BACKEND_DOMAIN_NAME" = "127.0.0.1" ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # we can mount into the this path when we're working locally.
 RUN mkdir /cln-plugins
@@ -81,7 +81,7 @@ EOF
 
     # add the lnplay live plugins/scripts
     # TODO this can be simplified probably; no need to specify every py sh
-    if [ "$DOMAIN_NAME" != "127.0.0.1" ]; then 
+    if [ "$BACKEND_DOMAIN_NAME" != "127.0.0.1" ]; then 
         cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # provisioning plugin
 ADD ./cln-plugins/lnplaylive/invoice_paid.py /plugins/lnplaylive/invoice_paid.py
