@@ -27,7 +27,7 @@ EOF
     CLN_COLOR="${colors[$CLN_ID]}"
 
     if [ "$BTC_CHAIN" = mainnet ]; then
-        CLN_ALIAS="$BACKEND_DOMAIN_NAME"
+        CLN_ALIAS="$BACKEND_FQDN"
     fi
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -59,7 +59,7 @@ EOF
     # otherwise we will mount the path later down the road so
     # plugins can be reloaded quickly without restarting the whole thing.
     PLUGIN_PATH=/plugins
-    if [ "$BACKEND_DOMAIN_NAME" = "127.0.0.1" ]; then
+    if [ "$BACKEND_FQDN" = "127.0.0.1" ]; then
         PLUGIN_PATH="/cln-plugins"
     fi
 
@@ -76,7 +76,7 @@ EOF
       - CLN_PTP_PORT=${CLN_PTP_PORT}
       - CLN_P2P_PORT_OVERRIDE=${CLN_P2P_PORT_OVERRIDE}
       - CLN_BITCOIND_POLL_SETTING=${CLN_BITCOIND_POLL_SETTING}
-      - BACKEND_DOMAIN_NAME=${BACKEND_DOMAIN_NAME}
+      - BACKEND_FQDN=${BACKEND_FQDN}
       - DEPLOY_PRISM_PLUGIN=${DEPLOY_PRISM_PLUGIN}
       - PLUGIN_PATH=${PLUGIN_PATH}
       - DEPLOY_CLBOSS_PLUGIN=${DEPLOY_CLBOSS_PLUGIN}
@@ -103,7 +103,7 @@ EOF
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
 EOF
 
-    if [ "$BACKEND_DOMAIN_NAME" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
+    if [ "$BACKEND_FQDN" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - ${HOME}/sovereign-stack:/sovereign-stack:ro
 EOF
@@ -116,7 +116,7 @@ EOF
     fi
 
     DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins"
-    if [ "$BACKEND_DOMAIN_NAME" = "127.0.0.1" ]; then
+    if [ "$BACKEND_FQDN" = "127.0.0.1" ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - ${DEV_PLUGIN_PATH}:/cln-plugins
 EOF

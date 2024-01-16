@@ -31,5 +31,5 @@ NODE_PUBKEY=$(bash -c "./lightning-cli.sh --id=$NODE_ID getinfo" | jq -r '.id')
 if [ "$SHOW_INTERNAL" = true ]; then
     echo "$NODE_PUBKEY@cln-${NODE_ID}:$PORT"
 else
-    echo "$NODE_PUBKEY@$BACKEND_DOMAIN_NAME:$PORT"
+    echo "$NODE_PUBKEY@$BACKEND_FQDN:$PORT"
 fi

@@ -87,8 +87,8 @@ if docker info | grep -q "Swarm: inactive"; then
 fi
 
 
-if [ "$ENABLE_TLS" = true ] && [ "$BACKEND_DOMAIN_NAME" = localhost ]; then
-    echo "ERROR: You can't use TLS with with a BACKEND_DOMAIN_NAME of 'localhost'. Use something that's resolveable by in DNS."
+if [ "$ENABLE_TLS" = true ] && [ "$BACKEND_FQDN" = localhost ]; then
+    echo "ERROR: You can't use TLS with with a BACKEND_FQDN of 'localhost'. Use something that's resolveable by in DNS."
     exit 1
 fi
 
@@ -109,8 +109,8 @@ export BROWSER_APP_EXTERNAL_PORT="$BROWSER_APP_EXTERNAL_PORT"
 
 export CLN_COUNT="$CLN_COUNT"
 export DEPLOY_CLAMS_REMOTE="$DEPLOY_CLAMS_REMOTE"
-export BACKEND_DOMAIN_NAME="$BACKEND_DOMAIN_NAME"
-export FRONTEND_DOMAIN_NAME="$FRONTEND_DOMAIN_NAME"
+export BACKEND_FQDN="$BACKEND_FQDN"
+export FRONTEND_FQDN="$FRONTEND_FQDN"
 export RPC_PATH="$RPC_PATH"
 export STARTING_WEBSOCKET_PORT="$STARTING_WEBSOCKET_PORT"
 export STARTING_REST_PORT="$STARTING_REST_PORT"

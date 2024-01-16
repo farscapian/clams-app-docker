@@ -20,7 +20,7 @@ PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # if the prism doesn't already exist, we create it
 EXISTING_PRISM_IDS=$(./lightning-cli.sh --id=1 prism-list | jq -r '.[].prism_id')
-PRISM_ID="prism-$BACKEND_DOMAIN_NAME-prism_demo"
+PRISM_ID="prism-$BACKEND_FQDN-prism_demo"
 if ! echo "$EXISTING_PRISM_IDS" | grep -q "$PRISM_ID"; then
 
     ../lightning-cli.sh --id=1 prism-create -k members="$PRISM_JSON_STRING" prism_id="${PRISM_ID}"
