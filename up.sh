@@ -181,6 +181,8 @@ function check_containers {
         fi
     done
 
+    sleep 2
+    
     # If all containers are running, return 0
     return 0
 }
