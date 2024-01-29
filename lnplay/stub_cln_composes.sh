@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 readarray -t names < "$NAMES_FILE_PATH"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 if [ "$UID" != 0 ]; then
     echo "ERROR: this script MUST be run as root."

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "$0")"
 
 # this script brings up the backend needed (i.e., lightningd+bitcoind) to test Clams app
