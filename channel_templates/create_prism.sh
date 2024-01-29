@@ -12,29 +12,32 @@ PRISM_JSON_STRING="["
 # create a JSON string with of the members[] definition
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
-    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"name\" : \"${names[$CLN_ID]}\", \"destination\": \"$NODE_ANYOFFER\", \"split\": $CLN_ID, \"type\":\"bolt12\"},"
+    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$NODE_ANYOFFER\", \"split\": $CLN_ID},"
 done
 
 # close off the json
 PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # if the prism doesn't already exist, we create it
-EXISTING_PRISM_IDS=$(./lightning-cli.sh --id=1 prism-list | jq -r '.[].prism_id')
-PRISM_ID="prism-$BACKEND_FQDN-prism_demo"
-if ! echo "$EXISTING_PRISM_IDS" | grep -q "$PRISM_ID"; then
+#EXISTING_PRISM_IDS=$(./lightning-cli.sh --id=1 prism-list | jq -r '.[].prism_id')
+#PRISM_ID_1="$BACKEND_FQDN-prism_demo"
 
-    ../lightning-cli.sh --id=1 prism-create -k members="$PRISM_JSON_STRING" prism_id="${PRISM_ID}"
+../lightning-cli.sh --id=1 prism-create -k prism_id="prism1" members="$PRISM_JSON_STRING"
 
-    # now let's create a BOLT12 entrypoint, then bind it to our prism.
-    OFFER_DESCRIPTION="Prism Demo"
+# # now create a new BOLT12 any offer and grab the offer_id
+# OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_a" label="prism1" | jq -r '.offer_id')
 
-    # now create a new BOLT12 any offer and grab the offer_id
-    OFFER_ID=$(../lightning-cli.sh --id=1 offer -k amount=any description="$OFFER_DESCRIPTION" label="$PRISM_ID" | jq -r '.offer_id')
+# # now lets bind that prism to the offer
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" bolt_version=bolt12 offer_id="$OFFER_ID_A"
 
-    # now lets bind that prism to the offer
-    ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="$PRISM_ID" invoice_type=bolt12 invoice_label="$OFFER_ID"
+# #prism_id="prism2"
+# ../lightning-cli.sh --id=1 prism-create -k prism_id="prism2" members="$PRISM_JSON_STRING" 
+# ../lightning-cli.sh --id=1 prism-create -k prism_id="prism3" members="$PRISM_JSON_STRING"
+# #prism_id="prism3"
+# # now create a new BOLT12 any offer and grab the offer_id
+# OFFER_ID_B=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_b" label="offer2" | jq -r '.offer_id')
 
-    echo "INFO: successfully created a BOLT12 prism on node 1."
-else
-    echo "INFO: Prism '$PRISM_ID' already exists. Skipping."
-fi
+# # add some bindings.
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" offer_id="$OFFER_ID_B"
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" offer_id="$OFFER_ID_A"
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism3" offer_id="$OFFER_ID_A"
