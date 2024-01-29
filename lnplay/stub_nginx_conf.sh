@@ -72,7 +72,7 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
             proxy_connect_timeout  120;
             proxy_redirect         off;
 
-            proxy_pass http://clams-app:5173;
+            proxy_pass http://clams-remote:5173;
         }
     }
 

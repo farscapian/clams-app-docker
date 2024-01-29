@@ -101,7 +101,7 @@ EOF
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
-  clams-app:
+  clams-remote:
     image: ${CLAMS_REMOTE_IMAGE_NAME}
     networks:
       - clams-appnet
