@@ -57,7 +57,7 @@ fi
 
 wait-for-it -t 600 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --experimental-websocket-port=9736 --experimental-offers --experimental-onion-messages"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-onion-messages"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -65,8 +65,7 @@ if [ "$ENABLE_TOR" = true ]; then
 fi
 
 if [ "$ENABLE_CLN_REST" = true ]; then
-    #REST_PLUGIN_PATH="/usr/local/libexec/c-lightning/plugins/clnrest/clnrest.py"
-    CLN_COMMAND="${CLN_COMMAND} --rest-port=3010 --rest-protocol=http --rest-host=0.0.0.0"
+    CLN_COMMAND="${CLN_COMMAND} --clnrest-port=3010 --clnrest-protocol=http --clnrest-host=0.0.0.0"
 fi
 
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
@@ -120,6 +119,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # regtest only
     CLN_COMMAND="$CLN_COMMAND --network=${BTC_CHAIN}"
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735 --announce-addr-dns=true"
+    CLN_COMMAND="$CLN_COMMAND --developer"
     CLN_COMMAND="$CLN_COMMAND --dev-fast-gossip"
     # CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
     # CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"

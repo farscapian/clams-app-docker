@@ -1,6 +1,9 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+RUN apt update
+RUN apt install curl wait-for-it -y
+
 # install lightning-cli bash completion
 RUN curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash_completion \
   && mv bash_completion /usr/share/bash-completion/
