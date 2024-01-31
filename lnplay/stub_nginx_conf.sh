@@ -119,10 +119,10 @@ EOF
 done
 
 
+
+# This section we write the out REST configuration for core lightning.
 CLN_REST_PORT=
 if [ "$ENABLE_CLN_REST" = true ]; then
-    # write out service for CLN; style is a docker stack deploy style,
-    # so we will use the replication feature
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         CLN_ALIAS="cln-${CLN_ID}"
         CLN_REST_PORT=$(( STARTING_REST_PORT+CLN_ID ))
@@ -135,24 +135,12 @@ if [ "$ENABLE_CLN_REST" = true ]; then
         server_name ${BACKEND_FQDN};
 
         location / {
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_set_header Proxy "";
-            proxy_set_header Host \$http_host;
+            proxy_set_header Host \$host;
             proxy_set_header X-Real-IP \$remote_addr;
             proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
 
             proxy_pass http://${CLN_ALIAS}:3010;
 
-            proxy_cache_bypass \$http_upgrade;
-            
-            # Timeout settings
-            proxy_connect_timeout       90;
-            proxy_send_timeout          90;
-            proxy_read_timeout          120;
-            send_timeout                90;
         }
     }
 
