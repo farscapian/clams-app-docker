@@ -38,8 +38,8 @@ for i in "$@"; do
     esac
 done
 
-LNPLAY_ACTIVE_ENV_FILE="$HOME/ss/projects/$(incus project list --format csv -q | grep "current" | cut -d' ' -f1)/lnplay.conf"
-export LNPLAY_ACTIVE_ENV_FILE="$LNPLAY_ACTIVE_ENV_FILE"
+#LNPLAY_ACTIVE_ENV_FILE="$HOME/ss/projects/$(incus project list --format csv -q | grep "current" | cut -d' ' -f1)/lnplay.conf"
+#export LNPLAY_ACTIVE_ENV_FILE="$LNPLAY_ACTIVE_ENV_FILE"
 
 . ./load_env.sh
 
