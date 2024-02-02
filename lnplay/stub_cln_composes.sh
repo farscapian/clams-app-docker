@@ -118,7 +118,7 @@ EOF
     fi
 
     DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins"
-    if [ "$BACKEND_FQDN" = "127.0.0.1" ]; then
+    if [ "$MOUNT_DEV_PLUGIN_PATH_INTO_CLN_CONTAINER" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - ${DEV_PLUGIN_PATH}:/cln-plugins
 EOF
