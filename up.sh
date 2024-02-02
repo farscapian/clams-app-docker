@@ -161,6 +161,8 @@ fi
 if ! docker stack list | grep -q lnplay; then
     # bring up the stack;
     ./lnplay/run.sh
+
+    sleep 10
 fi
 
 if [ "$RUN_SERVICES" = false ]; then
