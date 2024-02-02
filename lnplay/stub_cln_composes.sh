@@ -55,7 +55,7 @@ EOF
     fi
 
     # if we're NOT in development mode, we go ahead and bake
-    #  the existing prism.py into the docker image.
+    #  the existing bolt12-prism.py into the docker image.
     # otherwise we will mount the path later down the road so
     # plugins can be reloaded quickly without restarting the whole thing.
     PLUGIN_PATH=/plugins

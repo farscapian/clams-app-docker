@@ -14,7 +14,7 @@ for cmd in jq docker; do
 done
 
 # if we're running this locally, we will mount the plugin path into the containers
-# this allows us to develop the prism.py and update it locally. Then the user
+# this allows us to develop the bolt12-prism.py and update it locally. Then the user
 # can run ./reload_dev_plugins.sh and the plugins will be reregistered with every 
 # cln node that's been deployed
 DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"

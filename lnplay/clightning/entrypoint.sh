@@ -75,7 +75,7 @@ if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
-    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism.py"
+    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/bolt12-prism.py"
     chmod +x "$PRISM_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi

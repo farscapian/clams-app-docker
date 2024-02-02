@@ -11,7 +11,7 @@ if [ "$BACKEND_FQDN" != "127.0.0.1" ]; then
     exit 0
 fi
 
-DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins/bolt12-prism"
+#reload_plugin "$DEPLOY_PRISM_PLUGIN" "bolt12-prism.py" "bolt12-prism"
 
 
 ###################3 LNPLAYLIVE
