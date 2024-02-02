@@ -11,7 +11,44 @@ if [ "$BACKEND_FQDN" != "127.0.0.1" ]; then
     exit 0
 fi
 
-#reload_plugin "$DEPLOY_PRISM_PLUGIN" "bolt12-prism.py" "bolt12-prism"
+DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
+
+function reload_plugin {
+
+    if [ "$1" = true ]; then
+        for ((CLN_ID=0; CLN_ID<"$CLN_COUNT"; CLN_ID++)); do
+
+            SCRIPTS="$2"
+
+            # iterate over py scripts.
+            for PLUGIN_FILENAME in $SCRIPTS; do
+                chmod +x "$DEV_PLUGIN_PATH/$3/$PLUGIN_FILENAME"
+                FILE_NAME=$(basename "$DEV_PLUGIN_PATH/$3/$PLUGIN_FILENAME")
+
+                PLUGIN_LOADED=false
+                PLUGIN_LIST_OUTPUT=$(./lightning-cli.sh --id="$CLN_ID" plugin list)
+                if echo "$PLUGIN_LIST_OUTPUT" | grep -q "$FILE_NAME"; then
+                    PLUGIN_LOADED=true
+                fi
+
+                if [ "$PLUGIN_LOADED" = true ]; then
+                    ./lightning-cli.sh --id="$CLN_ID" plugin stop "/cln-plugins/$3/$FILE_NAME" > /dev/null
+                fi
+
+                ./lightning-cli.sh --id="$CLN_ID" plugin start "/cln-plugins/$3/$FILE_NAME" > /dev/null
+                echo "INFO: Plugin '$FILE_NAME' is available on 'cln-$CLN_ID'."
+            done
+        done
+    fi
+}
+
+
+reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "cln-reckless-wrapper.py" "cln-reckless-wrapper"
+#reload_plugin "$DEPLOY_PRISM_PLUGIN" "prism.py" "bolt12-prism"
+#reload_plugin "$DEPLOY_LNPLAYLIVE_PLUGIN" "prism.py" "bolt12-prism"
+
+
+
 
 
 ###################3 LNPLAYLIVE
@@ -30,31 +67,3 @@ fi
 
 # ./lightning-cli.sh --id=1 plugin start "$PLUGIN_PATH"
 
-
-############## END LNPLAYLIVE
-
-if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
-    for ((CLN_ID=0; CLN_ID<"$CLN_COUNT"; CLN_ID++)); do
-
-        SCRIPTS="prism.py"
-
-        # iterate over py scripts.
-        for PLUGIN_FILENAME in $SCRIPTS; do
-            chmod +x "$DEV_PLUGIN_PATH/$PLUGIN_FILENAME"
-            FILE_NAME=$(basename "$DEV_PLUGIN_PATH/$PLUGIN_FILENAME")
-
-            PLUGIN_LOADED=false
-            PLUGIN_LIST_OUTPUT=$(./lightning-cli.sh --id="$CLN_ID" plugin list)
-            if echo "$PLUGIN_LIST_OUTPUT" | grep -q "$FILE_NAME"; then
-                PLUGIN_LOADED=true
-            fi
-
-            if [ "$PLUGIN_LOADED" = true ]; then
-                ./lightning-cli.sh --id="$CLN_ID" plugin stop "/cln-plugins/bolt12-prism/$FILE_NAME" > /dev/null
-            fi
-
-            ./lightning-cli.sh --id="$CLN_ID" plugin start "/cln-plugins/bolt12-prism/$FILE_NAME" > /dev/null
-            echo "INFO: Plugin '$FILE_NAME' is available on 'cln-$CLN_ID'."
-        done
-    done
-fi
