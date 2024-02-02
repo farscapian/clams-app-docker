@@ -80,6 +80,35 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi
 
+
+if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ]; then
+    RECKLESS_WRAPPER_PLUGIN_PATH="$PLUGIN_PATH/cln-reckless-wrapper/cln-reckless-wrapper.py"
+    chmod +x "$RECKLESS_WRAPPER_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$RECKLESS_WRAPPER_PLUGIN_PATH"
+
+
+    # let's also stub out the config file
+
+    RECKLESS_CONFIG_PATH="/root/.lightning/reckless"
+    mkdir -p "$RECKLESS_CONFIG_PATH"
+    mkdir -p /root/.lightning/regtest
+    cat <<EOF >> "/root/.lightning/regtest/config"
+include /root/.lightning/reckless/regtest-reckless.conf
+EOF
+
+    cat <<EOF >> "$RECKLESS_CONFIG_PATH/.sources"
+https://github.com/lightningd/plugins
+EOF
+
+    # and we'll also create this empty file.
+    cat <<EOF >> "$RECKLESS_CONFIG_PATH/regtest-reckless.conf"
+# This configuration file is managed by reckless to activate and disable
+# reckless-installed plugins
+
+EOF
+
+fi
+
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     LNPLAYLIVE_PLUGIN_PATH="$PLUGIN_PATH/lnplaylive/lnplay-live-api.py"
     chmod +x "$LNPLAYLIVE_PLUGIN_PATH"
