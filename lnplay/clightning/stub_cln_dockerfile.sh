@@ -82,7 +82,7 @@ EOF
 
     # add the lnplay live plugins/scripts
     # TODO this can be simplified probably; no need to specify every py sh
-    if [ "$BACKEND_FQDN" != "127.0.0.1" ]; then 
+    if [ -n "$DOCKER_HOST" ]; then 
         cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # provisioning plugin
 ADD ./cln-plugins/lnplaylive/invoice_paid.py /plugins/lnplaylive/invoice_paid.py
@@ -107,21 +107,34 @@ EOF
     fi
 fi
 
-if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
+if [ "$DEPLOY_PRISM_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # let's embed the plugins into the image.
+ADD ./cln-plugins/bolt12-prism/lib.py /plugins/bolt12-prism/lib.py
 ADD ./cln-plugins/bolt12-prism/bolt12-prism.py /plugins/bolt12-prism/bolt12-prism.py
-RUN chmod +x /plugins/bolt12-prism/bolt12-prism.py
+RUN chmod +x /plugins/bolt12-prism/bolt12-prism.py /plugins/bolt12-prism/lib.py
 EOF
+
 fi
 
-if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
+if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
+    cat >> "$CLN_DOCKERFILE_PATH" <<EOF
+# let's embed the plugins into the image.
+ADD ./cln-plugins/cln-reckless-wrapper/cln-reckless-wrapper.py /plugins/cln-reckless-wrapper/cln-reckless-wrapper.py
+RUN chmod +x /plugins/cln-reckless-wrapper/cln-reckless-wrapper.py
+EOF
+
+fi
+
+
+if [ "$DEPLOY_CLBOSS_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # copy the CLBOSS binary to the plugin path.
 ADD ./cln-plugins/clboss/clboss /plugins/clboss/clboss
 RUN chmod +x /plugins/clboss/clboss
 RUN apt install -y libev-dev
 EOF
+
 fi
 
 cat >> "$CLN_DOCKERFILE_PATH" <<EOF

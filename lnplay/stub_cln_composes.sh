@@ -58,11 +58,10 @@ EOF
     #  the existing bolt12-prism.py into the docker image.
     # otherwise we will mount the path later down the road so
     # plugins can be reloaded quickly without restarting the whole thing.
-    # PLUGIN_PATH=/plugins
-    # if [ "$BACKEND_FQDN" = "127.0.0.1" ]; then
-    #     PLUGIN_PATH="/cln-plugins"
-    # fi
-    PLUGIN_PATH="/cln-plugins"
+    PLUGIN_PATH=/plugins
+    if [ -z "$DOCKER_HOST" ]; then
+        PLUGIN_PATH="/cln-plugins"
+    fi
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     environment:
@@ -118,7 +117,7 @@ EOF
     fi
 
     DEV_PLUGIN_PATH="$(pwd)/clightning/cln-plugins"
-    if [ "$MOUNT_DEV_PLUGIN_PATH_INTO_CLN_CONTAINER" = true ]; then
+    if [ -z "$DOCKER_HOST" ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - ${DEV_PLUGIN_PATH}:/cln-plugins
 EOF
