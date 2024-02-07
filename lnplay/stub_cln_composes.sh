@@ -273,7 +273,7 @@ EOF
 EOF
 
         if [ ! -f "$LNPLAY_INCUS_HOSTMAPPINGS" ]; then
-            echo "ERROR: The '$LNPLAY_INCUS_HOSTMAPPINGS' file does not exist."
+            echo "ERROR: The LNPLAY_INCUS_HOSTMAPPINGS file does not exist."
             exit 1
         else
             cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF

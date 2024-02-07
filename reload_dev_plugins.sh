@@ -53,3 +53,7 @@ fi
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN"  = true ]; then
     reload_plugin "$DEPLOY_LNPLAYLIVE_PLUGIN" "lnplay-live-api.py" "lnplaylive"
 fi
+
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN"  = true ]; then
+    reload_plugin "$DEPLOY_LNPLAYLIVE_PLUGIN" "invoice_paid.py" "lnplaylive"
+fi
