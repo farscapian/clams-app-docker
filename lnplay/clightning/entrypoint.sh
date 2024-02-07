@@ -57,7 +57,7 @@ fi
 
 wait-for-it -t 600 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-onion-messages --experimental-dual-fund --experimental-splicing --allow-deprecated-apis=false"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-onion-messages --experimental-dual-fund --experimental-splicing --experimental-peer-storage --allow-deprecated-apis=false"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -135,7 +135,6 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
     fi
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${BACKEND_FQDN}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
     CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
 fi
 
@@ -158,8 +157,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
     CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
     CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
-    # --invoices-onchain-fallback
-    # TODO research invoices-onchain-fallback
 
     # fee settings here are cln defaults
     #CLN_COMMAND="$CLN_COMMAND --fee-base=1000"

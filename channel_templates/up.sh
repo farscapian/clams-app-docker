@@ -17,7 +17,7 @@ done
 sleep 2
 
 # recache node addrs and pubkeys if not specified otherwise
-echo "Caching node info..." >> /dev/null
+echo "Caching node info..."
 
 rm -f "$LNPLAY_SERVER_PATH/node_addrs.txt"
 rm -f "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
@@ -28,13 +28,13 @@ for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
     echo "$pubkey" >> "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 done
 
-echo "Node pubkeys cached" >> /dev/null
+echo "Node pubkeys cached"
 
 for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
     addr=$(../lightning-cli.sh --id=$NODE_ID newaddr | jq -r ".bech32")
     echo "$addr" >> "$LNPLAY_SERVER_PATH/node_addrs.txt"
 done
-echo "Node addresses cached" >> /dev/null
+echo "Node addresses cached"
 
 # if we're deploying prisms, then we also standard any offers on each node.
 if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
@@ -43,7 +43,7 @@ if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
         echo "$BOLT12_OFFER" >> "$LNPLAY_SERVER_PATH/any_offers.txt"
     done
 
-    echo "BOLT12 any offers cached" >> /dev/null
+    echo "BOLT12 any offers cached"
 fi
 
 
@@ -82,7 +82,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     # then we open up the canonical channel setup.
     if [ "$CHANNEL_SETUP" = prism ]; then
         # now call the script that opens the channels.
-        ./create_prism_channels.sh >> /dev/null
+        ./create_prism_channels.sh
     fi
 
 fi
