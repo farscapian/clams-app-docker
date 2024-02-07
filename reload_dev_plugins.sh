@@ -42,28 +42,6 @@ function reload_plugin {
     fi
 }
 
-
-reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "cln-reckless-wrapper.py" "cln-reckless-wrapper"
-#reload_plugin "$DEPLOY_PRISM_PLUGIN" "prism.py" "bolt12-prism"
-#reload_plugin "$DEPLOY_LNPLAYLIVE_PLUGIN" "prism.py" "bolt12-prism"
-
-
-
-
-
-###################3 LNPLAYLIVE
-
-# CLN_TARGET_ID=1
-# if [ "$BTC_CHAIN" = mainnet ]; then
-#     CLN_TARGET_ID=0
-# fi
-
-# # this only does lnplaylive
-# PLUGIN_PATH="/cln-plugins/lnplaylive/invoice_paid.py"
-# PLUGIN_IS_ACTIVE=$(./lightning-cli.sh --id="$CLN_TARGET_ID" plugin list | jq "[.plugins[] | select(.name == \"$PLUGIN_PATH\" and .active == true)] | length")
-# if [ "$PLUGIN_IS_ACTIVE" -eq 1 ]; then
-#     ./lightning-cli.sh --id="$CLN_TARGET_ID" plugin stop "$PLUGIN_PATH" >> /dev/null
-# fi
-
-# ./lightning-cli.sh --id=1 plugin start "$PLUGIN_PATH"
-
+if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN"  = true ]; then
+    reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "cln-reckless-wrapper.py" "cln-reckless-wrapper"
+fi
