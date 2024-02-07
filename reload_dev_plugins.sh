@@ -45,3 +45,11 @@ function reload_plugin {
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN"  = true ]; then
     reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "cln-reckless-wrapper.py" "cln-reckless-wrapper"
 fi
+
+if [ "$DEPLOY_PRISM_PLUGIN"  = true ]; then
+    reload_plugin "$DEPLOY_PRISM_PLUGIN" "bolt12-prism.py" "bolt12-prism"
+fi
+
+if [ "$DEPLOY_LNPLAYLIVE_PLUGIN"  = true ]; then
+    reload_plugin "$DEPLOY_LNPLAYLIVE_PLUGIN" "lnplay-live-api.py" "lnplaylive"
+fi
