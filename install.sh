@@ -6,6 +6,7 @@ if [ "$UID" != 0 ]; then
     echo "ERROR: this script MUST be run as root."
     exit 1
 fi
+# update
 
 apt update
 
