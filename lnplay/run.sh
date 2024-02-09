@@ -130,10 +130,10 @@ if [ "$RUN_SERVICES" = true ]; then
     # so that clams remote will preemptively serve Clams files. 
 
     # TODO to make Clams Remote faster, we should cache responses at the nginx.
-    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay >> /dev/null
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay
 
     if ! docker network list | grep -q lnplay-p2pnet; then
-        docker network create lnplay-p2pnet -d overlay >> /dev/null
+        docker network create lnplay-p2pnet -d overlay
         sleep 1
     fi
 

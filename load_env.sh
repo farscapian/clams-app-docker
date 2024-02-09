@@ -20,7 +20,7 @@ if [ -z "${LNPLAY_CONF_PATH:-}" ]; then
 fi
 
 
-if [ -n "$LNPLAY_ENV_FILE_PATH" ] && [ -n "${LNPLAY_CONF_PATH:-}" ]; then
+if [ -z "$LNPLAY_ENV_FILE_PATH" ] && [ -n "${LNPLAY_CONF_PATH:-}" ]; then
     ACTIVE_ENV_PATH="$LNPLAY_CONF_PATH"
 else
     ACTIVE_ENV_PATH="$(pwd)/environments/""$(< "$LNPLAY_ACTIVE_ENV_FILE" head -n1 | awk '{print $1;}')"

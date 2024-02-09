@@ -106,7 +106,7 @@ EOF
 
     if [ "$BACKEND_FQDN" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
         cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - ${HOME}/sovereign-stack:/sovereign-stack:ro
+      - ${HOME}/sovereign-stack:/sovereign-stack:rw
 EOF
     fi
 
@@ -287,6 +287,6 @@ EOF
 
 
 
-    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}" >> /dev/null
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}"
 
 done

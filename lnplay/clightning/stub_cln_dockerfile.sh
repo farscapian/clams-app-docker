@@ -50,9 +50,7 @@ fi
 cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # install basic software.
 RUN apt update
-RUN apt install -y wait-for-it sshfs wget dnsutils 
-#RUN apt install -y systemctl 
-#RUN apt install -y systemd
+RUN apt install -y wait-for-it sshfs wget dnsutils
 EOF
 
 # if we're deploying lnplaylive, install the dependencies.

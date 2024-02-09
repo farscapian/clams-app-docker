@@ -2,7 +2,7 @@
 
 set -eu
 
-if [ "$BACKEND_FQDN" != "127.0.0.1" ]; then
+if [ -n "$DOCKER_HOST" ]; then
     read -r -p "WARNING: You are targeting a remote LNPlay instance at '$BACKEND_FQDN'. Are you sure you want to continue? (yes/no): " ANSWSER
 
     # Convert the answer to lowercase

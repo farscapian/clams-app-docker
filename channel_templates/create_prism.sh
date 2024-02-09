@@ -42,15 +42,15 @@ OFFER_ID_B=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_b
 ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" bind_to="$OFFER_ID_A"
 ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism3" bind_to="$OFFER_ID_A"
 
-sleep 1
+sleep 5
 
 # 10k sats
 AMOUNT_TO_PAY_MSAT="10000000"
-../lightning-cli.sh --id=1 prism-pay -k prism_id="prism1" amount_msat="$AMOUNT_TO_PAY_MSAT"
+../lightning-cli.sh --id=1 prism-executepayout -k prism_id="prism1" amount_msat="$AMOUNT_TO_PAY_MSAT"
 sleep 1
-../lightning-cli.sh --id=1 prism-pay -k prism_id="prism2" amount_msat="$AMOUNT_TO_PAY_MSAT"
+../lightning-cli.sh --id=1 prism-executepayout -k prism_id="prism2" amount_msat="$AMOUNT_TO_PAY_MSAT"
 sleep 1
-../lightning-cli.sh --id=1 prism-pay -k prism_id="prism3" amount_msat="$AMOUNT_TO_PAY_MSAT"
+../lightning-cli.sh --id=1 prism-executepayout -k prism_id="prism3" amount_msat="$AMOUNT_TO_PAY_MSAT"
 
 
 # now let's create a bolt11 invoice and bind prism2 to it.
