@@ -14,7 +14,11 @@ for i in "$@"; do
     esac
 done
 
-sleep 2
+wait-for-it -t 30 "$BACKEND_FQDN":80
+wait-for-it -t 30 "$BACKEND_FQDN":6001
+wait-for-it -t 30 "$BACKEND_FQDN":9001
+
+sleep 10
 
 # recache node addrs and pubkeys if not specified otherwise
 echo "Caching node info..."
