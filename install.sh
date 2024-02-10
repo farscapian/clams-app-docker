@@ -11,7 +11,7 @@ fi
 apt update
 
 # needed by scripts
-apt install -y jq dnsutils gridsite-clients qrencode
+apt install -y jq dnsutils gridsite-clients qrencode wait-for-it
 
 
 # the rest is needed for docker to work
