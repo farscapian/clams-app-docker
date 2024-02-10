@@ -102,7 +102,6 @@ The following table shows the most common configuration settings.
 |`ENABLE_CLAMS_V2_CONNECTION_STRINGS`|`true`|If true, will emit Clams v2 Connection String format with "LARP mode".|
 |`DO_NOT_DEPLOY`|`false`|Set to true to use as a safeguard against inadvertant state changes to an environment.|
 |`CONNECT_NODES`|`true`|By default, all regtest nodes are connected to each other to bootstrap the p2p network.|
-|`RENEW_CERTS`|`true`|Certificate renewal will be attempted.|
 |`DEPLOY_CLAMS_REMOTE`|`true`|By default, Clams gets deployed to port 80/443.|
 
 There are [other options](./defaults.env) in there that might be worth overriding, but the above list should cover most use cases.

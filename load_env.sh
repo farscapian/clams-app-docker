@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 DOCKER_HOST=
