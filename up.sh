@@ -24,12 +24,17 @@ DEV_PLUGIN_PATH="$(pwd)/lnplay/clightning/cln-plugins"
 USER_SAYS_YES=false
 RUN_SERVICES=true
 LNPLAY_CONF_PATH=
+RENEW_CERTS=true
 
 # grab any modifications from the command line.
 for i in "$@"; do
     case $i in
         --no-services)
             RUN_SERVICES=false
+            shift
+        ;;
+        --no-cert-renew)
+            RENEW_CERTS=false
             shift
         ;;
         --lnplay-conf-path=*)
@@ -127,7 +132,7 @@ export ENABLE_BITCOIND_DEBUGGING_OUTPUT="$ENABLE_BITCOIND_DEBUGGING_OUTPUT"
 export BASIC_HTTP_AUTHENTICATION="$BASIC_HTTP_AUTHENTICATION"
 export CONNECT_NODES="$CONNECT_NODES"
 export RUN_SERVICES="$RUN_SERVICES"
-export BUILD_IMAGES="$BUILD_IMAGES"
+
 
 LNPLAYLIVE_IMAGE_NAME="lnplay/lnplaylive:$LNPLAY_STACK_VERSION"
 export LNPLAYLIVE_IMAGE_NAME="$LNPLAYLIVE_IMAGE_NAME"
