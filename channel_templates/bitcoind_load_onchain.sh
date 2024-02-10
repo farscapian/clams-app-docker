@@ -3,7 +3,7 @@
 # the purpose of this script is to ensure the bitcoind
 # node has plenty of on-chain funds upon which to fund the CLN nodes.
 
-set -eu
+set -exu
 cd "$(dirname "$0")"
 
 WALLET_INFO=$(../bitcoin-cli.sh getwalletinfo)

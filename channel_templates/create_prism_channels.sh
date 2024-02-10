@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -exu
 
 # the objective of this script is to create channels in the prism format.
 # Alice -> Bob, then Bob creates a channels to all subsequent nodes.
