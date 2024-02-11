@@ -3,8 +3,6 @@
 set -exu
 cd "$(dirname "$0")"
 
-docker login -u farscapian -p "2OIS5bJ2O6NHbjmuhG"
-
 RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_PYTHON_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
 RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 BITCOIND_RPC_THREADS=$(( CLN_COUNT*4 ))
