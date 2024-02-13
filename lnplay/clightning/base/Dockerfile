@@ -2,11 +2,19 @@ ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 RUN apt update
-RUN apt install curl wait-for-it -y
+RUN apt install curl wait-for-it git -y
 
 # install lightning-cli bash completion
 RUN curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash_completion \
   && mv bash_completion /usr/share/bash-completion/
+
+# these next lines are JUST for if you're using the reckless plugin
+# DEPLOY_RECKLESS_WRAPPER_PLUGIN=true
+COPY updated-reckless.py /usr/local/bin/reckless
+RUN chmod +x /usr/local/bin/reckless
+RUN apt install -y python3-venv
+RUN mkdir -p /reckless-plugins/plugins
+RUN git clone --recurse-submodules https://github.com/lightningd/plugins /reckless-plugins/plugins
 
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY bashrc /home/clightning/.bashrc
