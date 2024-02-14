@@ -93,18 +93,7 @@ if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ]; then
     mkdir -p "$RECKLESS_CONFIG_PATH"
     mkdir -p /root/.lightning/regtest
     cat <<EOF >> "/root/.lightning/regtest/config"
-include /root/.lightning/reckless/regtest-reckless.conf
-EOF
-
-    cat <<EOF >> "$RECKLESS_CONFIG_PATH/.sources"
-https://github.com/lightningd/plugins
-EOF
-
-    # and we'll also create this empty file.
-    cat <<EOF >> "$RECKLESS_CONFIG_PATH/regtest-reckless.conf"
-# This configuration file is managed by reckless to activate and disable
-# reckless-installed plugins
-
+include /reckless-plugins/regtest-reckless.conf
 EOF
 
 fi
