@@ -86,7 +86,7 @@ STACKS=$(docker stack ls --format "{{.Name}}")
 for (( CLN_ID=CLN_COUNT; CLN_ID>=0; CLN_ID-- )); do
     STACK_NAME="lnplay-cln-${CLN_ID}"
     if echo "$STACKS" | grep -q "$STACK_NAME"; then
-        docker stack rm "$STACK_NAME" > /dev/null
+        docker stack rm "$STACK_NAME"
     fi
 done
 

@@ -27,9 +27,9 @@ BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:26.0"
 BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
-
-docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
-
+if ! docker image inspect "$BITCOIND_BASE_IMAGE_NAME" &> /dev/null; then
+    docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
+fi
 
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
@@ -54,7 +54,6 @@ LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v23.11.2-amd64"
 REBUILD_CLN_IMAGE=true
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
-    REBUILD_CLN_IMAGE=true
 fi
 
 # build the base image for cln
@@ -85,11 +84,14 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
     ./clightning/stub_cln_dockerfile.sh
 
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
+#fi
+
+CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
+if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
+    docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
 fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
-    docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
     docker build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
     export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
 fi
