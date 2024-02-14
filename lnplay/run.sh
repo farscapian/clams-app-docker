@@ -84,7 +84,7 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
     ./clightning/stub_cln_dockerfile.sh
 
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
-#fi
+fi
 
 CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
 if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
