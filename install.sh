@@ -11,12 +11,10 @@ fi
 apt update
 
 # needed by scripts
-apt install -y jq dnsutils gridsite-clients qrencode wait-for-it
-
+apt install -y jq dnsutils gridsite-clients qrencode wait-for-it imagemagick img2pdf
 
 # the rest is needed for docker to work
 apt install -y ca-certificates curl gnupg bc
-
 
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg

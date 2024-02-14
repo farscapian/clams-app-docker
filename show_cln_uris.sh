@@ -29,23 +29,24 @@ for i in "$@"; do
     esac
 done
 
-. ./defaults.env
-. ./load_env.sh
-
-export DOCKER_HOST="$DOCKER_HOST"
-QRCODE_OUTPUT_PATH="$LNPLAY_SERVER_PATH/qrcodes"
 
 if [ "$PRODUCE_QR_CODE" = true ]; then
     if ! command -v qrencode >/dev/null 2>&1; then
         echo "This script requires qrencode to be installed.. Hint: apt install qrencode"
         exit 1
     fi
-
-    mkdir -p "$QRCODE_OUTPUT_PATH"
 fi
 
+. ./defaults.env
+. ./load_env.sh
+
+export DOCKER_HOST="$DOCKER_HOST"
+QRCODE_OUTPUT_PATH="$LNPLAY_SERVER_PATH/connection_strings/qrcodes"
+mkdir -p "$QRCODE_OUTPUT_PATH"
+
+
 if [ -z "$OUTPUT_FILE" ]; then
-    OUTPUT_FILE="$LNPLAY_SERVER_PATH/${BACKEND_FQDN}.csv"""
+    OUTPUT_FILE="$LNPLAY_SERVER_PATH/connection_strings/${BACKEND_FQDN}.csv"""
 fi
 
 mapfile -t names < "$NAMES_FILE_PATH"
@@ -122,3 +123,7 @@ for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
         sleep 1
     fi
 done
+
+if [ "$PRODUCE_QR_CODE" = true ]; then
+    ./qr_to_pdf.sh
+fi
