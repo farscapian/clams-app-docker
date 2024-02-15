@@ -17,3 +17,6 @@
 [submodule "lnplay/clightning/cln-plugins/cln-reckless-wrapper"]
 	path = lnplay/clightning/cln-plugins/cln-reckless-wrapper
 	url = https://github.com/farscapian/cln-reckless-wrapper.git
+[submodule "lnplay/clightning/cln-plugins/lnplaylive"]
+	path = lnplay/clightning/cln-plugins/lnplaylive
+	url = https://github.com/farscapian/lnplaylive-cln-plugin
