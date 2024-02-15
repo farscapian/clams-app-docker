@@ -14,6 +14,7 @@ COPY updated-reckless.py /usr/local/bin/reckless
 RUN chmod +x /usr/local/bin/reckless
 RUN apt install -y python3-venv
 RUN mkdir -p /reckless-plugins
+RUN pip install Flask
 #RUN git clone --recurse-submodules https://github.com/lightningd/plugins /reckless-plugins
 #RUN git clone --recurse-submodules https://github.com/jrman28/cln-htmx-getinfo /reckless-plugins/cln-htmx-getinfo
 COPY ./.sources /reckless-plugins/.sources
