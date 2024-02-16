@@ -57,10 +57,10 @@ if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
 fi
 
 # build the base image for cln
-if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
+#if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
-fi
+#fi
 
 OLD_DOCKER_HOST="$DOCKER_HOST"
 DOCKER_HOST=
@@ -73,7 +73,7 @@ fi
 DOCKER_HOST="$OLD_DOCKER_HOST"
 
 # build the base image for cln
-if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
+#if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
     # build the cln image with our plugins
     # first we stub out the dockerfile.
 
@@ -84,7 +84,7 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE
     ./clightning/stub_cln_dockerfile.sh
 
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
-fi
+#fi
 
 CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
 if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
