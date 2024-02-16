@@ -126,4 +126,8 @@ done
 
 if [ "$PRODUCE_QR_CODE" = true ]; then
     ./qr_to_pdf.sh
+
+    # now archive this up.
+    OUTPUT_FILE="$HOME/lnplay_output_${BACKEND_FQDN}.tar.gz"
+    tar -cvf "$OUTPUT_FILE" "$LNPLAY_SERVER_PATH"
 fi
