@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+
 # updates from alex
 # https://raw.githubusercontent.com/endothermicdev/lightning/reckless-github-api-limits/tools/reckless
-
 
 import sys
 import argparse
@@ -21,6 +21,7 @@ import types
 from typing import Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
+from urllib.error import HTTPError
 import venv
 
 
@@ -32,7 +33,6 @@ logging.basicConfig(
 
 
 repos = ['https://github.com/lightningd/plugins']
-GH_API_CALLS = 0
 
 
 def py_entry_guesses(name) -> list:
@@ -149,7 +149,8 @@ class InstInfo:
         target = SourceDir(self.source_loc, srctype=self.srctype)
         # Set recursion for how many directories deep we should search
         depth = 0
-        if self.srctype in [Source.DIRECTORY, Source.LOCAL_REPO]:
+        if self.srctype in [Source.DIRECTORY, Source.LOCAL_REPO,
+                            Source.GIT_LOCAL_CLONE]:
             depth = 5
         elif self.srctype == Source.GITHUB_REPO:
             depth = 1
@@ -157,7 +158,8 @@ class InstInfo:
         def search_dir(self, sub: SourceDir, subdir: bool,
                        recursion: int) -> Union[SourceDir, None]:
             assert isinstance(recursion, int)
-            # carveout for archived plugins in lightningd/plugins
+            # carveout for archived plugins in lightningd/plugins. Other repos
+            # are only searched by API at the top level.
             if recursion == 0 and 'archive' in sub.name.lower():
                 pass
             # If unable to search deeper, resort to matching directory name
@@ -191,16 +193,42 @@ class InstInfo:
                         found_entry = None
             for file in sub.contents:
                 if isinstance(file, SourceDir):
+                    assert file.relative
                     success = search_dir(self, file, True, recursion - 1)
                     if success:
                         return success
             return None
 
-        result = search_dir(self, target, False, depth)
+        try:
+            result = search_dir(self, target, False, depth)
+        # Using the rest API of github.com may result in a
+        # "Error 403: rate limit exceeded" or other access issues.
+        # Fall back to cloning and searching the local copy instead.
+        except HTTPError:
+            result = None
+            if self.srctype == Source.GITHUB_REPO:
+                # clone source to reckless dir
+                target = copy_remote_git_source(self)
+                if not target:
+                    logging.warning(f"could not clone github source {self}")
+                    return False
+                logging.debug(f"falling back to cloning remote repo {self}")
+                # Update to reflect use of a local clone
+                self.source_loc = target.location
+                self.srctype = target.srctype
+                result = search_dir(self, target, False, 5)
+
+                if not result:
+                    return False
+
         if result:
             if result != target:
                 if result.relative:
                     self.subdir = result.relative
+                else:
+                    # populate() should always assign a relative path
+                    # if not in the top-level source directory
+                    assert self.subdir == result.name
             return True
         return False
 
@@ -234,6 +262,8 @@ class Source(Enum):
     GITHUB_REPO = 3
     OTHER_URL = 4
     UNKNOWN = 5
+    # Cloned from remote source before searching (rather than github API)
+    GIT_LOCAL_CLONE = 6
 
     @classmethod
     def get_type(cls, source: str):
@@ -251,6 +281,16 @@ class Source(Enum):
         if 'http://' in source.lower() or 'https://' in source.lower():
             return cls(4)
         return cls(5)
+
+    @classmethod
+    def get_github_user_repo(cls, source: str) -> (str, str):
+        'extract a github username and repository name'
+        if 'github.com/' not in source.lower():
+            return None, None
+        trailing = Path(source.lower().partition('github.com/')[2]).parts
+        if len(trailing) < 2:
+            return None, None
+        return trailing[0], trailing[1]
 
 
 class SourceDir():
@@ -276,7 +316,7 @@ class SourceDir():
         # logging.debug(f"populating {self.srctype} {self.location}")
         if self.srctype == Source.DIRECTORY:
             self.contents = populate_local_dir(self.location)
-        elif self.srctype == Source.LOCAL_REPO:
+        elif self.srctype in [Source.LOCAL_REPO, Source.GIT_LOCAL_CLONE]:
             self.contents = populate_local_repo(self.location)
         elif self.srctype == Source.GITHUB_REPO:
             self.contents = populate_github_repo(self.location)
@@ -303,7 +343,7 @@ class SourceDir():
         return None
 
     def __repr__(self):
-        return f"<SourceDir: {self.name} ({self.location})>"
+        return f"<SourceDir: {self.name}, {self.location}, {self.relative}>"
 
     def __eq__(self, compared):
         if isinstance(compared, str):
@@ -367,7 +407,17 @@ def populate_local_repo(path: str) -> list:
             if child:
                 parentdir = child
             else:
-                child = SourceDir(p, srctype=Source.LOCAL_REPO)
+                if p == revpath[-1]:
+                    relative_path = None
+                elif parentdir.relative:
+                    relative_path = str(Path(parentdir.relative) /
+                                        parentdir.name)
+                else:
+                    relative_path = parentdir.name
+                child = SourceDir(p, srctype=Source.LOCAL_REPO,
+                                  relative=relative_path)
+                # ls-tree lists every file in the repo with full path.
+                # No need to populate each directory individually.
                 child.prepopulated = True
                 parentdir.contents.append(child)
                 parentdir = child
@@ -388,9 +438,7 @@ def populate_local_repo(path: str) -> list:
 
 
 def source_element_from_repo_api(member: dict):
-    # FIXME: remove this assert
-    assert isinstance(member, dict)
-    # api accessed via /contents
+    # api accessed via <repo>/contents/
     if 'type' in member and 'name' in member and 'git_url' in member:
         if member['type'] == 'dir':
             return SourceDir(member['git_url'], srctype=Source.GITHUB_REPO,
@@ -401,12 +449,11 @@ def source_element_from_repo_api(member: dict):
                 return SourceDir(None, srctype=Source.GITHUB_REPO,
                                  name=member['name'])
             return SourceFile(member['name'])
-        # FIXME: Nope, this is by the other API
         elif member['type'] == 'commit':
             # No path is given by the api here
             return SourceDir(None, srctype=Source.GITHUB_REPO,
                              name=member['name'])
-    # git_url with /tree presents results a little differently
+    # git_url with <repo>/tree/ presents results a little differently
     elif 'type' in member and 'path' in member and 'url' in member:
         if member['type'] not in ['tree', 'blob']:
             logging.debug(f'  skipping {member["path"]} type={member["type"]}')
@@ -419,10 +466,19 @@ def source_element_from_repo_api(member: dict):
                 return SourceDir(member['git_url'], srctype=Source.GITHUB_REPO,
                                  name=member['name'])
             return SourceFile(member['path'])
+        elif member['type'] == 'commit':
+            # No path is given by the api here
+            return SourceDir(None, srctype=Source.GITHUB_REPO,
+                             name=member['name'])
     return None
 
 
 def populate_github_repo(url: str) -> list:
+    """populate one level of a github repository via REST API"""
+    # Forces search to clone remote repos (for blackbox testing)
+    if GITHUB_API_FALLBACK:
+        with tempfile.NamedTemporaryFile() as tmp:
+            raise HTTPError(url, 403, 'simulated ratelimit', {}, tmp)
     # FIXME: This probably contains leftover cruft.
     repo = url.split('/')
     while '' in repo:
@@ -452,11 +508,6 @@ def populate_github_repo(url: str) -> list:
         logging.debug(f'fetching from gh API: {git_url}')
         git_url = (API_GITHUB_COM + git_url.split("api.github.com")[-1])
     # Ratelimiting occurs for non-authenticated GH API calls at 60 in 1 hour.
-    global GH_API_CALLS
-    GH_API_CALLS += 1
-    if GH_API_CALLS > 5:
-        logging.warning('excessive github API calls. exiting.')
-        sys.exit(1)
     r = urlopen(git_url, timeout=5)
     if r.status != 200:
         return False
@@ -469,6 +520,28 @@ def populate_github_repo(url: str) -> list:
         if source_element_from_repo_api(sub):
             contents.append(source_element_from_repo_api(sub))
     return contents
+
+
+def copy_remote_git_source(github_source: InstInfo):
+    """clone or fetch & checkout a local copy of a remote git repo"""
+    user, repo = Source.get_github_user_repo(github_source.source_loc)
+    if not user or not repo:
+        logging.warning('could not extract github user and repo '
+                        f'name for {github_source.source_loc}')
+        return None
+    local_path = RECKLESS_DIR / '.remote_sources' / user
+    create_dir(RECKLESS_DIR / '.remote_sources')
+    if not create_dir(local_path):
+        logging.warning(f'could not provision dir {local_path} to '
+                        f'clone remote source {github_source.source_loc}')
+        return None
+    local_path = local_path / repo
+    if local_path.exists():
+        # Fetch the latest
+        assert _git_update(github_source, local_path)
+    else:
+        _git_clone(github_source, local_path)
+    return SourceDir(local_path, srctype=Source.GIT_LOCAL_CLONE)
 
 
 class Config():
@@ -796,19 +869,60 @@ def _git_clone(src: InstInfo, dest: Union[PosixPath, str]) -> bool:
     if src.srctype == Source.GITHUB_REPO:
         assert 'github.com' in src.source_loc
         source = f"{GITHUB_COM}" + src.source_loc.split("github.com")[-1]
-    elif src.srctype in [Source.LOCAL_REPO, Source.OTHER_URL]:
+    elif src.srctype in [Source.LOCAL_REPO, Source.OTHER_URL,
+                         Source.GIT_LOCAL_CLONE]:
         source = src.source_loc
     else:
         return False
-    git = run(['git', 'clone', source, str(dest)], stdout=PIPE, stderr=PIPE,
-              text=True, check=False, timeout=60)
+    git = run(['git', 'clone', '--recurse-submodules', source, str(dest)],
+              stdout=PIPE, stderr=PIPE, text=True, check=False, timeout=60)
     if git.returncode != 0:
-        for line in git.stderr:
+        for line in git.stderr.splitlines():
             logging.debug(line)
         if Path(dest).exists():
             remove_dir(str(dest))
         print('Error: Failed to clone repo')
         return False
+    return True
+
+
+def _git_update(github_source: InstInfo, local_copy: PosixPath):
+    # Ensure this is the correct source
+    git = run(['git', 'remote', 'set-url', 'origin', github_source.source_loc],
+              cwd=str(local_copy), stdout=PIPE, stderr=PIPE, text=True,
+              check=False, timeout=60)
+    assert git.returncode == 0
+    if git.returncode != 0:
+        return False
+
+    # Fetch the latest from the remote
+    git = run(['git', 'fetch', 'origin', '--recurse-submodules=on-demand'],
+              cwd=str(local_copy), stdout=PIPE, stderr=PIPE, text=True,
+              check=False, timeout=60)
+    assert git.returncode == 0
+    if git.returncode != 0:
+        return False
+
+    # Find default branch
+    git = run(['git', 'symbolic-ref', 'refs/remotes/origin/HEAD', '--short'],
+              cwd=str(local_copy), stdout=PIPE, stderr=PIPE, text=True,
+              check=False, timeout=60)
+    assert git.returncode == 0
+    if git.returncode != 0:
+        return False
+    default_branch = git.stdout.splitlines()[0]
+    if default_branch != 'origin/master':
+        logging.debug(f'UNUSUAL: fetched default branch {default_branch} for '
+                      f'{github_source.source_loc}')
+
+    # Checkout default branch
+    git = run(['git', 'checkout', default_branch],
+              cwd=str(local_copy), stdout=PIPE, stderr=PIPE, text=True,
+              check=False, timeout=60)
+    assert git.returncode == 0
+    if git.returncode != 0:
+        return False
+
     return True
 
 
@@ -843,7 +957,7 @@ def _checkout_commit(orig_src: InstInfo,
                      cloned_path: PosixPath):
     # Check out and verify commit/tag if source was a repository
     if orig_src.srctype in [Source.LOCAL_REPO, Source.GITHUB_REPO,
-                            Source.OTHER_URL]:
+                            Source.OTHER_URL, Source.GIT_LOCAL_CLONE]:
         if orig_src.commit:
             logging.debug(f"Checking out {orig_src.commit}")
             checkout = Popen(['git', 'checkout', orig_src.commit],
@@ -905,7 +1019,7 @@ def _install_plugin(src: InstInfo) -> Union[InstInfo, None]:
         create_dir(clone_path)
         shutil.copytree(src.source_loc, plugin_path)
     elif src.srctype in [Source.LOCAL_REPO, Source.GITHUB_REPO,
-                         Source.OTHER_URL]:
+                         Source.OTHER_URL, Source.GIT_LOCAL_CLONE]:
         # clone git repository to /tmp/reckless-...
         if not _git_clone(src, plugin_path):
             return None
@@ -1058,7 +1172,7 @@ def uninstall(plugin_name: str):
 
 def search(plugin_name: str) -> Union[InstInfo, None]:
     """searches plugin index for plugin"""
-    ordered_sources = RECKLESS_SOURCES
+    ordered_sources = RECKLESS_SOURCES.copy()
 
     for src in RECKLESS_SOURCES:
         # Search repos named after the plugin before collections
@@ -1229,7 +1343,7 @@ def load_config(reckless_dir: Union[str, None] = None,
 
 
 def get_sources_file() -> str:
-    return str(Path(RECKLESS_DIR) / '.sources')
+    return str(RECKLESS_DIR / '.sources')
 
 
 def sources_from_file() -> list:
@@ -1378,11 +1492,11 @@ if __name__ == '__main__':
     if LIGHTNING_DIR != Path.home().joinpath('.lightning'):
         LIGHTNING_CLI_CALL.append(f'--lightning-dir={LIGHTNING_DIR}')
     if args.reckless_dir:
-        RECKLESS_DIR = args.reckless_dir
+        RECKLESS_DIR = Path(args.reckless_dir)
     else:
         RECKLESS_DIR = Path(LIGHTNING_DIR) / 'reckless'
     LIGHTNING_CONFIG = args.conf
-    RECKLESS_CONFIG = load_config(reckless_dir=RECKLESS_DIR,
+    RECKLESS_CONFIG = load_config(reckless_dir=str(RECKLESS_DIR),
                                   network=NETWORK)
     RECKLESS_SOURCES = load_sources()
     API_GITHUB_COM = 'https://api.github.com'
@@ -1394,6 +1508,10 @@ if __name__ == '__main__':
         GITHUB_COM = os.environ['REDIR_GITHUB']
     logging.root.setLevel(args.loglevel)
 
+    GITHUB_API_FALLBACK = False
+    if 'GITHUB_API_FALLBACK' in os.environ:
+        GITHUB_API_FALLBACK = os.environ['GITHUB_API_FALLBACK']
+
     if 'targets' in args:
         # FIXME: Catch missing argument
         if args.func.__name__ == 'help_alias':
@@ -1403,5 +1521,3 @@ if __name__ == '__main__':
             args.func(target)
     else:
         args.func()
-    if GH_API_CALLS > 0:
-        logging.debug(f'GitHub API call total: {GH_API_CALLS}')
