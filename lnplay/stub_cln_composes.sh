@@ -182,7 +182,7 @@ EOF
       resources:
         limits:
           cpus: '2'
-          memory: 240M
+          memory: 220M
 
 EOF
 fi
