@@ -50,7 +50,7 @@ if [ "$ENABLE_TOR" = true ]; then
     fi
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v23.11.2-amd64"
+LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v24.02-amd64"
 REBUILD_CLN_IMAGE=true
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
