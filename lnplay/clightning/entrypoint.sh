@@ -108,7 +108,7 @@ if [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
     CLN_COMMAND="$CLN_COMMAND --plugin=$LNPLAYLIVE_INVOICE_PAID_PLUGIN_PATH"
 fi
 
-if [ -n "$CLN_BITCOIND_POLL_SETTING" ]; then
+if [ "$BTC_CHAIN" = regtest ] && [ -n "$CLN_BITCOIND_POLL_SETTING" ]; then
     if [ "$CLN_BITCOIND_POLL_SETTING" = 0 ]; then
         CLN_BITCOIND_POLL_SETTING=1
     fi
