@@ -40,7 +40,7 @@ fi
 checkOutputs 1
 
 # next we use fundmultichannel so Bob can create channels to the remaining nodes.
-SENDMANY_JSON="["
+MULTIFUND_CHANNEL_JSON="["
 
 # we increase the CLN count by one here so we can reserve at least one UTXO
 # for things like RBF and other things I'm sure.
@@ -50,12 +50,12 @@ SEND_AMT=$((100000000 / CLN_COUNT_PLUS_ONE))
 # fund each cln node starting at node 2 (Carol)
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_PUBKEY=${pubkeys[$CLN_ID]}
-    SENDMANY_JSON+="{\"id\": \"$NODE_PUBKEY@cln-${CLN_ID}:9735\",\"amount\": \"$SEND_AMT\""
-    SENDMANY_JSON="${SENDMANY_JSON}},"
+    MULTIFUND_CHANNEL_JSON+="{\"id\": \"$NODE_PUBKEY@cln-${CLN_ID}:9735\",\"amount\": \"$SEND_AMT\""
+    MULTIFUND_CHANNEL_JSON="${MULTIFUND_CHANNEL_JSON}},"
 done
 
 # close off the json
-SENDMANY_JSON="${SENDMANY_JSON::-1}]"
+MULTIFUND_CHANNEL_JSON="${MULTIFUND_CHANNEL_JSON::-1}]"
 
 # execute multifundchannel from bob.
-../lightning-cli.sh --id=1 multifundchannel "$SENDMANY_JSON" >> /dev/null
+../lightning-cli.sh --id=1 multifundchannel "$MULTIFUND_CHANNEL_JSON" >> /dev/null

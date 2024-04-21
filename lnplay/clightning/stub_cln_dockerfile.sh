@@ -18,7 +18,7 @@ ENV BACKEND_FQDN=
 ENV PLUGIN_PATH=
 ENV DEPLOY_CLBOSS_PLUGIN=false
 ENV DEPLOY_PRISM_PLUGIN=true
-ENV DEPLOY_RECKLESS_WRAPPER_PLUGIN=true
+ENV DEPLOY_RECKLESS_WRAPPER_PLUGIN=false
 ENV DEPLOY_LNPLAYLIVE_PLUGIN=false
 ENV CLN_BITCOIND_POLL_SETTING=1
 EOF
@@ -125,7 +125,7 @@ EOF
 fi
 
 
-if [ "$DEPLOY_CLBOSS_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
+if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # copy the CLBOSS binary to the plugin path.
 ADD ./cln-plugins/clboss/clboss /plugins/clboss/clboss

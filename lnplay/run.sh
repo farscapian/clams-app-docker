@@ -50,11 +50,17 @@ if [ "$ENABLE_TOR" = true ]; then
     fi
 fi
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v24.02-amd64"
-REBUILD_CLN_IMAGE=true
+export DOCKER_BUILDKIT=1
+#docker buildx install
+#docker buildx create --name lnplay --use
+
+LIGHTNINGD_DOCKER_IMAGE_NAME="lightningd:v24.02.1"
+
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
-    docker pull -q "$LIGHTNINGD_DOCKER_IMAGE_NAME" >> /dev/null 
+    docker buildx build --tag "$LIGHTNINGD_DOCKER_IMAGE_NAME" --platform=linux/amd64 --load ./lightning
 fi
+
+export DOCKER_BUILDKIT=0
 
 # build the base image for cln
 #if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then

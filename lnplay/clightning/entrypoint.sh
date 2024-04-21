@@ -57,7 +57,7 @@ fi
 
 wait-for-it -t 600 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-onion-messages --experimental-dual-fund --experimental-splicing --experimental-peer-storage --allow-deprecated-apis=false"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-dual-fund --experimental-splicing --experimental-peer-storage"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -71,7 +71,7 @@ fi
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_PLUGIN_PATH="$PLUGIN_PATH/clboss/clboss"
     chmod +x "$CLBOSS_PLUGIN_PATH"
-    CLN_COMMAND="$CLN_COMMAND --plugin=$CLBOSS_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$CLBOSS_PLUGIN_PATH --clboss-auto-close=true --clboss-zerobasefee=allow"
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
@@ -79,7 +79,6 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     chmod +x "$PRISM_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi
-
 
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ]; then
     RECKLESS_WRAPPER_PLUGIN_PATH="$PLUGIN_PATH/cln-reckless-wrapper/cln-reckless-wrapper.py"
@@ -124,7 +123,7 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
     fi
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${BACKEND_FQDN}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
+    #CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
 fi
 
 if [ "$BTC_CHAIN" = signet ]; then
