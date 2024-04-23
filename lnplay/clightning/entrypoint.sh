@@ -123,7 +123,7 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
     fi
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${BACKEND_FQDN}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    #CLN_COMMAND="$CLN_COMMAND --database-upgrade=true"
+    CLN_COMMAND="$CLN_COMMAND --disable-mpp"
 fi
 
 if [ "$BTC_CHAIN" = signet ]; then
