@@ -31,6 +31,8 @@ if ! docker image inspect "$BITCOIND_BASE_IMAGE_NAME" &> /dev/null; then
     docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
 fi
 
+export DOCKER_BUILDKIT=0
+
 if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
     docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="$BITCOIND_BASE_IMAGE_NAME" ./bitcoind/
@@ -54,7 +56,8 @@ export DOCKER_BUILDKIT=1
 #docker buildx install
 #docker buildx create --name lnplay --use
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="lightningd:v24.02.1"
+LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v24.02-amd64"
+docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker buildx build --tag "$LIGHTNINGD_DOCKER_IMAGE_NAME" --platform=linux/amd64 --load ./lightning
@@ -63,10 +66,10 @@ fi
 export DOCKER_BUILDKIT=0
 
 # build the base image for cln
-#if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
+if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
-#fi
+fi
 
 OLD_DOCKER_HOST="$DOCKER_HOST"
 DOCKER_HOST=
