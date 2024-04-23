@@ -56,7 +56,7 @@ export DOCKER_BUILDKIT=1
 #docker buildx install
 #docker buildx create --name lnplay --use
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="elementsproject/lightningd:v24.02-amd64"
+LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/cln:v24.02.2"
 docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &>/dev/null; then
