@@ -14,7 +14,12 @@ for i in "$@"; do
     esac
 done
 
-wait-for-it -t 30 "$BACKEND_FQDN":80
+
+# todo; technically this can be any front-end
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
+    wait-for-it -t 30 "$BACKEND_FQDN":80
+fi
+
 wait-for-it -t 30 "$BACKEND_FQDN":6001
 wait-for-it -t 30 "$BACKEND_FQDN":9001
 
