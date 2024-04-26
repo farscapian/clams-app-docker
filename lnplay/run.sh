@@ -80,7 +80,7 @@ fi
 DOCKER_HOST="$OLD_DOCKER_HOST"
 
 # build the base image for cln
-#if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null || [ "$REBUILD_CLN_IMAGE" = true ]; then
+if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     # first we stub out the dockerfile.
 
@@ -91,15 +91,15 @@ DOCKER_HOST="$OLD_DOCKER_HOST"
     ./clightning/stub_cln_dockerfile.sh
 
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
-#fi
+fi
 
 CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
-if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
+if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
 fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    docker build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ >> /dev/null
+    docker build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/
     export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
 fi
 
