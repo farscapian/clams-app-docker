@@ -36,11 +36,11 @@ PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 
 # now let's create offers
-OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_a" label="offer_a" | jq -r '.offer_id')
+OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="prism1_offer" label="prism1_offer" | jq -r '.offer_id')
 # OFFER_ID_B=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_b" label="offer_b" | jq -r '.offer_id')
 # OFFER_ID_C=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_c" label="offer_c" | jq -r '.offer_id')
 
-# now lets bind prism1 to offer_a. This is valid.
+# now lets bind prism1 to prism1_offer. This is valid.
 ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" bind_to="$OFFER_ID_A"
 
 # sleep 5

@@ -23,14 +23,14 @@ echo "$PRISM_JSON_STRING"
 
 
 # # now let's create offers
-# OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_a" label="prism1" | jq -r '.offer_id')
+# OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="prism1_offer" label="prism1" | jq -r '.offer_id')
 # OFFER_ID_B=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_b" label="offer2" | jq -r '.offer_id')
 # #OFFER_ID_C=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_c" label="offer3" | jq -r '.offer_id')
 
-# # now lets bind prism1 to offer_a. This is valid.
+# # now lets bind prism1 to prism1_offer. This is valid.
 # ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" bind_to="$OFFER_ID_A"
 
-# # now let's try to bind prism2 to offer_a. This is INVALID because there's already a binding
+# # now let's try to bind prism2 to prism1_offer. This is INVALID because there's already a binding
 # ## this should fail
 # ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" bind_to="$OFFER_ID_A"
 
