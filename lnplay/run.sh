@@ -56,7 +56,7 @@ export DOCKER_BUILDKIT=1
 #docker buildx install
 #docker buildx create --name lnplay --use
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/cln:v24.02.2"
+LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/pay-to-self-cln:v24.02.2"
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &> /dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 fi
@@ -64,10 +64,10 @@ fi
 export DOCKER_BUILDKIT=0
 
 # build the base image for cln
-if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
+#if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
-fi
+#fi
 
 OLD_DOCKER_HOST="$DOCKER_HOST"
 DOCKER_HOST=
@@ -80,7 +80,7 @@ fi
 DOCKER_HOST="$OLD_DOCKER_HOST"
 
 # build the base image for cln
-if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
+#if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
     # first we stub out the dockerfile.
 
@@ -91,7 +91,7 @@ if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
     ./clightning/stub_cln_dockerfile.sh
 
     docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
-fi
+#fi
 
 CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
 if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
