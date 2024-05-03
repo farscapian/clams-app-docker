@@ -95,22 +95,14 @@ if echo "$STACKS" | grep -q lnplay; then
     docker stack rm lnplay
 fi
 
-# wait until all containers are shut down.
-i=0
+# Interval in seconds between checks
+INTERVAL=1
 while true; do
-    CONTAINER_COUNT=$(docker ps -q | wc -l)
-    if [ "$CONTAINER_COUNT" -gt 0 ]; then
-        sleep 1
+    if ! docker ps --filter "status=running" --format "{{.Names}}" | grep -q "lnplay"; then
+        break
     else
-        if [ "$i" -gt 0 ]; then
-            sleep 3
-            break
-        else
-            break
-        fi
+        sleep "$INTERVAL"
     fi
-
-    i=$((i + 1))
 done
 
 if [ "$PRUNE" = true ]; then
