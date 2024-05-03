@@ -1,0 +1,45 @@
+
+# Core Lightning Liquidity Ads Config
+# CLN v23.02.2
+# Mar 23, 2023
+
+# set `./configure --enable-experimental-features` before compiling.
+
+# Enable the dual-funding channel open feature
+experimental-dual-fund
+
+# Advertise dual-fund channel matching
+# This provides exactly what the requester asks for.
+funder-policy=match
+funder-policy-mod=100
+
+# Set your fees for contributing to a dual-funding open request
+# These are paid to the node by remote peers opening a dual-fund channel
+
+# This is a 500 satoshi base fee for any dual open.
+lease-fee-base-sat=500sat
+# And also 0.02% of the funds requested from our node.
+lease-fee-basis=2
+
+# This tells the requestor that we will charge a maximum of 1sat base fee
+# for routing to them over this channel, and a max 2000ppm.
+channel-fee-max-base-msat=1sat
+channel-fee-max-proportional-thousandths=2
+
+# Let's not dump all our funds on a single channel
+# This would allow a 10MSat channel!
+funder-per-channel-max=5000000000
+funder-reserve-tank=400000000
+
+# Now we get a little advanced - here we introduce 3% noise to our funding
+# amount, but in order to ensure we provide at least as much as the
+# requesting node asked for, we also bump up our matching policy from 100%
+# to 105%.
+funder-policy-mod=105
+funder-fuzz-percent=3
+
+# Set the default channel fee to something reasonable
+# This preserves our option to set the fee to 2000ppm if needed, but has
+# a more sensible default channel fee.
+fee-per-satoshi=100
+
