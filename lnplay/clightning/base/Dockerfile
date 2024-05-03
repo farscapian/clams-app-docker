@@ -10,8 +10,7 @@ RUN curl -SLO https://raw.githubusercontent.com/scop/bash-completion/master/bash
 
 # these next lines are JUST for if you're using the reckless plugin
 # DEPLOY_RECKLESS_WRAPPER_PLUGIN=true
-COPY updated-reckless.py /usr/local/bin/reckless
-RUN chmod +x /usr/local/bin/reckless
+
 RUN apt install -y python3-venv
 RUN mkdir -p /reckless-plugins
 #RUN git clone --recurse-submodules https://github.com/lightningd/plugins /reckless-plugins
