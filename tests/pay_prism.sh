@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -eux
 cd "$(dirname "$0")"
 
 # now create a new BOLT12 any offer and grab the offer_id
