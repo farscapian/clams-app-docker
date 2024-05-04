@@ -56,7 +56,10 @@ export DOCKER_BUILDKIT=1
 #docker buildx install
 #docker buildx create --name lnplay --use
 
-LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/pay-to-self-cln:v24.02.2"
+
+
+#tuq5hg6cxpz7e/pay-to-self-cln:v24.02.2
+LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/cln:v24.02.2"
 if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &> /dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
 fi
