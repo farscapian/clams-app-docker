@@ -143,7 +143,7 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
     CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
     CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
-    CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
+    CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=500sat"
     CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=2"
     CLN_COMMAND="$CLN_COMMAND --channel-fee-max-base-msat=1sat"
     CLN_COMMAND="$CLN_COMMAND --channel-fee-max-proportional-thousandths=2"
@@ -154,9 +154,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=100000"
     CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
     CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=100"
-    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
-    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
-    CLN_COMMAND="$CLN_COMMAND --fee-base-sat=500sat"
 
     # TODO disable-ip-discovery
 
