@@ -71,7 +71,7 @@ fi
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_PLUGIN_PATH="$PLUGIN_PATH/clboss/clboss"
     chmod +x "$CLBOSS_PLUGIN_PATH"
-    CLN_COMMAND="$CLN_COMMAND --plugin=$CLBOSS_PLUGIN_PATH --clboss-auto-close=true --clboss-zerobasefee=allow"
+    CLN_COMMAND="$CLN_COMMAND --important-plugin=$CLBOSS_PLUGIN_PATH --clboss-auto-close=true --clboss-zerobasefee=allow"
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
