@@ -57,7 +57,7 @@ fi
 
 wait-for-it -t 600 "bitcoind:18443"
 
-CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers --experimental-dual-fund --experimental-splicing --experimental-peer-storage"
+CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers"
 
 
 if [ "$ENABLE_TOR" = true ]; then
@@ -123,7 +123,8 @@ if [ "$BTC_CHAIN" = mainnet ] || [ "$BTC_CHAIN" = signet ]; then
     fi
 
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${BACKEND_FQDN}:${CLN_PTP_PORT} --announce-addr-dns=true"
-    CLN_COMMAND="$CLN_COMMAND --disable-mpp"
+    # CLN_COMMAND="$CLN_COMMAND --disable-mpp"
+    CLN_COMMAND="$CLN_COMMAND --experimental-dual-fund --experimental-splicing --experimental-peer-storage"
 fi
 
 if [ "$BTC_CHAIN" = signet ]; then
