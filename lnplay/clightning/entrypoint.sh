@@ -138,20 +138,26 @@ if [ "$BTC_CHAIN" = regtest ]; then
     CLN_COMMAND="$CLN_COMMAND --announce-addr=${CLN_NAME}:9735 --announce-addr-dns=true"
     CLN_COMMAND="$CLN_COMMAND --developer"
     CLN_COMMAND="$CLN_COMMAND --dev-fast-gossip"
+    CLN_COMMAND="$CLN_COMMAND --experimental-dual-fund"
+    CLN_COMMAND="$CLN_COMMAND --experimental-splicing"
+    CLN_COMMAND="$CLN_COMMAND --experimental-peer-storage"
     CLN_COMMAND="$CLN_COMMAND --funder-policy=match"
     CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=100"
-    CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
-    CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=100000"
-    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
-    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
-    CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=50"
     CLN_COMMAND="$CLN_COMMAND --lease-fee-base-sat=2sat"
+    CLN_COMMAND="$CLN_COMMAND --lease-fee-basis=2"
+    CLN_COMMAND="$CLN_COMMAND --channel-fee-max-base-msat=1sat"
+    CLN_COMMAND="$CLN_COMMAND --channel-fee-max-proportional-thousandths=2"
+    CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=5000000000"
+    CLN_COMMAND="$CLN_COMMAND --funder-reserve-tank=400000000"
+    CLN_COMMAND="$CLN_COMMAND --funder-policy-mod=105"
+    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=3"
+    CLN_COMMAND="$CLN_COMMAND --funder-per-channel-max=100000"
+    CLN_COMMAND="$CLN_COMMAND --funder-min-their-funding=10000"
+    CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=100"
+    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
+    CLN_COMMAND="$CLN_COMMAND --funder-fuzz-percent=0"
+    CLN_COMMAND="$CLN_COMMAND --fee-base-sat=500sat"
 
-    # fee settings here are cln defaults
-    #CLN_COMMAND="$CLN_COMMAND --fee-base=1000"
-    #CLN_COMMAND="$CLN_COMMAND --fee-per-satoshi=10"
-    
-    # TODO min-capacity-sat=SATOSHI
     # TODO disable-ip-discovery
 
     # cln accepts only 1 block before the channel can be used.
