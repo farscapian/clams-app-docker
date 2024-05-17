@@ -21,7 +21,8 @@ for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
         DESTINATION="$NODE_ID_FOR_KEYSEND"
     fi
 
-    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1, \"payout_threshold\": \"0msat\"},"
+    PAYMENT_THRESHOLD_MSAT="0"
+    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\"},"
 done
 
 # close off the json
@@ -33,8 +34,8 @@ PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 
 # let's create 3 prisms
 ../lightning-cli.sh --id=1 prism-create -k prism_id="prism1" members="$PRISM_JSON_STRING" outlay_factor="0.8"
-#../lightning-cli.sh --id=1 prism-create -k prism_id="prism2" members="$PRISM_JSON_STRING" 
-#../lightning-cli.sh --id=1 prism-create -k prism_id="prism3" members="$PRISM_JSON_STRING"
+#../lightning-cli.sh --id=1 prism-create -k prism_id="prism2" members="$PRISM_JSON_STRING"
+#../lightning-cli.sh --id=1 prism-create -k prism_id="prism3" members="$PRISM_JSON_STRING" outlay_factor="1.1"
 
 
 # now let's create offers
