@@ -73,7 +73,7 @@ RUN chmod a+r /etc/apt/keyrings/docker.gpg
 # Add the repository to Apt sources:
 RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list
 RUN apt update
-RUN apt install -y docker-ce-cli cron procps bc gridsite-clients openssh-client rsync
+RUN apt install -y docker-ce-cli procps bc gridsite-clients openssh-client rsync
 
 EOF
 
@@ -139,5 +139,6 @@ cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 ENV SLEEP=0
+RUN pip3 install pyln-client==24.2.1 pyln-proto==24.2.1
 ENTRYPOINT [ "/entrypoint.sh" ]
 EOF

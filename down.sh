@@ -98,7 +98,7 @@ fi
 # Interval in seconds between checks
 INTERVAL=1
 while true; do
-    if ! docker ps --filter "status=running" --format "{{.Names}}" | grep -q "lnplay"; then
+    if ! docker ps --filter "status=running" --format "{{.Names}}" | grep -q "lnplay_"; then
         break
     else
         sleep "$INTERVAL"
