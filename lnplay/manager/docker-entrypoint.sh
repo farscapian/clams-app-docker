@@ -14,20 +14,22 @@ if [ -z "$BITCOIND_SERVICE_NAME" ]; then
     exit 1
 fi
 
-if [ -z "$BITCOIND_RPC_USERNAME" ]; then
-    echo "ERROR: You must specify BITCOIND_RPC_USERNAME."
-    exit 1
-fi
-
-if [ -z "$BITCOIND_RPC_PASSWORD" ]; then
-    echo "ERROR: You must specify BITCOIND_RPC_PASSWORD."
-    exit 1
-fi
-
 echo "BLOCK_TIME: $BLOCK_TIME"
 echo "INFO: waiting for bitcoind RPC service to become available."
 wait-for-it -t 300 "$BITCOIND_SERVICE_NAME":18443
 
+if [ ! -f "/bitcoind-cookie/.cookie" ]; then
+    echo "ERROR: Bitcoind cookie file does not exist."
+    sleep 5
+    exit 1
+fi
+
+COOKIE_FILE_CONTENT=$(cat /bitcoind-cookie/.cookie)
+BITCOIND_RPC_USERNAME=$(echo "$COOKIE_FILE_CONTENT" | cut -d':' -f1)
+BITCOIND_RPC_PASSWORD=$(echo "$COOKIE_FILE_CONTENT" | cut -d':' -f2)
+
+export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
+export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
 
 bcli() {
     bitcoin-cli -regtest -rpcconnect="$BITCOIND_SERVICE_NAME" -rpcport=18443 -rpcuser="$BITCOIND_RPC_USERNAME" -rpcpassword="$BITCOIND_RPC_PASSWORD" "$@"

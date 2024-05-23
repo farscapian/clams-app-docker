@@ -69,8 +69,6 @@ EOF
       - ENABLE_CLN_REST=${ENABLE_CLN_REST}
       - CLN_ALIAS=${CLN_ALIAS}
       - CLN_COLOR=${CLN_COLOR}
-      - BITCOIND_RPC_USERNAME=\${BITCOIND_RPC_USERNAME}
-      - BITCOIND_RPC_PASSWORD=\${BITCOIND_RPC_PASSWORD}
       - CLN_NAME=${CLN_NAME}
       - BTC_CHAIN=${BTC_CHAIN}
       - CLN_PTP_PORT=${CLN_PTP_PORT}
@@ -101,6 +99,7 @@ EOF
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     volumes:
       - cln-${CLN_ID}-${BTC_CHAIN}:/root/.lightning
+      - bitcoind-${BTC_CHAIN}-cookie:/bitcoind-cookie:ro
 EOF
 
     if [ "$BACKEND_FQDN" = "127.0.0.1" ] && [ "$DEPLOY_LNPLAYLIVE_PLUGIN" = true ]; then
@@ -246,6 +245,8 @@ EOF
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}-${BTC_CHAIN}:
   cln-${CLN_ID}-certs-${BTC_CHAIN}:
+  bitcoind-${BTC_CHAIN}-cookie:
+    external: true
 EOF
 
     if [ "$ENABLE_TOR" = true ]; then

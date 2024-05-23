@@ -25,16 +25,6 @@ if [ -z "$CLN_COLOR" ]; then
     exit 1
 fi
 
-if [ -z "$BITCOIND_RPC_USERNAME" ]; then
-    echo "ERROR: BITCOIND_RPC_USERNAME is unset."
-    exit 1
-fi
-
-if [ -z "$BITCOIND_RPC_PASSWORD" ]; then
-    echo "ERROR: BITCOIND_RPC_PASSWORD is unset."
-    exit 1
-fi
-
 if [ -z "$CLN_NAME" ]; then
     echo "ERROR: CLN_NAME is unset."
     exit 1
@@ -56,6 +46,11 @@ if [ -z "$PLUGIN_PATH" ]; then
 fi
 
 wait-for-it -t 600 "bitcoind:18443"
+
+
+COOKIE_FILE_CONTENT=$(cat /bitcoind-cookie/.cookie)
+BITCOIND_RPC_USERNAME=$(echo "$COOKIE_FILE_CONTENT" | cut -d':' -f1)
+BITCOIND_RPC_PASSWORD=$(echo "$COOKIE_FILE_CONTENT" | cut -d':' -f2)
 
 CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers"
 

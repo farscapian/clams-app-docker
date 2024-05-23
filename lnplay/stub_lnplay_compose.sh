@@ -3,12 +3,10 @@
 set -exu
 cd "$(dirname "$0")"
 
-RPC_AUTH_TOKEN=$(docker run --rm -t "$CLN_PYTHON_IMAGE_NAME" /scripts/rpc-auth.py "$BITCOIND_RPC_USERNAME" "$BITCOIND_RPC_PASSWORD" | grep rpcauth)
-RPC_AUTH_TOKEN="${RPC_AUTH_TOKEN//[$'\t\r\n ']}"
 BITCOIND_RPC_THREADS=$(( CLN_COUNT*4 ))
 BITCOIND_WORKQUEUE=$(( CLN_COUNT*16 ))
 
-BITCOIND_COMMAND="bitcoind -server=1 -${RPC_AUTH_TOKEN} -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=18443 -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -mempoolfullrbf=1 -rpcthreads=$BITCOIND_RPC_THREADS -rpcworkqueue=${BITCOIND_WORKQUEUE}"
+BITCOIND_COMMAND="bitcoind -rpccookiefile=/bitcoind-cookie/.cookie -server=1 -upnp=0 -rpcbind=0.0.0.0 -rpcallowip=0.0.0.0/0 -rpcport=18443 -rest -listen=1 -listenonion=0 -fallbackfee=0.0002 -rpcthreads=$BITCOIND_RPC_THREADS -rpcworkqueue=${BITCOIND_WORKQUEUE}"
 
 for CHAIN in regtest signet; do
     if [ "$CHAIN" = "$BTC_CHAIN" ]; then
@@ -127,10 +125,13 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     hostname: bitcoind
     networks:
       - bitcoindnet
+    environment:
+      - BTC_CHAIN=${BTC_CHAIN}
     command: >-
       ${BITCOIND_COMMAND}
     volumes:
       - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
+      - ${COOKIE_DOCKER_VOL}:/bitcoind-cookie:rw
     deploy:
       mode: global
 EOF
@@ -147,8 +148,8 @@ if [ "$BTC_CHAIN" == regtest ]; then
     environment: 
       - BLOCK_TIME=${REGTEST_BLOCK_TIME:-15}
       - BITCOIND_SERVICE_NAME=bitcoind
-      - BITCOIND_RPC_USERNAME=\${BITCOIND_RPC_USERNAME}
-      - BITCOIND_RPC_PASSWORD=\${BITCOIND_RPC_PASSWORD}
+    volumes:
+      - ${COOKIE_DOCKER_VOL}:/bitcoind-cookie
     deploy:
       mode: global
       resources:
@@ -188,6 +189,8 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 volumes:
 
   bitcoind-${BTC_CHAIN}:
+  ${COOKIE_DOCKER_VOL}:
+    external: true
 
 EOF
 
