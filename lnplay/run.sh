@@ -3,8 +3,12 @@
 set -exu
 cd "$(dirname "$0")"
 
-CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$LNPLAY_STACK_VERSION"
-export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
+export DOCKER_BUILDKIT=1
+docker buildx install
+
+if ! docker buildx ls | grep -q lnplay; then
+    docker buildx create --name lnplay --use
+fi
 
 # this script brings up the backend needed (i.e., lightningd+bitcoind) to test Clams app
 WEBSOCKET_PORT_LOCAL=9736
@@ -22,65 +26,53 @@ export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 CLN_IMAGE_NAME="lnplay/cln:$LNPLAY_STACK_VERSION"
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
-# TODO review base images; ensure get a secure/minial base image, e.g., https://hub.docker.com/r/blockstream/lightningd
-BITCOIND_BASE_IMAGE_NAME="polarlightning/bitcoind:26.0"
+# this is our base image! for bitcoind/lightningd
+LIGHTNINGD_DOCKER_BASE_IMAGE_NAME="czlw31/cln:v24.02.2"
+export LIGHTNINGD_DOCKER_BASE_IMAGE_NAME="$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME"
+if ! docker image inspect "$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME" &> /dev/null; then
+    docker pull "$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME"
+fi
+
 BITCOIND_DOCKER_IMAGE_NAME="lnplay/bitcoind:$LNPLAY_STACK_VERSION"
 export BITCOIND_DOCKER_IMAGE_NAME="$BITCOIND_DOCKER_IMAGE_NAME"
 
-if ! docker image inspect "$BITCOIND_BASE_IMAGE_NAME" &> /dev/null; then
-    docker pull -q "$BITCOIND_BASE_IMAGE_NAME"
-fi
-
-export DOCKER_BUILDKIT=0
-
-if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
+#if ! docker image inspect "$BITCOIND_DOCKER_IMAGE_NAME" &>/dev/null; then
     # build custom bitcoind image
-    docker build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="$BITCOIND_BASE_IMAGE_NAME" ./bitcoind/
-fi
+    # the base lightning image should contain the correct bitcoind, so we 
+    # just overwrite the entrypoint.
+    docker buildx build -t "$BITCOIND_DOCKER_IMAGE_NAME" --build-arg BASE_IMAGE="$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME" ./bitcoind/ --load
+#fi
 
 BITCOIND_MANAGER_IMAGE_NAME="lnplay/manager:$LNPLAY_STACK_VERSION"
 export BITCOIND_MANAGER_IMAGE_NAME="$BITCOIND_MANAGER_IMAGE_NAME"
-if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
-    docker build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="$BITCOIND_DOCKER_IMAGE_NAME" ./manager/
-fi
+#if ! docker image inspect "$BITCOIND_MANAGER_IMAGE_NAME" &>/dev/null; then
+    docker buildx build -t "$BITCOIND_MANAGER_IMAGE_NAME" --build-arg BASE_IMAGE="$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME" ./manager/ --load
+#fi
 
-TOR_PROXY_IMAGE_NAME="torproxy:$LNPLAY_STACK_VERSION"
+TOR_PROXY_IMAGE_NAME="lnplay/torproxy:$LNPLAY_STACK_VERSION"
 export TOR_PROXY_IMAGE_NAME="$TOR_PROXY_IMAGE_NAME"
 if [ "$ENABLE_TOR" = true ]; then
     if ! docker image inspect "$TOR_PROXY_IMAGE_NAME" &>/dev/null; then
-        docker build -t "$TOR_PROXY_IMAGE_NAME" ./torproxy/  >>/dev/null
+        docker buildx build -t "$TOR_PROXY_IMAGE_NAME" --build-arg BASE_IMAGE="$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME"  ./torproxy/  --load
     fi
 fi
 
-export DOCKER_BUILDKIT=1
-#docker buildx install
-#docker buildx create --name lnplay --use
-
-
-
-#tuq5hg6cxpz7e/pay-to-self-cln:v24.02.2
-LIGHTNINGD_DOCKER_IMAGE_NAME="tuq5hg6cxpz7e/cln:v24.02.2"
-if ! docker image inspect "$LIGHTNINGD_DOCKER_IMAGE_NAME" &> /dev/null; then
-    docker pull "$LIGHTNINGD_DOCKER_IMAGE_NAME"
+# if the clboss binary doesn't exist, build it.
+if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
+    CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
+    docker buildx build -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss  --load
+    docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
 
 export DOCKER_BUILDKIT=0
 
 # build the base image for cln
+CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$LNPLAY_STACK_VERSION"
+export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
 #if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
-    docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_IMAGE_NAME}" ./clightning/base/
+    docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/
 #fi
-
-OLD_DOCKER_HOST="$DOCKER_HOST"
-DOCKER_HOST=
-# if the clboss binary doesn't exist, build it.
-if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
-    CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
-    docker build -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss
-    docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
-fi
-DOCKER_HOST="$OLD_DOCKER_HOST"
 
 # build the base image for cln
 #if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
@@ -92,18 +84,22 @@ DOCKER_HOST="$OLD_DOCKER_HOST"
     export CLN_DOCKERFILE_PATH="$CLN_DOCKERFILE_PATH"
 
     ./clightning/stub_cln_dockerfile.sh
-
-    docker build -t "$CLN_IMAGE_NAME" --build-arg BASE_IMAGE="${CLN_PYTHON_IMAGE_NAME}" ./clightning/
+    docker build -t "$CLN_IMAGE_NAME" ./clightning/
 #fi
 
+
+export DOCKER_BUILDKIT=1
+
 CLAMS_REMOTE_IMAGE_NAME="lnplay/clams:$LNPLAY_STACK_VERSION"
+export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
 if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
 fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    docker build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/
-    export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
+    if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
+        docker buildx build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/  --load
+    fi
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
@@ -127,15 +123,17 @@ if [ "$RUN_SERVICES" = true ]; then
     export DOCKER_COMPOSE_YML_PATH="$DOCKER_COMPOSE_YML_PATH"
     touch "$DOCKER_COMPOSE_YML_PATH"
 
-    # let's generate a random username and password and get our -rpcauth=<token>
-    # TODO see if I can get rid of all this and use bitcoind cookie auth instead.
-    BITCOIND_RPC_USERNAME=$(gpg --gen-random --armor 1 8 | tr -dc '[:alnum:]' | head -c10)
-    BITCOIND_RPC_PASSWORD=$(gpg --gen-random --armor 1 32 | tr -dc '[:alnum:]' | head -c32)
-    export BITCOIND_RPC_USERNAME="$BITCOIND_RPC_USERNAME"
-    export BITCOIND_RPC_PASSWORD="$BITCOIND_RPC_PASSWORD"
+    # let's create an external volume for the bitcoind cookie so it can be made accessible
+    # to both bitcoind (rw) and all the cln instance (ro)
+    COOKIE_DOCKER_VOL="bitcoind-${BTC_CHAIN}-cookie"
+    export COOKIE_DOCKER_VOL="$COOKIE_DOCKER_VOL"
+    if ! docker volume list | grep $"$COOKIE_DOCKER_VOL"; then
+        docker volume create "$COOKIE_DOCKER_VOL"
+    fi
 
     # stub out the docker-compose.yml file before we bring it up.
     ./stub_lnplay_compose.sh
+
     ./stub_nginx_conf.sh
 
     # this is the main bitcoind/nginx etc., everything sans CLN nodes.
@@ -143,7 +141,9 @@ if [ "$RUN_SERVICES" = true ]; then
     # so that clams remote will preemptively serve Clams files. 
 
     # TODO to make Clams Remote faster, we should cache responses at the nginx.
-    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" lnplay 
+    #--detach=false
+
 
     if ! docker network list | grep -q lnplay-p2pnet; then
         docker network create lnplay-p2pnet -d overlay

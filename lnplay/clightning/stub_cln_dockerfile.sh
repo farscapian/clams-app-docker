@@ -4,8 +4,9 @@ set -eu
 cd "$(dirname "$0")"
 
 cat > "$CLN_DOCKERFILE_PATH" <<EOF
-ARG BASE_IMAGE
-FROM \$BASE_IMAGE
+# syntax=docker/dockerfile:1.4
+FROM ${CLN_PYTHON_IMAGE_NAME}
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV CLN_ALIAS=
 ENV CLN_COLOR=
