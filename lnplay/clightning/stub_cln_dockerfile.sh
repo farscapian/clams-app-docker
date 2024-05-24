@@ -3,6 +3,8 @@
 set -eu
 cd "$(dirname "$0")"
 
+CLN_DOCKERFILE_PATH="$(pwd)/Dockerfile"
+
 cat > "$CLN_DOCKERFILE_PATH" <<EOF
 # syntax=docker/dockerfile:1.4
 FROM ${CLN_PYTHON_IMAGE_NAME}

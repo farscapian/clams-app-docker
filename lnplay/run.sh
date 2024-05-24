@@ -76,13 +76,6 @@ export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
 
 # build the base image for cln
 #if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
-    # build the cln image with our plugins
-    # first we stub out the dockerfile.
-
-    CLN_BUILD_PATH="$(pwd)/clightning"
-    CLN_DOCKERFILE_PATH="$CLN_BUILD_PATH/Dockerfile"
-    export CLN_DOCKERFILE_PATH="$CLN_DOCKERFILE_PATH"
-
     ./clightning/stub_cln_dockerfile.sh
     docker build -t "$CLN_IMAGE_NAME" ./clightning/
 #fi
