@@ -15,11 +15,8 @@ PRISM_JSON_STRING="["
 # create a JSON string with of the members[] definition
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
-    NODE_ID_FOR_KEYSEND=${nodepubkeys[$CLN_ID]}
+
     DESTINATION="$NODE_ANYOFFER"
-    if [ $((CLN_ID % 2)) -eq 1 ]; then
-        DESTINATION="$NODE_ID_FOR_KEYSEND"
-    fi
 
     PAYMENT_THRESHOLD_MSAT="0"
     PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\"},"
@@ -44,16 +41,16 @@ OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="prism1_
 #OFFER_ID_C=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_c" label="offer_c" | jq -r '.offer_id')
 
 # now lets bind prism1 to prism1_offer. This is valid.
-../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" offer_id="$OFFER_ID_A"
+../lightning-cli.sh --id=1 prism-bindingadd -k offer_id="$OFFER_ID_A" prism_id="prism1"
 
 # binding again simply replaces the prism given a distinct offer.
-#../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" offer_id="$OFFER_ID_A"
+#../lightning-cli.sh --id=1 prism-bindingadd -k offer_id="$OFFER_ID_A" prism_id="prism2"
 
 # ok let's bind prism1 to offer_b. This is valid.
-#../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" offer_id="$OFFER_ID_B"
+#../lightning-cli.sh --id=1 prism-bindingadd -k offer_id="$OFFER_ID_B" prism_id="prism1"
 
 # Let's just add another typical binding.
-#../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism3" offer_id="$OFFER_ID_C"
+#../lightning-cli.sh --id=1 prism-bindingadd -k offer_id="$OFFER_ID_C" prism_id="prism3"
 
 
 # ok, so now let's execute some manual payouts to ensure the splits are working.

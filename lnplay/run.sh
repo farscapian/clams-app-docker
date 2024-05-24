@@ -3,7 +3,6 @@
 set -exu
 cd "$(dirname "$0")"
 
-export DOCKER_BUILDKIT=1
 docker buildx install
 
 if ! docker buildx ls | grep -q lnplay; then
@@ -64,15 +63,16 @@ if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" 
     docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
 
-export DOCKER_BUILDKIT=0
-
 # build the base image for cln
 CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$LNPLAY_STACK_VERSION"
 export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
 #if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
     # build the cln image with our plugins
-    docker build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/
+    docker buildx build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/ --load
 #fi
+
+# for some reason I can't get BUILDKIT=1 to work on this last step.
+export DOCKER_BUILDKIT=0
 
 # build the base image for cln
 #if ! docker image inspect "$CLN_IMAGE_NAME" &>/dev/null; then
@@ -90,9 +90,9 @@ if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
 fi
 
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
+    #if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
         docker buildx build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/  --load
-    fi
+    #fi
 fi
 
 NGINX_DOCKER_IMAGE_NAME="nginx:latest"
