@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 # get the BOLT12 any offers
 mapfile -t anyoffers < "$LNPLAY_SERVER_PATH/any_offers.txt"

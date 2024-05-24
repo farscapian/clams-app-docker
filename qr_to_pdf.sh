@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -eu
 
 QR_DIMENSIONS="280x280"
 OUTPUT_DIR="$LNPLAY_SERVER_PATH/connection_strings"
