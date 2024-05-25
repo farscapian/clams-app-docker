@@ -46,7 +46,6 @@ BITCOIND_RPC_PASSWORD=$(echo "$COOKIE_FILE_CONTENT" | cut -d':' -f2)
 
 CLN_COMMAND="/usr/local/bin/lightningd --alias=${CLN_ALIAS} --rgb=${CLN_COLOR} --bind-addr=0.0.0.0:9735 --bitcoin-rpcuser=${BITCOIND_RPC_USERNAME} --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD} --bitcoin-rpcconnect=bitcoind --bitcoin-rpcport=18443 --bind-addr=ws::9736 --experimental-offers"
 
-
 if [ "$ENABLE_TOR" = true ]; then
     CLN_COMMAND="${CLN_COMMAND} --proxy=torproxy-${CLN_NAME}:9050"
 fi
