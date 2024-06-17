@@ -142,5 +142,5 @@ COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 ENV SLEEP=0
 RUN pip3 install pyln-client==24.2.1 pyln-proto==24.2.1
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
 EOF

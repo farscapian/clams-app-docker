@@ -23,7 +23,7 @@ VOLUME ["/home/clightning"]
 
 EXPOSE 9735 9835 8080 10000
 
-ENTRYPOINT []
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD ["lightningd"]
 
