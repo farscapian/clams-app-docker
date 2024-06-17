@@ -15,11 +15,22 @@ PRISM_JSON_STRING="["
 # create a JSON string with of the members[] definition
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
-
     DESTINATION="$NODE_ANYOFFER"
 
-    PAYMENT_THRESHOLD_MSAT="0"
-    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\"},"
+    # we alternate the fees_incurred_by with remote/local
+    FEES_INCURRED_BY="local"
+
+    # pay out when threshold is over 500 sats
+    PAYMENT_THRESHOLD_MSAT="5000000"
+
+    # if odd
+    if (( CLN_ID % 2 != 0)); then
+        FEES_INCURRED_BY="remote"
+        # payout instantly
+        PAYMENT_THRESHOLD_MSAT="10000000"
+    fi
+
+    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"label\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\", \"fees_incurred_by\": \"$FEES_INCURRED_BY\"},"
 done
 
 # close off the json
