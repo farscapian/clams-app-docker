@@ -27,6 +27,6 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD ["lightningd"]
 
-RUN apt update && apt install -y tor wait-for-it git jq dnsutils
+RUN apt update && apt install -y tor wait-for-it git jq dnsutils python3-venv
 
 COPY ./torrc /etc/tor/torrc
