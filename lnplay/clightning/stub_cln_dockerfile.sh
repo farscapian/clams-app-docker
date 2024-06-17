@@ -119,8 +119,8 @@ fi
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # let's embed the plugins into the image.
-ADD ./cln-plugins/cln-reckless-wrapper/cln-reckless-wrapper.py /plugins/cln-reckless-wrapper/cln-reckless-wrapper.py
-RUN chmod +x /plugins/cln-reckless-wrapper/cln-reckless-wrapper.py
+ADD ./cln-plugins/cln-reckless-wrapper/reckless-wrapper.py /plugins/reckless-wrapper/reckless-wrapper.py
+RUN chmod +x /plugins/reckless-wrapper/reckless-wrapper.py
 EOF
 
 fi

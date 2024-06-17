@@ -67,7 +67,7 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
 fi
 
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ]; then
-    RECKLESS_WRAPPER_PLUGIN_PATH="$PLUGIN_PATH/cln-reckless-wrapper/cln-reckless-wrapper.py"
+    RECKLESS_WRAPPER_PLUGIN_PATH="$PLUGIN_PATH/cln-reckless-wrapper/reckless-wrapper.py"
     chmod +x "$RECKLESS_WRAPPER_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$RECKLESS_WRAPPER_PLUGIN_PATH"
 

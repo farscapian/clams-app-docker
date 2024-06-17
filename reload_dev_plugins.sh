@@ -38,7 +38,7 @@ function reload_plugin {
 }
 
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN"  = true ]; then
-    reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "cln-reckless-wrapper.py" "cln-reckless-wrapper"
+    reload_plugin "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" "reckless-wrapper.py" "cln-reckless-wrapper"
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN"  = true ]; then

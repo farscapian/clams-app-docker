@@ -65,6 +65,7 @@ EOF
 
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     environment:
+      - SLEEP=false
       - ENABLE_TOR=${ENABLE_TOR}
       - ENABLE_CLN_REST=${ENABLE_CLN_REST}
       - CLN_ALIAS=${CLN_ALIAS}

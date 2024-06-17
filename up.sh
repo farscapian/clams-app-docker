@@ -158,7 +158,7 @@ mkdir -p "$LNPLAY_SERVER_PATH"
 ROOT_DIR="$(pwd)"
 export ROOT_DIR="$ROOT_DIR"
 
-if (( "$CLN_COUNT" < 5 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
+if (( "$CLN_COUNT" < 5 )) && [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" = regtest ]; then
     echo "ERROR: You MUST have AT LEAST FIVE CLN nodes when deploying the prism channel setup."
     exit 1
 fi

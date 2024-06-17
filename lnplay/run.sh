@@ -27,6 +27,10 @@ export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # this is our base image! for bitcoind/lightningd
 LIGHTNINGD_DOCKER_BASE_IMAGE_NAME="czlw31/cln:v24.02.2"
+if [ "$BTC_CHAIN" = "regtest" ]; then
+    LIGHTNINGD_DOCKER_BASE_IMAGE_NAME="lnplay/cln:v24.05"
+fi
+
 export LIGHTNINGD_DOCKER_BASE_IMAGE_NAME="$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME"
 if ! docker image inspect "$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME" &> /dev/null; then
     docker pull "$LIGHTNINGD_DOCKER_BASE_IMAGE_NAME"
