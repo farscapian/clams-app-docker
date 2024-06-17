@@ -130,7 +130,7 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
     command: >-
       ${BITCOIND_COMMAND}
     volumes:
-      - bitcoind-${BTC_CHAIN}:/home/bitcoin/.bitcoin
+      - bitcoind-${BTC_CHAIN}:/root/.bitcoin
       - ${COOKIE_DOCKER_VOL}:/bitcoind-cookie:rw
     deploy:
       mode: global
