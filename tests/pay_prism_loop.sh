@@ -3,7 +3,7 @@
 set -ex
 cd "$(dirname "$0")"
 
-OFFER_LABELS=("prism1_offer") # "prism2_offer" "prism3_offer")
+OFFER_LABELS=("Band Prism") # "prism2_offer" "prism3_offer")
 
 # Iterate over each offer
 index=0
