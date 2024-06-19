@@ -6,6 +6,10 @@ cd "$(dirname "$0")"
 . ./defaults.env
 . ./load_env.sh
 
+if [ "$BTC_CHAIN" = mainnet ]; then
+    echo "WARNING: MAINNET node."
+fi
+
 BITCOIND_CONTAINER_ID="$(docker ps | grep 'lnplay_bitcoind.' | head -n1 | awk '{print $1;}')"
 if [ -n "$BITCOIND_CONTAINER_ID" ]; then
     docker exec -t "$BITCOIND_CONTAINER_ID" /bitcoin-cli "$@"

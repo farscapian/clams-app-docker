@@ -7,6 +7,12 @@ cd "$(dirname "$0")"
 
 . ./load_env.sh
 
+
+if [ "$BTC_CHAIN" = mainnet ]; then
+    echo "WARNING: MAINNET node."
+fi
+
+
 NODE_ID=0
 
 # grab any modifications from the command line.
