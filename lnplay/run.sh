@@ -93,16 +93,19 @@ if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
 fi
 
-if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
-        docker buildx build  -t "$CLAMS_REMOTE_IMAGE_NAME" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/  --load
-    fi
+
+
+NGINX_BASE_IMAGE="nginx:1.25.4"
+NGINX_IMAGE_NAME="lnplay/nginx:1.25.4"
+export NGINX_IMAGE_NAME="$NGINX_IMAGE_NAME"
+if ! docker image inspect "$NGINX_BASE_IMAGE" &>/dev/null; then
+    docker pull -q "$NGINX_BASE_IMAGE"
 fi
 
-NGINX_DOCKER_IMAGE_NAME="nginx:latest"
-export NGINX_DOCKER_IMAGE_NAME="$NGINX_DOCKER_IMAGE_NAME"
-if ! docker image inspect "$NGINX_DOCKER_IMAGE_NAME" &>/dev/null; then
-    docker pull -q "$NGINX_DOCKER_IMAGE_NAME"
+if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
+    #if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
+        docker buildx build  -t "$NGINX_IMAGE_NAME" --build-arg NGINX_BASE_IMAGE="$NGINX_BASE_IMAGE" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ --load
+    #fi
 fi
 
 

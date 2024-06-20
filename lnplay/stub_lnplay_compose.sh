@@ -28,7 +28,7 @@ version: '3.8'
 services:
 
   reverse-proxy:
-    image: ${NGINX_DOCKER_IMAGE_NAME}
+    image: ${NGINX_IMAGE_NAME}
 EOF
 
 
@@ -67,13 +67,6 @@ cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - nginxnet
 EOF
 
-
-if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-      - clams-appnet
-EOF
-fi
-
 if [ "$BTC_CHAIN" != regtest ]; then
     for (( CLN_ID=0; CLN_ID<CLN_COUNT; CLN_ID++ )); do
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
@@ -95,28 +88,6 @@ EOF
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
       - lnplay-certs:/certs
 EOF
-
-if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-
-  clams-remote:
-    image: ${CLAMS_REMOTE_IMAGE_NAME}
-    networks:
-      - clams-appnet
-    environment:
-      - HOST=0.0.0.0
-      - PORT=5173
-    deploy:
-      mode: global
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1000M
-
-EOF
-
-fi
-
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 
@@ -176,13 +147,6 @@ if [ "$BTC_CHAIN" != regtest ]; then
 EOF
     done
 fi
-
-if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
-  clams-appnet:
-EOF
-fi
-
 
 cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
 

@@ -4,6 +4,9 @@ set -e
 cd "$(dirname "$0")"
 
 cat > "$NGINX_CONFIG_PATH" <<EOF
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+
 events {
     worker_connections 1024;
 }
@@ -58,21 +61,18 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     # server block for clams remote
     server {
         listen ${SERVICE_INTERNAL_PORT}${SSL_TAG};
-
         server_name ${FRONTEND_FQDN};
+        root /usr/share/nginx/html; 
+        index index.html;
+
+        # Location block for /wallets, /utxos, /settings, /forwards, /offers, /channels, /payments
+        location ~ ^/(wallets|utxos|settings|forwards|offers|channels|payments)$ {
+            try_files /200.html =202;
+        }
 
         location / {
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_set_header Host \$http_host;
-            proxy_cache_bypass \$http_upgrade;
-
-            proxy_read_timeout     120;
-            proxy_connect_timeout  120;
-            proxy_redirect         off;
-
-            proxy_pass http://clams-remote:5173;
+            try_files \$uri \$uri/ =200;
+            
         }
     }
 
