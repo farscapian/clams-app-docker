@@ -15,7 +15,7 @@ if [ -z "${LNPLAY_CONF_PATH:-}" ]; then
     if [ ! -f "$LNPLAY_ACTIVE_ENV_FILE" ]; then
         # stub one out
         echo "local.env" >> "$LNPLAY_ACTIVE_ENV_FILE"
-        echo "INFO: '$LNPLAY_ACTIVE_ENV_FILE' was just stubbed out."
+        echo "INFO: '$LNPLAY_ACTIVE_ENV_FILE' was just stubbed out. Go update it! It currently points to ./environments/local.envdocke"
     fi
 fi
 
