@@ -65,14 +65,11 @@ if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
         root /usr/share/nginx/html; 
         index index.html;
 
-        # Location block for /wallets, /utxos, /settings, /forwards, /offers, /channels, /payments
-        location ~ ^/(wallets|utxos|settings|forwards|offers|channels|payments)$ {
-            try_files /200.html =202;
-        }
+        error_page 404 =200 /200.html;
+        error_page 403 =200 /200.html;
 
-        location / {
-            try_files \$uri \$uri/ =200;
-            
+        location = /200.html {
+            internal;
         }
     }
 
