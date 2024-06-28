@@ -129,6 +129,7 @@ fi
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     cat >> "$CLN_DOCKERFILE_PATH" <<EOF
 # copy the CLBOSS binary to the plugin path.
+RUN apt install libev4
 ADD ./cln-plugins/clboss/clboss /plugins/clboss/clboss
 RUN chmod +x /plugins/clboss/clboss
 RUN apt install -y libev-dev
