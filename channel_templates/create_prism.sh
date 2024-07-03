@@ -22,17 +22,17 @@ for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     FEES_INCURRED_BY="local"
 
     # pay out when threshold is over 500 sats
-    PAYMENT_THRESHOLD_MSAT="5000000"
+    PAYMENT_THRESHOLD_MSAT="0"
 
     # if odd
     if (( CLN_ID % 2 != 0)); then
         FEES_INCURRED_BY="remote"
         # payout instantly
-        PAYMENT_THRESHOLD_MSAT="10000000"
+        PAYMENT_THRESHOLD_MSAT="0"
         DESTINATION="$NODE_PUBKEY"
     fi
 
-    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"description\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 0.333333, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\", \"fees_incurred_by\": \"$FEES_INCURRED_BY\"},"
+    PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"description\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1.0, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\", \"fees_incurred_by\": \"$FEES_INCURRED_BY\"},"
 done
 
 # close off the json
@@ -43,7 +43,7 @@ PRISM_JSON_STRING="${PRISM_JSON_STRING::-1}]"
 #PRISM_ID_1="$BACKEND_FQDN-prism_demo"
 
 # let's create 3 prisms
-PRISM1_ID=$(../lightning-cli.sh --id=1 prism-create -k description="Band Prism" members="$PRISM_JSON_STRING" outlay_factor="0.8" | tee /dev/tty | jq -r '.prism_id')
+PRISM1_ID=$(../lightning-cli.sh --id=1 prism-create -k description="Band Prism" members="$PRISM_JSON_STRING" outlay_factor="0.75" | tee /dev/tty | jq -r '.prism_id')
 #PRISM2_ID=$(../lightning-cli.sh --id=1 prism-create -k description="prism2" members="$PRISM_JSON_STRING" | tee /dev/tty  | jq -r '.prism_id')
 #PRISM3_ID=$(../lightning-cli.sh --id=1 prism-create -k description="prism3" members="$PRISM_JSON_STRING" outlay_factor="1.1" | tee /dev/tty  | jq -r '.prism_id')
 

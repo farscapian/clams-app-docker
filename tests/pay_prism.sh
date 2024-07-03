@@ -25,10 +25,15 @@ if [ -z "$PRISM_DESCRIPTION" ]; then
 fi
 
 # now create a new BOLT12 any offer and grab the offer_id
-prism_offer=$(../lightning-cli.sh --id=1 listoffers | jq -r ".offers[] | select(.label == \"$PRISM_DESCRIPTION\") | .bolt12")
+PRISM_OFFER=$(../lightning-cli.sh --id=1 listoffers | jq -r ".offers[] | select(.description == \"$PRISM_DESCRIPTION\") | .bolt12")
+
+if [ -z "$PRISM_OFFER" ]; then
+    echo "ERROR: PRISM OFFER was not found."
+    exit 1
+fi
 
 # fetch an invoice
-INVOICE=$(../lightning-cli.sh --id=0 fetchinvoice "$prism_offer" 4000000 | jq -r '.invoice')
+INVOICE=$(../lightning-cli.sh --id=0 fetchinvoice "$PRISM_OFFER" 4000000 | jq -r '.invoice')
 
 if [ -z "$INVOICE" ]; then
     echo "ERROR: INVOICE is not set."
