@@ -245,7 +245,6 @@ EOF
     # define the volumes for CLN nodes. regtest and signet SHOULD NOT persist data, but TESTNET and MAINNET MUST define volumes
     cat >> "$DOCKER_COMPOSE_YML_PATH" <<EOF
   cln-${CLN_ID}-${BTC_CHAIN}:
-  cln-${CLN_ID}-certs-${BTC_CHAIN}:
   bitcoind-${BTC_CHAIN}-cookie:
     external: true
 EOF
@@ -285,7 +284,6 @@ configs:
 EOF
         fi
     fi
-
 
 
     docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}"
