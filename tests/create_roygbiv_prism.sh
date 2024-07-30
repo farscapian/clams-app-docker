@@ -28,14 +28,14 @@ echo "$PRISM_JSON_STRING"
 # #OFFER_ID_C=$(../lightning-cli.sh --id=1 offer -k amount=any description="offer_c" label="offer3" | jq -r '.offer_id')
 
 # # now lets bind prism1 to prism1_offer. This is valid.
-# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" bind_to="$OFFER_ID_A"
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" offer_id="$OFFER_ID_A"
 
 # # now let's try to bind prism2 to prism1_offer. This is INVALID because there's already a binding
 # ## this should fail
-# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" bind_to="$OFFER_ID_A"
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" offer_id="$OFFER_ID_A"
 
 # # ok let's bind prism1 to offer_b. This is still valid since offer_b has no existing bindings.
-# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" bind_to="$OFFER_ID_B"
+# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" offer_id="$OFFER_ID_B"
 
 
 # # ok, so now let's execute some manual payouts to ensure the splits are working.
@@ -49,8 +49,3 @@ echo "$PRISM_JSON_STRING"
 # # sleep 1
 # # ../lightning-cli.sh --id=1 prism-executepayout -k prism_id="prism3" amount_msat="$AMOUNT_TO_PAY_MSAT"
 
-# # now let's create a bolt11 invoice and bind prism2 to it.
-# BOLT11_INVOICE_LABEL="BOLT11-001"
-# ../lightning-cli.sh --id=1 invoice -k amount_msat="$AMOUNT_TO_PAY_MSAT" label="$BOLT11_INVOICE_LABEL" description="test123"
-# sleep 1
-# ../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism2" bind_to="$BOLT11_INVOICE_LABEL" bolt_version="bolt11"
