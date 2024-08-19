@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -eu
-
+set -exu
 
 if [ "$SLEEP" = true ]; then
     sleep 500
@@ -57,11 +56,15 @@ fi
 if [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_PLUGIN_PATH="$PLUGIN_PATH/clboss/clboss"
     chmod +x "$CLBOSS_PLUGIN_PATH"
-    CLN_COMMAND="$CLN_COMMAND --important-plugin=$CLBOSS_PLUGIN_PATH --clboss-auto-close=true --clboss-zerobasefee=allow"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$CLBOSS_PLUGIN_PATH --clboss-auto-close=true --clboss-zerobasefee=allow"
 fi
 
 if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/bolt12-prism.py"
+    chmod +x "$PRISM_PLUGIN_PATH"
+    CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
+
+    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-payer.py"
     chmod +x "$PRISM_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi
@@ -150,6 +153,8 @@ fi
 
 # Specify the log file path
 LOG_FILE="/root/.lightning/debug.log"
+
+echo "$CLN_COMMAND"
 
 # we'll log all STDOUT/STDERR to debug.log
 exec $CLN_COMMAND > >(tee -a "$LOG_FILE") 2>&1

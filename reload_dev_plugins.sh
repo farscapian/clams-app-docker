@@ -43,6 +43,7 @@ fi
 
 if [ "$DEPLOY_PRISM_PLUGIN"  = true ]; then
     reload_plugin "$DEPLOY_PRISM_PLUGIN" "bolt12-prism.py" "bolt12-prism"
+    reload_plugin "$DEPLOY_PRISM_PLUGIN" "prism-payer.py" "bolt12-prism"
 fi
 
 if [ "$DEPLOY_LNPLAYLIVE_PLUGIN"  = true ]; then

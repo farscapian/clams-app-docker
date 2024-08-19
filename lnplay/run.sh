@@ -23,6 +23,12 @@ NGINX_CONFIG_PATH="$LNPLAY_SERVER_PATH/nginx.conf"
 export NGINX_CONFIG_PATH="$NGINX_CONFIG_PATH"
 
 CLN_IMAGE_NAME="lnplay/cln:$LNPLAY_STACK_VERSION"
+
+# The user can override the base image using CLN_BASE_IMAGE_OVERRIDE
+if [ -n "$CLN_BASE_IMAGE_OVERRIDE" ]; then
+    CLN_IMAGE_NAME="$CLN_BASE_IMAGE_OVERRIDE"
+fi
+
 export CLN_IMAGE_NAME="$CLN_IMAGE_NAME"
 
 # this is our base image! for bitcoind/lightningd
@@ -95,13 +101,14 @@ fi
 
 
 
-NGINX_BASE_IMAGE="nginx:1.25.4"
-NGINX_IMAGE_NAME="lnplay/nginx:1.25.4"
+NGINX_BASE_IMAGE="nginx:1.27.0"
+NGINX_IMAGE_NAME="lnplay/nginx:1.27.0"
 export NGINX_IMAGE_NAME="$NGINX_IMAGE_NAME"
 if ! docker image inspect "$NGINX_BASE_IMAGE" &>/dev/null; then
     docker pull -q "$NGINX_BASE_IMAGE"
 fi
 
+#DEPLOY_CLAMS_REMOTE=false
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
     #if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
         docker buildx build  -t "$NGINX_IMAGE_NAME" --build-arg NGINX_BASE_IMAGE="$NGINX_BASE_IMAGE" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ --load

@@ -81,8 +81,4 @@ AMOUNT_TO_PAY_MSAT="10000000"
 #sleep 1
 #../lightning-cli.sh --id=1 prism-pay -k prism_id="$PRISM3_ID" amount_msat="$AMOUNT_TO_PAY_MSAT"
 
-# now let's create a bolt11 invoice and bind prism2 to it.
-#BOLT11_INVOICE_LABEL="BOLT11-001"
-#../lightning-cli.sh --id=1 invoice -k amount_msat="$AMOUNT_TO_PAY_MSAT" label="$BOLT11_INVOICE_LABEL" description="test123"
-#sleep 1
-#../lightning-cli.sh --id=1 prism-bindingadd -k prism_id="prism1" invoice_label="$BOLT11_INVOICE_LABEL"
+
