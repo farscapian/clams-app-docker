@@ -1,6 +1,6 @@
 ARG NGINX_BASE_IMAGE=nginx:1.27.0
 ARG BASE_IMAGE=node:22.6.0
-FROM $BASE_IMAGE as build-stage
+FROM $BASE_IMAGE AS build-stage
 
 
 RUN mkdir /app
