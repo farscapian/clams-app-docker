@@ -64,9 +64,9 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
     chmod +x "$PRISM_PLUGIN_PATH"
     CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 
-    PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-payer.py"
-    chmod +x "$PRISM_PLUGIN_PATH"
-    CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
+    #PRISM_PLUGIN_PATH="$PLUGIN_PATH/bolt12-prism/prism-payer.py"
+    #chmod +x "$PRISM_PLUGIN_PATH"
+    #CLN_COMMAND="$CLN_COMMAND --plugin=$PRISM_PLUGIN_PATH"
 fi
 
 if [ "$DEPLOY_RECKLESS_WRAPPER_PLUGIN" = true ]; then

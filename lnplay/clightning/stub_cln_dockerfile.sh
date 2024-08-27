@@ -111,8 +111,8 @@ if [ "$DEPLOY_PRISM_PLUGIN" = true ] && [ -n "$DOCKER_HOST" ]; then
 # let's embed the plugins into the image.
 ADD ./cln-plugins/bolt12-prism/lib.py /plugins/bolt12-prism/lib.py
 ADD ./cln-plugins/bolt12-prism/bolt12-prism.py /plugins/bolt12-prism/bolt12-prism.py
-ADD ./cln-plugins/bolt12-prism/prism-payer.py /plugins/bolt12-prism/prism-payer.py
-RUN chmod +x /plugins/bolt12-prism/bolt12-prism.py /plugins/bolt12-prism/lib.py /plugins/bolt12-prism/prism-payer.py
+# ADD ./cln-plugins/bolt12-prism/prism-payer.py /plugins/bolt12-prism/prism-payer.py
+# RUN chmod +x /plugins/bolt12-prism/bolt12-prism.py /plugins/bolt12-prism/lib.py /plugins/bolt12-prism/prism-payer.py
 EOF
 
 fi
