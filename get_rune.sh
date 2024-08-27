@@ -103,7 +103,7 @@ if [ "$READ_PERMISSIONS" = false ] && \
         exit 1
 fi
 
-CMD="./lightning-cli.sh --id=${NODE_ID} commando-rune"
+CMD="./lightning-cli.sh --id=${NODE_ID} createrune"
 
 if [ "$ADMIN_RUNE" = false ]; then
     CMD="${CMD} restrictions='["
