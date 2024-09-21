@@ -4,7 +4,6 @@ set -exu
 
 # get the BOLT12 any offers
 mapfile -t anyoffers < "$LNPLAY_SERVER_PATH/any_offers.txt"
-mapfile -t nodepubkeys < "$LNPLAY_SERVER_PATH/node_pubkeys.txt"
 mapfile -t names < "$NAMES_FILE_PATH"
 
 sleep 5
@@ -15,7 +14,6 @@ PRISM_JSON_STRING="["
 # create a JSON string with of the members[] definition
 for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
     NODE_ANYOFFER=${anyoffers[$CLN_ID]}
-    NODE_PUBKEY=${nodepubkeys[$CLN_ID]}
     DESTINATION="$NODE_ANYOFFER"
 
     # we alternate the fees_incurred_by with remote/local
@@ -29,7 +27,6 @@ for ((CLN_ID=2; CLN_ID<CLN_COUNT; CLN_ID++)); do
         FEES_INCURRED_BY="remote"
         # payout instantly
         PAYMENT_THRESHOLD_MSAT="0"
-        DESTINATION="$NODE_PUBKEY"
     fi
 
     PRISM_JSON_STRING="${PRISM_JSON_STRING}{\"description\" : \"${names[$CLN_ID]}\", \"destination\": \"$DESTINATION\", \"split\": 1.0, \"payout_threshold_msat\": \"$PAYMENT_THRESHOLD_MSAT\", \"fees_incurred_by\": \"$FEES_INCURRED_BY\"},"
