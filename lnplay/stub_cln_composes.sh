@@ -286,6 +286,6 @@ EOF
     fi
 
 
-    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}"
+    docker stack deploy -c "$DOCKER_COMPOSE_YML_PATH" "lnplay-cln-${CLN_ID}" --detach=true
 
 done
