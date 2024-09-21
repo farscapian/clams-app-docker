@@ -72,10 +72,10 @@ fi
 # build the base image for cln
 CLN_PYTHON_IMAGE_NAME="lnplay/cln-python:$LNPLAY_STACK_VERSION"
 export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
-if ! docker image inspect "$CLN_PYTHON_IMAGE_NAME" &>/dev/null; then
-    # build the cln image with our plugins
-    docker buildx build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/ --load
-fi
+
+# build the cln image with our plugins
+docker buildx build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/ --load
+
 
 # for some reason I can't get BUILDKIT=1 to work on this last step.
 export DOCKER_BUILDKIT=0
