@@ -51,7 +51,7 @@ if [ "$PRISM1_ID" = null ]; then
 fi
 
 # now let's create offers
-OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="Band Offer" label="Band Prism Offer" | jq -r '.offer_id')
+OFFER_ID_A=$(../lightning-cli.sh --id=1 offer -k amount=any description="Band Offer" label="band_prism_offer" | jq -r '.offer_id')
 OFFER_ID_B=$(../lightning-cli.sh --id=1 offer -k amount=any description="prism2_offer" label="prism2_offer" | jq -r '.offer_id')
 OFFER_ID_C=$(../lightning-cli.sh --id=1 offer -k amount=any description="prism3_offer" label="prism3_offer" | jq -r '.offer_id')
 
