@@ -104,9 +104,7 @@ fi
 
 #DEPLOY_CLAMS_REMOTE=false
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    #if ! docker image inspect "$CLAMS_REMOTE_IMAGE_NAME" &>/dev/null; then
-        docker buildx build  -t "$NGINX_IMAGE_NAME" --build-arg NGINX_BASE_IMAGE="$NGINX_BASE_IMAGE" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ --load
-    #fi
+    docker buildx build  -t "$NGINX_IMAGE_NAME" --build-arg NGINX_BASE_IMAGE="$NGINX_BASE_IMAGE" --build-arg BASE_IMAGE="${NODE_BASE_DOCKER_IMAGE_NAME}" ./clams/ --load
 fi
 
 

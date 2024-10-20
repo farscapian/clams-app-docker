@@ -6,7 +6,8 @@ set -exu
 mapfile -t anyoffers < "$LNPLAY_SERVER_PATH/any_offers.txt"
 mapfile -t names < "$NAMES_FILE_PATH"
 
-sleep 5
+# TODO; we need to ensure each CLN API is ready here; there's some weird issue with larger CLN_COUNTs.
+sleep $((5 * REGTEST_BLOCK_TIME))
 
 # start the createprism json string
 PRISM_JSON_STRING="["

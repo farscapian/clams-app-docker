@@ -1,5 +1,7 @@
 # LNPlay - Deploy a Private Lightning Network
 
+Visit [lnplay.guide](lnplay.guide) to learn more about this project.
+
 ```
 WARNING: This software is new and should be used for testing and evaluation only!
 ```
@@ -9,7 +11,7 @@ This repo allows you to deploy `LNPlay` quickly in a [modern docker engine](http
 
 > Want to try this software but don't have the skill to host it yourself? Consider renting your own Private Lightning Network at [LNPlay.live](https://lnplay.live). For more information about this project, visit [lnplay.guide](https://www.lnplay.guide).
 
-`LNPlay` run in `regtest`, `signet`, or `mainnet` modes. When running in `regtest`, various channel setups can be created. All lightning nodes are able to communicate with each other using a [docker overlay network](https://docs.docker.com/network/drivers/overlay/).
+`LNPlay` runs in `regtest`, `signet`, or `mainnet` modes. When running in `regtest`, various channel setups can be created. All lightning nodes are able to communicate with each other using a [docker overlay network](https://docs.docker.com/network/drivers/overlay/).
 
 To get started, clone this repo and its submodules:
 
