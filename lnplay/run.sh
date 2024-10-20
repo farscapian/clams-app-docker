@@ -65,6 +65,7 @@ fi
 # if the clboss binary doesn't exist, build it.
 if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
+    ./clightning/cln-plugins/clboss/app/generate_commit_hash.sh
     docker buildx build -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss  --load
     docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
@@ -75,7 +76,6 @@ export CLN_PYTHON_IMAGE_NAME="$CLN_PYTHON_IMAGE_NAME"
 
 # build the cln image with our plugins
 docker buildx build -t "$CLN_PYTHON_IMAGE_NAME" --build-arg BASE_IMAGE="${LIGHTNINGD_DOCKER_BASE_IMAGE_NAME}" ./clightning/base/ --load
-
 
 # for some reason I can't get BUILDKIT=1 to work on this last step.
 export DOCKER_BUILDKIT=0
@@ -94,8 +94,6 @@ export CLAMS_REMOTE_IMAGE_NAME="$CLAMS_REMOTE_IMAGE_NAME"
 if ! docker image inspect "$NODE_BASE_DOCKER_IMAGE_NAME" &>/dev/null; then
     docker pull -q "$NODE_BASE_DOCKER_IMAGE_NAME"
 fi
-
-
 
 NGINX_BASE_IMAGE="nginx:1.27.0"
 NGINX_IMAGE_NAME="lnplay/nginx:1.27.0"
