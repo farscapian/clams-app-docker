@@ -10,8 +10,8 @@ Synthesizer
 Trumpet
 Trombone
 Tuba
-French Horn
-Alto Saxophone
+FrenchHorn
+AltoSaxophone
 Clarinet
 Flute
 Piccolo
@@ -20,14 +20,14 @@ Bassoon
 Violin
 Viola
 Cello
-Double Bass
-Snare Drum
-Bass Drum
+DoubleBass
+SnareDrum
+BassDrum
 Timpani
 Glockenspiel
 Xylophone
 Vibraphone
-Tenor Saxophone
+TenorSaxophone
 Marimba
 Tambourine
 Triangle
@@ -38,7 +38,7 @@ Congas
 Bongos
 Djembe
 Cajón
-Steel Drums
+SteelDrums
 Ukulele
 Mandolin
 Banjo
@@ -48,52 +48,52 @@ Bagpipes
 Sitar
 Dulcimer
 Recorder
-Bass Clarinet
-Baritone Horn
+BassClarinet
+BaritoneHorn
 Euphonium
 Sousaphone
 Flugelhorn
 Mellophone
-Bass Trombone
-Marching Snare
-Marching Toms
-Marching Bass Drum
-Marching Cymbals
-Marching Bells
+BassTrombone
+MarchingSnare
+MarchingToms
+MarchingBassDrum
+MarchingCymbals
+MarchingBells
 Saxhorn
 Cornet
-English Horn
-Soprano Saxophone
-Bass Flute
+EnglishHorn
+SopranoSaxophone
+BassFlute
 Contrabassoon
-Drum Machine
-Electric Violin
-Electronic Drum Pads
+DrumMachine
+ElectricViolin
+ElectronicDrumPads
 Melodica
 Kazoo
 Guiro
 Cowbell
 Castanets
-Baritone Saxophone
+BaritoneSaxophone
 Claves
-Agogo Bells
+AgogoBells
 Chimes
-Wind Chimes
-Sleigh Bells
+WindChimes
+SleighBells
 Shaker
 Shekere
 Maracas
 Ratchet
 Flexatone
-Jaw Harp
-Vibra Slap
+JawHarp
+VibraSlap
 Cabasa
 Kalimba
 Berimbau
 Rainstick
 Whistle
-Slide Whistle
+SlideWhistle
 Theremin
-Talk Box
+TalkBox
 Bullroarer
 Washboard
