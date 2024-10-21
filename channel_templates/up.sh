@@ -49,7 +49,7 @@ done
 echo "Node addresses cached"
 
 # if we're deploying prisms, then we also standard any offers on each node.
-if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ]; then
+if [ "$CHANNEL_SETUP" = prism ] && [ "$BTC_CHAIN" != mainnet ] && [ "$CREATE_PRISM" == "true" ]; then
     for ((NODE_ID=0; NODE_ID<CLN_COUNT; NODE_ID++)); do
         BOLT12_OFFER=$(../lightning-cli.sh --id=${NODE_ID} offer any default | jq -r '.bolt12')
         echo "$BOLT12_OFFER" >> "$LNPLAY_SERVER_PATH/any_offers.txt"
@@ -100,6 +100,6 @@ if [ "$BTC_CHAIN" = regtest ]; then
 fi
 
 # create a prism 
-if [ "$CHANNEL_SETUP" = prism ] && [ "$DEPLOY_PRISM_PLUGIN" = true ]; then
+if [ "$CHANNEL_SETUP" = prism ] && [ "$DEPLOY_PRISM_PLUGIN" = true ] && [ "$CREATE_PRISM" == true ]; then
     ./create_prism.sh
 fi
