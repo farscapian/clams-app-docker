@@ -65,7 +65,9 @@ fi
 # if the clboss binary doesn't exist, build it.
 if [ ! -f ./clightning/cln-plugins/clboss/clboss ] && [ "$DEPLOY_CLBOSS_PLUGIN" = true ]; then
     CLBOSS_IMAGE_NAME="lnplay/clboss:$LNPLAY_STACK_VERSION"
-    bash -c "./clightning/cln-plugins/clboss/app/generate_commit_hash.sh"
+    cd ./clightning/cln-plugins/clboss/app
+    ./generate_commit_hash.sh
+    cd -
     docker buildx build -t "$CLBOSS_IMAGE_NAME" -f ./clightning/cln-plugins/clboss/Dockerfile1 ./clightning/cln-plugins/clboss  --load
     docker run -t -v "$(pwd)/clightning/cln-plugins/clboss":/output "$CLBOSS_IMAGE_NAME" cp /usr/local/bin/clboss /output/clboss
 fi
