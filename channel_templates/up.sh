@@ -17,13 +17,13 @@ done
 
 # todo; technically this can be any front-end
 if [ "$DEPLOY_CLAMS_REMOTE" = true ]; then
-    wait-for-it -t 30 "$BACKEND_FQDN":80
+    wait-for-it -t 300 "$BACKEND_FQDN":80
 fi
 
-wait-for-it -t 30 "$BACKEND_FQDN":6001
+wait-for-it -t 300 "$BACKEND_FQDN":6001
 
 if [ "$ENABLE_CLN_REST" = true ]; then
-    wait-for-it -t 30 "$BACKEND_FQDN":9001
+    wait-for-it -t 300 "$BACKEND_FQDN":9001
 fi
 
 sleep 10
